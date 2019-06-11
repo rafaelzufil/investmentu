@@ -1,0 +1,38 @@
+.DS_Store
+*/.DS_Store
+./index.php
+wp-activate.php
+wp-admin
+wp-blog-header.php
+wp-comments-post.php
+wp-config-sample.php
+wp-config.php
+wp-cron.php
+wp-includes
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+
+wp-content/uploads
+wp-content/cache
+wp-content/w3tc-config
+
+node_modules
+
+wp-content/advanced-cache.php
+
+# wp-content/plugins/w3-total-cache
+# wp-content/plugins/amazon-s3-and-cloudfront
+# wp-content/plugins/amazon-web-services
+# wp-content/plugins/oc-support
+# wp-content/plugins/w3-total-cache
+
+**/.sass-cache
+**/.sass-cache/*
+
+**/log/*
