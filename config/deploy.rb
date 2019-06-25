@@ -13,7 +13,7 @@ set :scm, :git
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
 # Default value for :linked_files is []
-set :linked_files, fetch(:linked_files, []).push('wp-config.php')
+set :linked_files, fetch(:linked_files, []).push('wp-config.php', 'wp-content/plugins/iu-syndication-aggregator/iu-syndication-configs.php')
 
 # Default value for linked_dirs is []
 set :linked_dirs, fetch(:linked_dirs, []).push('wp-content/uploads', 'wp-content/cache', 'wp-content/w3tc-config')
