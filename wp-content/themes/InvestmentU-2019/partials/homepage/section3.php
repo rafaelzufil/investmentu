@@ -5,7 +5,7 @@
         'post_status'=>'publish', 
         'posts_per_page'=>3,
         'offset' => 4,
-        'category__not_in' => array( 34 ),
+        'category__not_in' => array( 3275 ),
     )); 
     
 ?>

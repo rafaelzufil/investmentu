@@ -8,7 +8,7 @@
                 'post_type'=>'post', 
                 'post_status'=>'publish', 
                 'posts_per_page'=>4,
-                'category__not_in' => array( 34 ),
+                'category__not_in' => array( 3275 ),
             )); 
             if( $the_query->have_posts() ):
             while ( $the_query->have_posts() ) : $the_query->the_post(); 
