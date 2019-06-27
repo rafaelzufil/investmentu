@@ -1,3 +1,8 @@
+<?php
+/**
+ * Template Name: Page without sidebar
+ */
+?>
 <?php while (have_posts()) : the_post(); ?>
   <main>
     <div class="container">
@@ -9,7 +14,6 @@
                 <div class="article-header mb-2">
                   <h3 class="page-title mb-4"><?php the_title(); ?></h3>
                 </div>
-                <img src="<?php the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image">
                 <?php the_content(); ?>
               </article>
             </div>
