@@ -36,7 +36,7 @@
                 <?php } ?>
                 <?php the_content(); ?>
              <!-- Lead gen ad for whichever franchise fits best -->  
-                <?php get_template_part('partials/article-mid-ad'); ?>
+                <?php //get_template_part('partials/article-mid-ad'); ?>
                 <!-- Author Introduction -->
                 <?php get_template_part('partials/article-author-intro'); ?>
               </article>
