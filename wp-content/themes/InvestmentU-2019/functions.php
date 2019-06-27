@@ -109,13 +109,12 @@ function get_related_author_posts() {
 
   $authors_posts = get_posts( array( 'author' => $authordata->ID, 'post__not_in' => array( $post->ID ), 'posts_per_page' => 4 ) );
 
-  //$output = '<ul>';
   foreach ( $authors_posts as $authors_post ) {
-      $category = get_the_category();
-      // $output .= '<li><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></li>';
+      $category = get_the_category($authors_post->ID);
+      $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
       $output .= '<div class="col-12 col-sm-6 col-lg-3">
-                    <a href="'. get_the_permalink() .'#">
-                    <img src="'. get_the_post_thumbnail_url() .'" class="small-featured-article-image img-fluid">
+                    <a href="'. get_permalink( $authors_post->ID ) .'#">
+                    <img src="'. $thumb .'" class="small-featured-article-image img-fluid">
                     </a>
                     <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
@@ -126,7 +125,15 @@ function get_related_author_posts() {
                     </div>
                 </div>';
   }
-  //$output .= '</ul>';
-
   return $output;
 }
+
+
+function custom_video_cat_template($single_template) {
+  global $post;
+    if ( in_category( 'video' )) {
+       $single_template = dirname( __FILE__ ) . '/single-video.php';
+  }
+  return $single_template;
+}
+add_filter( "single_template", "custom_video_cat_template" ) ;
