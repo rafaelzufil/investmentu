@@ -1,0 +1,83 @@
+.navbar-brand
+  padding-top: 0
+  padding-bottom: 0
+
+.navbar-collapse
+  justify-content: space-between
+
+.nav
+  justify-content: space-between
+  // flex-grow: 1
+
+.nav-links
+  flex-grow: 1
+  flex-direction: column
+  @media screen and (min-width: 786px)
+    flex-direction: row
+  
+
+.nav-item
+  font-size: $smd
+  margin: 0 auto
+  padding: 0.5rem 0
+  a 
+    color: $black
+    &:hover, &:focus, &:active
+      color: $iu-blue
+
+.nav-links .nav-item
+  width: 100%
+  border-bottom: solid 1px $medium-grey
+  @media screen and (min-width: 768px)
+    width: inherit
+    border-bottom: none
+
+.nav-social
+  margin-right: 1rem
+  .nav-item
+    margin: 0 0.5rem
+
+#logo
+  width: 180px
+  @media screen and (min-width: 576px)
+    width: 225px
+
+#nav-search
+  background-image: url(../img/search.png)
+  background-repeat: no-repeat
+  background-size: 20px
+  background-position-x: 10px
+  background-position-y: 8px
+  text-indent: 25px
+
+.nav-link
+  text-transform: capitalize
+  padding: 0
+
+footer 
+  nav 
+    background-color: $xlite-grey
+    ul 
+      li 
+        a 
+          color: $medium-grey
+          &:hover, &:focus, &:active
+            color: $xdark-grey
+
+.home-links
+  padding-left: 0
+  li
+    margin: 0
+    padding: 0
+    padding-top: 0.5rem
+    padding-bottom: 0.5rem
+    border-bottom: 1px solid #d3d3d3
+    text-transform: capitalize
+    width: 100%
+    list-style: none
+
+.footer-nav
+  li
+    font-size: 0.85rem
+    margin: 0 auto
+    padding: 0.5rem 1.5rem

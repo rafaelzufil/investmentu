@@ -1,0 +1,28 @@
+# CF OpenX Handler Changelog
+
+## 1.4.3
+
+- Moving the zone override to a proper place so checks can be made on it
+- Adding the CF OpenX Override plugin to provide an admin interface to override a Zone ID.
+
+## 1.4.2
+
+- Added the ability to override the zone ID when displaying a zone
+
+## 1.4.1
+
+- Added the htmloutput variable to the URL for getting the zone content
+
+## 1.4
+
+- Cleanup of code to update with current coding standards
+- Adding functionality to Block widgets from being cached in WP Super Cache
+- Adding README content
+
+## 1.3.1
+
+- Adding a link to the settings screen in the widget form
+
+## 1.3
+
+- Removed the responsibility of the plugin to build the parameters.  Now able to filter in parameters via `cfox_params` filter

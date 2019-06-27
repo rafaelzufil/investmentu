@@ -1,0 +1,21 @@
+# CF Get 2 Cookie Changelog
+
+## 1.2
+
+- Added WP Super Cache Integration
+
+## 1.1.1
+
+- Bug fix to only add the JS for the plugin when needed
+
+## 1.1
+
+- Added automatic integration with the CF Context plugin
+
+## 1.0.1
+
+- Tested Successfully on WordPress 3.0.
+
+## 1.0
+
+- Initial release.
