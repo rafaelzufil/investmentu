@@ -82,6 +82,7 @@ function iu_syndication_handler(WP_REST_Request $request) {
 	$post_id = wp_insert_post($params);
 
 	iu_syndication_update_meta($post_id, '_yoast_wpseo_canonical', $post_body['post_permalink']);
+	iu_syndication_update_meta($post_id, 'publication-source', $post_body['publisher_name']);
 	
 	echo $post_id;
 }
