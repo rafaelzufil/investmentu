@@ -167,7 +167,7 @@ function prefix_insert_post_ads( $content ) {
 </div>';
  
     if ( is_page( 'faq' ) || is_page( 'about-us' ) || is_single() && ! is_admin() ) {
-        return prefix_insert_after_paragraph( $ad_code, 2, $content );
+        return prefix_insert_after_paragraph( $ad_code, 10, $content );
     }
      
     return $content;
@@ -191,3 +191,20 @@ function prefix_insert_after_paragraph( $insertion, $paragraph_id, $content ) {
      
     return implode( '', $paragraphs );
 }
+
+
+function create_post_type() {
+	register_post_type( 'experts',
+	 array(
+        'labels' => array(
+        'name' => __( 'Experts' ),
+        'singular_name' => __( 'Expert' )
+        ),
+        'public' => true,
+        'has_archive' => true,
+      )
+    );
+    
+}
+
+add_action( 'init', 'create_post_type' );
