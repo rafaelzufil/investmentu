@@ -28,16 +28,16 @@
                 <?php $category = get_the_category(); ?>
                 <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
                     <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
-                    <p><?php 
-                        if($date == $tdate) {
-                            echo human_time_diff(get_the_time('U'), current_time('timestamp') ) . ' ago';
-                        } elseif( $date == $ydate) {
-                            echo 'Posted Yesterday';
-                        } else {
-                            echo $date;
-                        }
-                    ?></p>
-                  <!-- <p><time><?php time_ago( get_the_time( 'U' ) ); ?></time> </p> -->
+                    <!-- <p><?php 
+                        // if($date == $tdate) {
+                        //     echo human_time_diff(get_the_time('U'), current_time('timestamp') ) . ' ago';
+                        // } elseif( $date == $ydate) {
+                        //     echo 'Posted Yesterday';
+                        // } else {
+                        //     echo $date;
+                        // }
+                    ?></p> -->
+                  <!-- <p><time><?php // time_ago( get_the_time( 'U' ) ); ?></time> </p> -->
                 </a>
                 <a href="<?php the_permalink(); ?>">
                     <h4><?php the_title(); ?></h4>
