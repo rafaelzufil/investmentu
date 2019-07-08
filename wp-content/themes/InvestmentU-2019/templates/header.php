@@ -20,6 +20,17 @@
     <a class="navbar-brand" href="<?= esc_url(home_url('/')); ?>">
       <img src="<?php bloginfo('template_directory');?>/assets/images/logo.png" alt="Investment U" class="mx-auto my-3 img-fluid" id="logo">
     </a>
+    <ul class="nav nav-social d-none d-sm-flex d-lg-none">
+      <li class="nav-item">
+        <a class="nav-link" href="#"><i class="fab fa-facebook-square"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"><i class="fab fa-youtube"></i></a>
+      </li>
+      <li class="nav-item d-none d-lg-inline-block">
+        <a class="nav-link" href="#"><i class="fas fa-search"></i></a>
+      </li>
+    </ul>
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem">
       <a href="#" class="nav-link"><i class="fas fa-search"></i></a>
     </div>
@@ -28,23 +39,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="collapse-nav">
-      <!-- <ul class="nav nav-links">
-        <li class="nav-item">
-          <a class="nav-link" href="#">dividend stocks</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">marijuana stocks</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">financial freedom</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">investment opportunities</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">tech stocks</a>
-        </li>
-      </ul> -->
+    
       <?php
         wp_nav_menu(array(
           'theme_location' => 'primary_navigation',
@@ -55,7 +50,7 @@
           'walker' => new wp_bootstrap_navwalker())
         );
       ?>
-      <ul class="nav nav-social">
+      <ul class="nav nav-social d-sm-none d-lg-flex">
         <li class="nav-item">
           <a class="nav-link" href="#"><i class="fab fa-facebook-square"></i></a>
         </li>

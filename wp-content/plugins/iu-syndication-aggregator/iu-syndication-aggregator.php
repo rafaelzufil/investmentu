@@ -82,7 +82,12 @@ function iu_syndication_handler(WP_REST_Request $request) {
 	$post_id = wp_insert_post($params);
 
 	iu_syndication_update_meta($post_id, '_yoast_wpseo_canonical', $post_body['post_permalink']);
-	
+	iu_syndication_update_meta($post_id, 'publication-source', $post_body['publisher_name']);
+
+	if ($post_body['post_thumbnail_url'] != '') {
+		iu_syndication_insert_attachment_from_url($post_id, $post_body['post_thumbnail_url']);
+	}
+
 	echo $post_id;
 }
 
@@ -106,5 +111,58 @@ function iu_syndication_update_meta($post_id, $meta_key, $new_meta_value) {
 		/* If the new meta value does not match the old value, update it. */
 		update_post_meta($post_id, $meta_key, $new_meta_value);
 	}
+}
+
+/**
+ * Insert an attachment from URL
+ *
+ * @param string $url
+ * @param int $parent_post_id
+ * @return int Attachment ID
+ */
+function iu_syndication_insert_attachment_from_url($parent_post_id, $url) {
+	require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+	if (!class_exists('WP_Http')) {
+		include_once( ABSPATH . WPINC . '/class-http.php' );
+	}
+
+	$http = new WP_Http();
+	$response = $http->request($url);
+
+	if ($response['response']['code'] != 200) {
+		return false;
+	}
+
+	$upload = wp_upload_bits(basename($url), null, $response['body']);
+
+	if (!empty($upload['error'])){
+		return false;
+	}
+
+	$file_path = $upload['file'];
+	$file_name = basename($file_path);
+	$file_type = wp_check_filetype($file_name, null);
+	$attachment_title = sanitize_file_name(pathinfo( $file_name, PATHINFO_FILENAME));
+	$wp_upload_dir = wp_upload_dir();
+
+	$post_info = array(
+		'guid'           => $wp_upload_dir['url'] . '/' . $file_name,
+		'post_mime_type' => $file_type['type'],
+		'post_title'     => $attachment_title,
+		'post_content'   => '',
+		'post_status'    => 'inherit',
+	);
+
+	// Create the attachment
+	$attachment_id = wp_insert_attachment($post_info, $file_path, $parent_post_id);
+
+	// Define attachment metadata
+	$attachment_data = wp_generate_attachment_metadata($attachment_id, $file_path);
+
+	// Assign metadata to attachment
+	wp_update_attachment_metadata($attachment_id, $attachment_data);
+
+	return $attachment_id;
 }
 ?>

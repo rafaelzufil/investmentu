@@ -14,7 +14,10 @@
   flex-direction: column
   @media screen and (min-width: 786px)
     flex-direction: row
-  
+
+.nav-fill
+  .nav-item
+    flex: initial 
 
 .nav-item
   font-size: $smd
@@ -33,7 +36,11 @@
     border-bottom: none
 
 .nav-social
-  margin-right: 1rem
+  justify-content: center
+  @media screen and (min-width: 576px) and (max-width: 991px) 
+    margin-right: 1rem
+    flex-grow: 1
+    justify-content: flex-end
   .nav-item
     margin: 0 0.5rem
 
