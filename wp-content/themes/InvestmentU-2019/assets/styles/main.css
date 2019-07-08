@@ -70,7 +70,7 @@ main {
           flex-direction: column;
 }
 
-@media screen and (min-width: 786px) {
+@media screen and (min-width: 768px) {
   .nav-links {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
@@ -220,11 +220,6 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
 
 .headshot {
   border-radius: 100%;
-}
-
-.exp-headshot img {
-  border-radius: 100%;
-  width: 160px;
 }
 
 .publication-source {

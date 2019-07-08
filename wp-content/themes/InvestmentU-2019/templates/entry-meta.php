@@ -1,4 +1,3 @@
-
 <div class="byline-container py-2">
     <img src="<?php echo get_wp_user_avatar_src(); ?>" class="headshot align-middle d-inline-block">
 <div class="align-middle d-inline-block ml-1">

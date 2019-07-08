@@ -15,6 +15,7 @@
         <h6>Related Articles</h6>
     </div>
     <?php
+    $date = get_the_date();
     $my_query = new wp_query( $args );
     if( $my_query->have_posts() ) {
     while( $my_query->have_posts() ) {
@@ -29,6 +30,7 @@
         <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
             <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
         </a>
+        <p class="date-posted m-0"><?php echo $date; ?> </p>
         <a href="<?php the_permalink(); ?>">
             <h6><?php the_title(); ?></h6>
         </a>
