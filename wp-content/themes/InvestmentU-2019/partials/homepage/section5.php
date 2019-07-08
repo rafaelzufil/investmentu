@@ -1,6 +1,6 @@
 <!-- other links section -->
 <div class="container py-4" id="section05">
-<h3 class="mb-3">Populat Posts</h3>
+<h3 class="mb-3">Popular Posts</h3>
     <div class="row">
         <div class="col-12 col-sm-6 col-lg-3">
             <nav class="nav-primary ">
@@ -40,3 +40,4 @@
         </div>
     </div>
 </div>
+<hr>
