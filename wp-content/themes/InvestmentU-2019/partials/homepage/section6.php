@@ -1,6 +1,6 @@
 <!-- headshot carousel -->
 <div class="container py-4" id="section06">
-<h3 class="mb-3">Meet the Experts</h3>
+<h3 class="mb-3 small-title">Meet the Experts</h3>
     <div class="row justify-content-center">
         <div class="guru-carousel">
             <div class="arrow-left d-inline-block mx-2 align-middle"></div>

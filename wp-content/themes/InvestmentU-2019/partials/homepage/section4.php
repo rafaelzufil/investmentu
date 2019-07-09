@@ -54,7 +54,7 @@
                             <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
                         </a>
                         <a href="<?php the_permalink(); ?>">
-                            <h4><?php the_title(); ?></h4>
+                            <h4 class="small-title"><?php the_title(); ?></h4>
                         </a>
                         <a href="<?php the_permalink(); ?>">
                             <p class="p-black"><?php the_excerpt(); ?></p>

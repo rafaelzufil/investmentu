@@ -139,7 +139,7 @@ main {
 
 @media screen and (min-width: 576px) {
   #logo {
-    width: 225px;
+    width: 260px;
   }
 }
 
@@ -260,6 +260,10 @@ h1, h2, h3, h4, h5, h6 {
   -o-object-fit: cover;
      object-fit: cover;
   width: 100%;
+}
+
+.small-title {
+  font-size: 1.25rem;
 }
 
 .main-featured-article-excerpt a {
@@ -413,6 +417,10 @@ article .featured-image {
 
 input.form-control.form-control-lg, select.form-control.form-control-lg, textarea.form-control.form-control-lg {
   margin-bottom: 1rem;
+}
+
+.exp-headshot img {
+  border-radius: 50%;
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px) {

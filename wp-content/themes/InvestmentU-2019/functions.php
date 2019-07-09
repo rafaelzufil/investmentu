@@ -77,7 +77,7 @@ function IU_recent_posts_shortcode($atts, $content = null) {
 		
 		setup_postdata($post);
     $category = get_the_category();
-    
+    $date = get_the_date();
     $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
                   <a href="'. get_the_permalink() .'">
                     <img src="'. get_the_post_thumbnail_url() .'" class="small-featured-article-image img-fluid">
@@ -86,6 +86,7 @@ function IU_recent_posts_shortcode($atts, $content = null) {
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
                       <span class="category-tag">'. $category[0]->cat_name .'</span>
                     </a>
+                    <p class="date-posted m-0"> '. $date .' </p>
                     <a href="'. get_the_permalink() .'">
                       <h6>'. get_the_title() .'</h6>
                     </a>
@@ -112,6 +113,7 @@ function get_related_author_posts() {
   foreach ( $authors_posts as $authors_post ) {
       $category = get_the_category($authors_post->ID);
       $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
+      $date = get_the_date();
       $output .= '<div class="col-12 col-sm-6 col-lg-3">
                     <a href="'. get_permalink( $authors_post->ID ) .'#">
                     <img src="'. $thumb .'" class="small-featured-article-image img-fluid">
@@ -120,6 +122,7 @@ function get_related_author_posts() {
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
                         <span class="category-tag">'. $category[0]->cat_name .'</span>
                     </a>
+                    <p class="date-posted m-0"> '. $date .' </p>
                     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
                     
                     </div>
@@ -153,11 +156,14 @@ function prefix_insert_post_ads( $content ) {
     </div>
     <div class="col-7 col-lg-9 small-featured-article-excerpt">
     <a href="#">
-        <span class="category-tag">Published Thru </span>
+        <span class="category-tag">Published Thru <em>Grey Circle News</em></span>
     </a>
     <a href="#">
         <h6>This Pug Would Be Da Belle of Da Ball</h6>
     </a>
+    <p class="date-posted m-0">
+        Posted June 12, 2019
+    </p>
     <a href="#">
         <p class="m-0">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
         turpis
@@ -208,3 +214,37 @@ function create_post_type() {
 }
 
 add_action( 'init', 'create_post_type' );
+
+
+/* Tmestamp for Homepage Articles */
+
+    define( TIMEBEFORE_NOW,         'now' );
+    define( TIMEBEFORE_MINUTE,      '{num} minute ago' );
+    define( TIMEBEFORE_MINUTES,     '{num} minutes ago' );
+    define( TIMEBEFORE_HOUR,        '{num} hour ago' );
+    define( TIMEBEFORE_HOURS,       '{num} hours ago' );
+    define( TIMEBEFORE_YESTERDAY,   'yesterday' );
+    define( TIMEBEFORE_FORMAT,      '%e %b' );
+    define( TIMEBEFORE_FORMAT_YEAR, '%e %b, %Y' );
+
+    function time_ago( $time )
+    {
+        $out    = ''; // what we will print out
+        $now    = time(); // current time
+        $diff   = $now - $time; // difference between the current and the provided dates
+
+        if( $diff < 60 ) // it happened now
+            return TIMEBEFORE_NOW;
+
+        elseif( $diff < 3600 ) // it happened X minutes ago
+            return str_replace( '{num}', ( $out = round( $diff / 60 ) ), $out == 1 ? TIMEBEFORE_MINUTE : TIMEBEFORE_MINUTES );
+
+        elseif( $diff < 3600 * 24 ) // it happened X hours ago
+            return str_replace( '{num}', ( $out = round( $diff / 3600 ) ), $out == 1 ? TIMEBEFORE_HOUR : TIMEBEFORE_HOURS );
+
+        elseif( $diff < 3600 * 24 * 2 ) // it happened yesterday
+            return TIMEBEFORE_YESTERDAY;
+
+        else // falling back on a usual date format as it happened later than yesterday
+            return strftime( date( 'Y', $time ) == date( 'Y' ) ? TIMEBEFORE_FORMAT : TIMEBEFORE_FORMAT_YEAR, $time );
+    }
