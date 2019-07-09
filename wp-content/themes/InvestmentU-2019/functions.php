@@ -142,7 +142,7 @@ function custom_video_cat_template($single_template) {
 add_filter( "single_template", "custom_video_cat_template" ) ;
 
 
-//Insert ads after second paragraph of single post content.
+//Insert ads after 10th paragraph of single post content.
  
 add_filter( 'the_content', 'prefix_insert_post_ads' );
  
@@ -248,3 +248,10 @@ add_action( 'init', 'create_post_type' );
         else // falling back on a usual date format as it happened later than yesterday
             return strftime( date( 'Y', $time ) == date( 'Y' ) ? TIMEBEFORE_FORMAT : TIMEBEFORE_FORMAT_YEAR, $time );
     }
+
+
+/* Excerpt - Read More.. */
+function excerpt_readmore($more) {
+  return '... <a href="'. get_permalink($post->ID) . '" class="readmore"><em>' . 'Read More' . '</em></a>';
+}
+add_filter('excerpt_more', 'excerpt_readmore');

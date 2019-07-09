@@ -133,6 +133,10 @@ main {
   margin: 0 0.5rem;
 }
 
+.nav-social .nav-item .nav-link {
+  font-size: 1.55rem;
+}
+
 #logo {
   width: 180px;
 }
@@ -364,6 +368,17 @@ article .featured-image {
   margin: 0;
   padding: 0;
   text-align: center;
+}
+
+a.readmore {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+@media screen and (min-width: 992px) {
+  .first-post {
+    height: 170px !important;
+  }
 }
 
 .category-article-preview-row .small-featured-article-excerpt h6 {
