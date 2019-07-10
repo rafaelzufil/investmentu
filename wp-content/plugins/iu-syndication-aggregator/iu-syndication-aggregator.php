@@ -163,6 +163,8 @@ function iu_syndication_insert_attachment_from_url($parent_post_id, $url) {
 	// Assign metadata to attachment
 	wp_update_attachment_metadata($attachment_id, $attachment_data);
 
+	set_post_thumbnail($parent_post_id, $attachment_id);
+
 	return $attachment_id;
 }
 ?>
