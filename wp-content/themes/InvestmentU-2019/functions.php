@@ -17,7 +17,9 @@ $sage_includes = [
   'lib/titles.php',    // Page titles
   'lib/wrapper.php',   // Theme wrapper class
   'lib/customizer.php', // Theme customizer
-  'lib/pagination.php' // Pagination
+  'lib/pagination.php', // Pagination
+  'lib/recent-posts.php' // category page recent posts
+  
 ];
 
 foreach ($sage_includes as $file) {
@@ -49,60 +51,6 @@ function tn_custom_excerpt_length( $length ) {
   return 10;
   }
   add_filter( 'excerpt_length', 'tn_custom_excerpt_length', 999 );
-
-
-// recent posts shortcode
-
-function IU_recent_posts_shortcode($atts, $content = null) {
-	
-	global $post;
-	
-	extract(shortcode_atts(array(
-		'cat'     => '',
-		'num'     => '5',
-		'offset'   => '0',
-    
-	), $atts));
-	
-	$args = array(
-		'category_name'  => $cat,
-		'posts_per_page' => $num,
-		'offset'          => $offset,
-	);
-	
-	$output = '';
-	
-	$posts = get_posts($args);
-	
-	foreach($posts as $post) {
-		
-		setup_postdata($post);
-    $category = get_the_category();
-    $date = get_the_date();
-    $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
-                  <a href="'. get_the_permalink() .'">
-                    <img src="'. get_the_post_thumbnail_url() .'" class="small-featured-article-image img-fluid">
-                  </a>
-                  <div class="small-featured-article-excerpt">
-                    <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
-                      <span class="category-tag">'. $category[0]->cat_name .'</span>
-                    </a>
-                    <p class="date-posted m-0"> '. $date .' </p>
-                    <a href="'. get_the_permalink() .'">
-                      <h6>'. get_the_title() .'</h6>
-                    </a>
-                  </div>
-                </div>';
-		
-	}
-	
-	wp_reset_postdata();
-	
-	return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div>';
-	
-}
-add_shortcode('recent_posts', 'IU_recent_posts_shortcode');
-
 
 // Authors Related articles
 
