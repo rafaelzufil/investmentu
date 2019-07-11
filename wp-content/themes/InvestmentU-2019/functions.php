@@ -10,6 +10,7 @@
  * @link https://github.com/roots/sage/pull/1042
  */
 $sage_includes = [
+  'lib/ads.php',    // Article mid ad
   'lib/assets.php',    // Scripts and stylesheets
   'lib/extras.php',    // Custom functions
   'lib/setup.php',     // Theme setup
@@ -122,8 +123,8 @@ function get_related_author_posts() {
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
                         <span class="category-tag">'. $category[0]->cat_name .'</span>
                     </a>
-                    <p class="date-posted m-0"> '. $date .' </p>
                     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
+                    <p class="date-posted m-0 category-tag">' . $date . '</p>
                     
                     </div>
                 </div>';
@@ -140,63 +141,6 @@ function custom_video_cat_template($single_template) {
   return $single_template;
 }
 add_filter( "single_template", "custom_video_cat_template" ) ;
-
-
-//Insert ads after 10th paragraph of single post content.
- 
-add_filter( 'the_content', 'prefix_insert_post_ads' );
- 
-function prefix_insert_post_ads( $content ) {
-     
-    $ad_code = '<div class="article-native-ad row border-top border-bottom py-4 mb-4">
-    <div class="col-5 col-lg-3">
-    <a href="#">
-        <img src="assets/img/princepug.jpg" class="small-featured-article-image img-fluid">
-    </a>
-    </div>
-    <div class="col-7 col-lg-9 small-featured-article-excerpt">
-    <a href="#">
-        <span class="category-tag">Published Thru <em>Grey Circle News</em></span>
-    </a>
-    <a href="#">
-        <h6>This Pug Would Be Da Belle of Da Ball</h6>
-    </a>
-    <p class="date-posted m-0">
-        Posted June 12, 2019
-    </p>
-    <a href="#">
-        <p class="m-0">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
-        turpis
-        egestas. <span class="blue-link">Learn More</span></p>
-    </a>
-    </div>
-</div>';
- 
-    if ( is_page( 'faq' ) || is_page( 'about-us' ) || is_single() && ! is_admin() ) {
-        return prefix_insert_after_paragraph( $ad_code, 10, $content );
-    }
-     
-    return $content;
-}
-  
-// Parent Function that makes the magic happen
-  
-function prefix_insert_after_paragraph( $insertion, $paragraph_id, $content ) {
-    $closing_p = '</p>';
-    $paragraphs = explode( $closing_p, $content );
-    foreach ($paragraphs as $index => $paragraph) {
- 
-        if ( trim( $paragraph ) ) {
-            $paragraphs[$index] .= $closing_p;
-        }
- 
-        if ( $paragraph_id == $index + 1 ) {
-            $paragraphs[$index] .= $insertion;
-        }
-    }
-     
-    return implode( '', $paragraphs );
-}
 
 
 function create_post_type() {
@@ -250,8 +194,3 @@ add_action( 'init', 'create_post_type' );
     }
 
 
-/* Excerpt - Read More.. */
-function excerpt_readmore($more) {
-  return '... <a href="'. get_permalink($post->ID) . '" class="readmore"><em>' . 'Read More' . '</em></a>';
-}
-add_filter('excerpt_more', 'excerpt_readmore');

@@ -30,9 +30,10 @@
         <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
             <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
         </a>
-        <p class="date-posted m-0"><?php echo $date; ?> </p>
+        
         <a href="<?php the_permalink(); ?>">
             <h6><?php the_title(); ?></h6>
+            <p class="date-posted m-0 category-tag"><?php echo $date; ?> </p>
         </a>
         </div>
     </div>
