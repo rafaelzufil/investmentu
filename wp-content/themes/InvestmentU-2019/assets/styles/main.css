@@ -7,6 +7,7 @@ main {
 
 #small-signup-form {
   background-color: #1f82c5;
+  z-index: 1021;
 }
 
 #small-signup-form p {
@@ -26,6 +27,9 @@ main {
   background-color: #41dde3;
   color: white;
   font-weight: bold;
+  height: calc(1em + .75rem + 2px);
+  font-size: 1.5rem;
+  padding: 0px;
 }
 
 #sticky-lead-gen-ad p {
@@ -170,6 +174,14 @@ footer nav ul li a {
 }
 
 footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
+  color: #313131;
+}
+
+.footer-nav .nav-item a {
+  color: #898989;
+}
+
+.footer-nav .nav-item a:hover, .footer-nav .nav-item a:focus, .footer-nav .nav-item a:active {
   color: #313131;
 }
 
