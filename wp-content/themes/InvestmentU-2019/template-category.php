@@ -36,7 +36,7 @@
                             <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
                         </a>
                         <a href="<?php the_permalink(); ?>">
-                            <h4 class="small-title"><?php the_title(); ?></h4>
+                            <h6><?php the_title(); ?></h6>
                         </a>
                         
                     </div>
