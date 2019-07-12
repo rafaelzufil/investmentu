@@ -30,21 +30,24 @@
                 <a href="<?php the_permalink(); ?>">
                     <h4 class="mb-0"><?php the_title(); ?></h4>
                 </a>
-                <!-- <span class="category-tag"><?php 
-                //     $postDate = strtotime( $post->post_date );
-                //     $todaysDate = strtotime( date( 'Y-m-d' ) );
-                //     $tdate = date("F j, Y", strtotime("today"));
-                //     $ydate =  date("F j, Y", strtotime("yesterday"));
-                //     $date = get_the_date();
+                 <span class="category-tag"><?php 
+                    $postDate =  get_the_time("Y-m-d") ;
+                    $todaysDate = date( 'Y-m-d' );
+                    
+                    $ydate =  date("F j, Y", strtotime("yesterday"));
+                    $date = get_the_date();
+                    
 
-                //     if($postDate == $todaysDate) {
-                //         echo human_time_diff(get_the_time('U'), current_time('timestamp') ) . ' ago';
-                //     } elseif( $date == $ydate) {
-                //         echo 'Posted Yesterday';
-                //     } else {
-                //         echo $date;
-                //     }
-                // ?> -->
+                    if($postDate === $todaysDate) {
+                        echo human_time_diff(get_the_time('U'), current_time('timestamp') ) . ' ago';
+                    } elseif( $date == $ydate) {
+                        echo 'Posted Yesterday';
+                    } else {
+                        echo $date;
+                    }
+                ?> 
+                <p><?php //echo $postDate; ?></p>
+                 <p><?php //echo $todaysDate; ?> </p>   
                 <!-- <time><?php //time_ago( get_the_time( 'U' )); ?></time>
                 </span> -->
                 <p><?php the_excerpt(); ?></p>

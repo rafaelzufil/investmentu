@@ -19,7 +19,7 @@
              <!-- Lead gen ad for whichever franchise fits best -->  
                 <?php // get_template_part('partials/article-mid-ad'); ?>
                 <!-- Author Introduction -->
-                <?php get_template_part('partials/article-author-intro'); ?>
+                <?php get_template_part('partials/article-author-ad'); ?>
               </article>
             </div>
           </div>

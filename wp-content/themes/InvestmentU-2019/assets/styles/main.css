@@ -236,6 +236,9 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
 
 .headshot {
   border-radius: 100%;
+}
+
+.article-headshot {
   width: 10%;
 }
 
