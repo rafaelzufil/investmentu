@@ -25,8 +25,11 @@
                     </a>
                     <a href="<?php the_permalink(); ?>">
                         <h4 class="small-title"><?php the_title(); ?></h4>
+                        <?php get_template_part('partials/homepage/article-date'); ?>
                     </a>
-                    <p><?php the_excerpt(); ?></p> 
+                    <a href="<?php the_permalink(); ?>">
+                        <p class="p-black"><?php the_excerpt(); ?></p>
+                    </a> 
                 </div>
             </div>
         <?php endwhile; endif; ?>	
