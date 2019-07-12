@@ -52,7 +52,7 @@
                     </a>
                     
                     <a href="<?php the_permalink(); ?>">
-                        <h6><?php the_title(); ?></h6>
+                        <h6 class="m-0"><?php the_title(); ?></h6>
                         <?php get_template_part('partials/homepage/article-date'); ?>
                     </a>
                 </div>

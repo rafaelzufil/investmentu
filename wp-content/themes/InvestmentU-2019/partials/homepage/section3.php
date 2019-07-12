@@ -24,7 +24,7 @@
                         <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     <a href="<?php the_permalink(); ?>">
-                        <h4 class="small-title"><?php the_title(); ?></h4>
+                        <h4 class="small-title m-0"><?php the_title(); ?></h4>
                         <?php get_template_part('partials/homepage/article-date'); ?>
                     </a>
                     <a href="<?php the_permalink(); ?>">
