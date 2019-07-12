@@ -42,17 +42,13 @@ function IU_recent_posts_shortcode($atts, $content = null) {
                     </a>
                   </div>
                 </div>
-                <button class="btn btn-block btn-primary form-control" disabled="disabled" onClick="" >ABC</button>
-                
-                
-                
                 ';
 		
 	}
 	
 	wp_reset_postdata();
 	
-	return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div>';
+	return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" href=" ' . esc_url(home_url('/')) . 'category/dividend-stocks/" style="width:60%;">View More</a>';
 	
 }
 add_shortcode('recent_posts', 'IU_recent_posts_shortcode');
