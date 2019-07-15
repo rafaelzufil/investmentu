@@ -31,9 +31,8 @@
                     <h4 class="mb-0"><?php the_title(); ?></h4>
                 </a>
                  <?php get_template_part('partials/homepage/article-date'); ?>
-                <a href="<?php the_permalink(); ?>">
-                    <p class="p-black"><?php the_excerpt(); ?></p>
-                </a>
+                <p class="p-black"><?php the_excerpt(); ?>...<a href="<?php the_permalink(); ?>"><em>Read More</em></a></p>
+                
                  
             </div>
         <?php

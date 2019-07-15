@@ -1,0 +1,29 @@
+.mg-slick-carousel.picture-frame p.mg-description.above {
+    padding: 10px 28px 44px;
+}
+.mg-slick-carousel.picture-frame p.mg-description.below {
+	padding-top: 0px;
+}
+.slick-slider button.slick-next, .slick-slider button.slick-prev {
+  color: gray;
+}
+.slick-slider button.slick-next:hover, .slick-slider button.slick-prev:hover {
+  color: #000;
+}
+.slick-next {
+  right: 4px;
+}
+.slick-prev {
+  left: 4px;
+}
+
+.mg-slick-carousel.picture-frame .slick-slide {
+    padding: 7px !important;
+    background-color: #ffffff !important;
+    border-style: solid !important;
+    border-width: 1px !important;
+    border-color: #b4b9bb !important;
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+}

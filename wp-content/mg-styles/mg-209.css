@@ -1,0 +1,22 @@
+
+.slick-initialized .slick-slide {
+	 margin-right: 25px;
+}
+.slick-prev, .slick-next {
+  background: none !important;
+}
+.slick-prev::before, .slick-next::before {
+	display: none ;
+}
+button.slick-prev.slick-arrow {
+  background: url("http://localhost/investmentu2019/wp-content/plugins/maxgalleria/images/icons/arrow-style-l-wt.png")	no-repeat scroll center center transparent !important;
+  display: block;
+  height: 50px;
+  width: 30px;
+}
+button.slick-next.slick-arrow {
+  background: url("http://localhost/investmentu2019/wp-content/plugins/maxgalleria/images/icons/arrow-style-r-wt.png")	no-repeat scroll center center transparent !important;
+  display: block;
+  height: 50px;
+  width: 30px;
+}

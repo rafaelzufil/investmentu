@@ -1,9 +1,9 @@
 <!-- headshot carousel -->
 <div class="container py-4" id="section06">
 <h3 class="mb-3 small-title">Meet the Experts</h3>
-    <div class="row justify-content-center">
-        <div class="guru-carousel">
-            <div class="arrow-left d-inline-block mx-2 align-middle"></div>
+    <!-- <div class="row justify-content-center">
+        <div class="guru-carousel lazy slider" data-sizes="50vw"> -->
+            <!-- <div class="arrow-left d-inline-block mx-2 align-middle"></div>
             <div id="guru-1" class="d-inline-block mx-4 align-middle">
                 <img src="https://via.placeholder.com/160" class=" headshot">
                 <p class="mt-2"><strong>Facey McGreycircle</strong></p>
@@ -29,7 +29,13 @@
                 <p class="mt-2"><strong>Facey McGreycircle</strong></p>
                 <p> Grey Circle Guru</p>
             </div>
-            <div class="arrow-right d-inline-block mx-2 align-middle"></div>
-        </div>
-    </div>
+            <div class="arrow-right d-inline-block mx-2 align-middle"></div> -->
+            
+
+           
+        <!-- </div>
+        
+    </div> -->
+
+    <?php echo do_shortcode("[maxgallery name='authors']"); ?>
 </div>
