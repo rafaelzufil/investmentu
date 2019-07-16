@@ -32,7 +32,7 @@
                 </a>
                  <?php get_template_part('partials/homepage/article-date'); ?>
                 <div class="p-black e-margin"><?php the_excerpt(); ?></div>
-                <span><a href="<?php the_permalink(); ?>" class="readmore"><em>Read More &raquo;</em></a></span>
+                <span><a href="<?php the_permalink(); ?>" class="readmore">Read More &raquo;</a></span>
                 
                  
             </div>
@@ -45,7 +45,7 @@
                 <a href="<?php the_permalink(); ?>">
                 <img src="<?php the_post_thumbnail_url(); ?>" class="small-featured-article-image img-fluid">
                 </a>
-                <div class="small-featured-article-excerpt">
+                <div class="small-featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
                     <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
                         <span class="category-tag <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>

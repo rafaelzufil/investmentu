@@ -11,17 +11,13 @@
 
   <!-- IU Stylesheet -->
   <link rel="stylesheet" href="assets/css/main.css" type="text/css">
+  <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/957989842b.js"></script>
-  
-  <!-- Add the slick-theme.css if you want default styling -->
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/kenwheeler/slick@1.9.0/slick/slick.css"/>
-  <!-- Add the slick-theme.css if you want default styling -->
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/kenwheeler/slick@1.9.0/slick/slick-theme.css"/>
 
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 

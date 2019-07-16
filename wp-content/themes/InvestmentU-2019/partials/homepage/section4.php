@@ -52,7 +52,7 @@
                     <a href="<?php the_permalink(); ?>">
                         <img src="<?php the_post_thumbnail_url(); ?>" class="big-featured-article-image img-fluid">
                     </a>
-                    <div class="featured-article-excerpt">
+                    <div class="featured-article-excerpt pt-2">
                         <?php $category = get_the_category(); ?>
                         <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
                             <span class="category-tag <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
@@ -61,7 +61,7 @@
                             <h4 class="small-title"><?php the_title(); ?></h4>
                         </a>
                         <div class="p-black e-margin"><?php the_excerpt(); ?></div>
-                        <span><a href="<?php the_permalink(); ?>" class="readmore"><em>Read More &raquo;</em></a></span>
+                        <span><a href="<?php the_permalink(); ?>" class="readmore">Read More &raquo;</a></span>
                     </div>
                 </div>
                 
