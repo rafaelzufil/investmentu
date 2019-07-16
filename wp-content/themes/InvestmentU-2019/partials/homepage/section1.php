@@ -31,7 +31,8 @@
                     <h4 class="mb-0"><?php the_title(); ?></h4>
                 </a>
                  <?php get_template_part('partials/homepage/article-date'); ?>
-                <p class="p-black"><?php the_excerpt(); ?>...<a href="<?php the_permalink(); ?>"><em>Read More</em></a></p>
+                <div class="p-black e-margin"><?php the_excerpt(); ?></div>
+                <span><a href="<?php the_permalink(); ?>" class="readmore"><em>Read More &raquo;</em></a></span>
                 
                  
             </div>

@@ -31,7 +31,7 @@
         <a class="nav-link" href="#"><i class="fas fa-search"></i></a>
       </li>
     </ul>
-    <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem">
+    <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
       <a href="#" class="nav-link"><i class="fas fa-search"></i></a>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapse-nav"

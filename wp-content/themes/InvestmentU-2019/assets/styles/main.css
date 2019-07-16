@@ -352,6 +352,10 @@ article .featured-image {
   padding: 4px;
 }
 
+.e-margin p {
+  margin: 5px 0;
+}
+
 #section02 {
   background-color: #f2f2f2;
 }

@@ -60,9 +60,8 @@
                         <a href="<?php the_permalink(); ?>">
                             <h4 class="small-title"><?php the_title(); ?></h4>
                         </a>
-                        <a href="<?php the_permalink(); ?>">
-                            <p class="p-black"><?php the_excerpt(); ?></p>
-                        </a>
+                        <div class="p-black e-margin"><?php the_excerpt(); ?></div>
+                        <span><a href="<?php the_permalink(); ?>" class="readmore"><em>Read More &raquo;</em></a></span>
                     </div>
                 </div>
                 
