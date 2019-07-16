@@ -206,6 +206,39 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
   padding: 0.5rem 1.5rem;
 }
 
+/* searxh form */
+.search-form-wrapper.open {
+  z-index: 1;
+}
+
+.search-form {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.search-form label {
+  width: 90%;
+}
+
+.search-form label .search-field {
+  width: 100%;
+  height: 45px;
+  border-radius: 6px;
+  padding: 13px;
+}
+
+.search-form .search-submit {
+  background-color: #1f82c5;
+  color: #fff;
+  height: 45px;
+  border-radius: 6px;
+  padding: 9px 34px;
+}
+
+span.screen-reader-text {
+  display: none;
+}
+
 .carousel-control-next {
   width: 0 !important;
   height: 0 !important;
@@ -528,6 +561,37 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 .carousel-inner .carousel-item-left {
   -webkit-transform: translateX(0);
           transform: translateX(0);
+}
+
+/* Category Colors */
+.dividend-stocks {
+  border-left: 8px solid #2a5bbf;
+  padding: 0 5px;
+}
+
+.marijuana-stocks {
+  border-left: 8px solid #31ad37;
+  padding: 0 5px;
+}
+
+.financial-freedom {
+  border-left: 8px solid #41dde3;
+  padding: 0 5px;
+}
+
+.investing-101 {
+  border-left: 8px solid #f81f1a;
+  padding: 0 5px;
+}
+
+.investment-opportunities {
+  border-left: 8px solid #f4a316;
+  padding: 0 5px;
+}
+
+.tech-stocks {
+  border-left: 8px solid #c1cf22;
+  padding: 0 5px;
 }
 
 body#tinymce {

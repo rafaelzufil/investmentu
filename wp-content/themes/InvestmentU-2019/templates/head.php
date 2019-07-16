@@ -25,5 +25,41 @@
 
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
+  <style type="text/css">
+   .search-form-wrapper {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 20px 15px;
+    margin-top: 50px;
+  }
+  .search-form-wrapper.open {
+      display: block;
+  }
+  </style>
+  <script type="text/javascript">
+    $( document ).ready(function() {
+      $('[data-toggle=search-form]').click(function() {
+          $('.navbar').toggleClass('mb-5');
+          $('.search-form-wrapper').toggleClass('open');
+          $('.search-form-wrapper .search').focus();
+          $('html').toggleClass('search-form-open');
+        });
+        $('[data-toggle=search-form-close]').click(function() {
+          $('.search-form-wrapper').removeClass('open');
+          $('html').removeClass('search-form-open');
+        });
+      $('.search-form-wrapper .search').keypress(function( event ) {
+        if($(this).val() == "Search") $(this).val("");
+      });
+
+      $('.search-close').click(function(event) {
+        $('.search-form-wrapper').removeClass('open');
+        $('html').removeClass('search-form-open');
+      });
+    });
+  </script>
+
   <?php wp_head(); ?>
 </head>

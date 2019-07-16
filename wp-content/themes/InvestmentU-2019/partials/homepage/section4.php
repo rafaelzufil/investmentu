@@ -55,7 +55,7 @@
                     <div class="featured-article-excerpt">
                         <?php $category = get_the_category(); ?>
                         <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
-                            <span class="category-tag"><?php echo $category[0]->cat_name; ?></span>
+                            <span class="category-tag <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                         </a>
                         <a href="<?php the_permalink(); ?>">
                             <h4 class="small-title"><?php the_title(); ?></h4>
