@@ -18,10 +18,6 @@
               </article>
             </div>
           </div>
-          <!-- Most recent articles by the same author -->
-          <?php get_template_part('partials/experts-articles'); ?>
-          <!-- Related Posts -->
-          <?php //get_template_part('partials/related-posts'); ?>
         </div>
         <!-- SIDEBAR -->
         <?php get_template_part('partials/sidebar'); ?>
