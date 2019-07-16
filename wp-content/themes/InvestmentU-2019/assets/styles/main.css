@@ -577,32 +577,32 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 
 /* Category Colors */
 .dividend-stocks {
-  border-left: 8px solid #2a5bbf;
+  border-left: 6px solid #2a5bbf;
   padding: 0 5px;
 }
 
 .marijuana-stocks {
-  border-left: 8px solid #31ad37;
+  border-left: 6px solid #31ad37;
   padding: 0 5px;
 }
 
 .financial-freedom {
-  border-left: 8px solid #41dde3;
+  border-left: 6px solid #41dde3;
   padding: 0 5px;
 }
 
 .investing-101 {
-  border-left: 8px solid #f81f1a;
+  border-left: 6px solid #f81f1a;
   padding: 0 5px;
 }
 
 .investment-opportunities {
-  border-left: 8px solid #f4a316;
+  border-left: 6px solid #f4a316;
   padding: 0 5px;
 }
 
 .tech-stocks {
-  border-left: 8px solid #c1cf22;
+  border-left: 6px solid #c1cf22;
   padding: 0 5px;
 }
 
