@@ -217,7 +217,7 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
 }
 
 .search-form label {
-  width: 90%;
+  width: 88%;
 }
 
 .search-form label .search-field {
@@ -232,7 +232,7 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
   color: #fff;
   height: 45px;
   border-radius: 6px;
-  padding: 9px 34px;
+  width: 10%;
 }
 
 span.screen-reader-text {
@@ -296,7 +296,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .category-tag {
   color: #898989;
-  font-size: 0.75rem;
+  font-size: .74rem;
 }
 
 .category-tag:hover, .category-tag:focus, .category-tag:active {

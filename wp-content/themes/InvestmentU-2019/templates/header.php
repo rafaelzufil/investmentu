@@ -28,7 +28,6 @@
         <a class="nav-link" href="#"><i class="fab fa-youtube"></i></a>
       </li>
       <li class="nav-item d-none d-lg-inline-block">
-        <!-- <i class="nav-link" href="#"><i class="fas fa-search"></i></a> -->
         <div id="navbar" class="navbar-collapse collapse">
           <div class="hidden-xs navbar-form navbar-right">
               <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
@@ -69,7 +68,6 @@
           <a class="nav-link" href="#"><i class="fab fa-youtube"></i></a>
         </li>
         <li class="nav-item d-none d-lg-inline-block">
-          <!-- <i class="nav-link" href="#"><i class="fas fa-search"></i></a> -->
           <div id="navbar" class="navbar-collapse collapse">
             <div class="hidden-xs navbar-form navbar-right">
                 <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
@@ -78,16 +76,7 @@
         </li>
       </ul>
     </div> 
-    <div class="search-form-wrapper">
-      <!-- <form class="search-form" id="" action="">
-          <div class="input-group">
-            <input type="text" name="search" class="search form-control" placeholder="Search">
-            <span class="input-group-addon" id="basic-addon2"><i class="fa fa-search" aria-hidden="true"></i>
-            </span>
-            <span class="input-group-addon search-close" id="basic-addon2"><i class="fa fa-window-close" aria-hidden="true"></i>
-            </span>
-          </div>
-      </form> -->
+    <div class="search-form-wrapper col-lg-12">
       <?php get_search_form(); ?>
     </div>
   </nav>
