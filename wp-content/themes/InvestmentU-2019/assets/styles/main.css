@@ -353,7 +353,7 @@ article .featured-image {
 }
 
 .e-margin p {
-  margin: 5px 0;
+  margin: 5px 0 !important;
 }
 
 #section02 {
