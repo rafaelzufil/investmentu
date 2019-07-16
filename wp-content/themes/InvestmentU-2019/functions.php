@@ -69,7 +69,7 @@ function get_related_author_posts() {
                     </a>
                     <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
-                        <span class="category-tag">'. $category[0]->cat_name .'</span>
+                      <span class="category-tag '. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
                     </a>
                     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
                     <p class="date-posted m-0 category-tag">' . $date . '</p>
