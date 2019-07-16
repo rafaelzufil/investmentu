@@ -206,17 +206,19 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
   padding: 0.5rem 1.5rem;
 }
 
-.slick-next {
+.carousel-control-next {
   width: 0 !important;
   height: 0 !important;
+  top: 30%;
   border-top: 1rem solid transparent !important;
   border-bottom: 1rem solid transparent !important;
   border-left: 1.25rem solid #70b3e1 !important;
 }
 
-.slick-prev {
+.carousel-control-prev {
   width: 0 !important;
   height: 0 !important;
+  top: 30%;
   border-top: 1rem solid transparent !important;
   border-bottom: 1rem solid transparent !important;
   border-right: 1.25rem solid #70b3e1 !important;
@@ -485,42 +487,43 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 }
 
 /* Author Slider */
-.slick-slide img {
-  width: 160px;
-  height: 160px;
-}
-
-.mg-slick-carousel .slick-slide img {
-  width: auto;
-  max-height: 100%;
-}
-
-.slick-list {
-  margin: 20px !important;
-}
-
-@media (max-width: 1024px) {
-  .mg-slick-carousel .slick-slide img {
-    max-height: 170px;
+@media (max-width: 992px) {
+  .carousel-inner .carousel-item > div {
+    display: none;
+  }
+  .carousel-inner .carousel-item > div:first-child {
+    display: block;
   }
 }
 
-@media (max-width: 768px) {
-  .mg-slick-carousel .slick-slide img {
-    max-height: 150px;
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+@media (min-width: 992px) {
+  .carousel-inner .carousel-item-right.active,
+  .carousel-inner .carousel-item-next {
+    -webkit-transform: translateX(16.6%);
+            transform: translateX(16.6%);
+  }
+  .carousel-inner .carousel-item-left.active,
+  .carousel-inner .carousel-item-prev {
+    -webkit-transform: translateX(-16.6%);
+            transform: translateX(-16.6%);
   }
 }
 
-@media (max-width: 480px) {
-  .mg-slick-carousel .slick-slide img {
-    max-height: 100px;
-  }
-}
-
-@media (max-width: 320px) {
-  .mg-slick-carousel .slick-slide img {
-    max-height: 50px;
-  }
+.carousel-inner .carousel-item-right,
+.carousel-inner .carousel-item-left {
+  -webkit-transform: translateX(0);
+          transform: translateX(0);
 }
 
 body#tinymce {

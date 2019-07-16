@@ -185,38 +185,36 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 
 /* Author Slider */
 
-.slick-slide 
-    img 
-        width: 160px 
-        height: 160px
+@media (max-width: 992px) 
+    .carousel-inner .carousel-item > div 
+        display: none
+    
+    .carousel-inner .carousel-item > div:first-child 
+        display: block
+        
+    
 
-.mg-slick-carousel .slick-slide img 
-    width: auto
-    max-height: 100%
-
-.slick-list
-        margin: 20px !important
-
-@media (max-width: 1024px) 
-    .mg-slick-carousel .slick-slide img 
-        max-height: 170px
-
-
-@media (max-width: 768px) 
-    .mg-slick-carousel .slick-slide img 
-        max-height: 150px
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev 
+    display: flex
+    justify-content: center
 
 
-@media (max-width: 480px) 
-    .mg-slick-carousel .slick-slide img 
-        max-height: 100px
+@media (min-width: 992px) 
+    .carousel-inner .carousel-item-right.active,
+    .carousel-inner .carousel-item-next 
+        transform: translateX(16.6%)
+    
+    
+    .carousel-inner .carousel-item-left.active, 
+    .carousel-inner .carousel-item-prev 
+        transform: translateX(-16.6%)
+    
+    
 
-
-@media (max-width: 320px) 
-    .mg-slick-carousel .slick-slide img 
-        max-height: 50px
-
-
-
-
+.carousel-inner .carousel-item-right,
+.carousel-inner .carousel-item-left 
+    transform: translateX(0)
+    
     
