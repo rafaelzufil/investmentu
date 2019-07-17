@@ -48,7 +48,7 @@ function IU_recent_posts_shortcode($atts, $content = null) {
 	
 	wp_reset_postdata();
 	
-	return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" href=" ' . esc_url(home_url('/')) . 'category/dividend-stocks/" style="width:60%;">View More</a>';
+	return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" href=" ' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'/" style="width:60%;">View More</a>';
 	
 }
 add_shortcode('recent_posts', 'IU_recent_posts_shortcode');
