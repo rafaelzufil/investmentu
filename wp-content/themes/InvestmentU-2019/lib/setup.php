@@ -34,6 +34,7 @@ function setup() {
     'col2_navigation' => __('Homepage Column2 Links', 'sage'),
     'col3_navigation' => __('Homepage Column3 Links', 'sage'),
     'col4_navigation' => __('Homepage Column4 Links', 'sage'),
+    'popular_post_navigation' => __('Homepage Popular posts', 'sage'),
   ]);
 
   // Enable post thumbnails

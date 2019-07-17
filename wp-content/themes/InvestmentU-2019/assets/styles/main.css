@@ -314,6 +314,10 @@ body {
   color: #000000 !important;
 }
 
+.p-blue {
+  color: #1f82c5;
+}
+
 .byline a {
   color: #000000;
 }
@@ -439,6 +443,20 @@ a.readmore {
 
 .popular-posts a {
   color: #1f82c5;
+  font-weight: 500;
+}
+
+.h-popular-posts {
+  list-style: none;
+}
+
+.h-popular-posts li {
+  padding: 6px 0;
+  border-bottom: 1px solid #d3d3d3;
+}
+
+.h-popular-posts li a {
+  color: #000000;
   font-weight: 500;
 }
 
