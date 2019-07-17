@@ -27,7 +27,6 @@
             </div>
             <!-- SIDEBAR -->
             <?php get_template_part('partials/sidebar'); ?>
-        </div>
-        
+        </div>       
     </div>
   </main>

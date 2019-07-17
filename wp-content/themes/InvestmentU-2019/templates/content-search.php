@@ -1,9 +1,18 @@
 <article <?php post_class(); ?>>
-  <header>
-    <h2 class="entry-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-    <?php if (get_post_type() === 'post') { get_template_part('templates/entry-meta'); } ?>
-  </header>
   <div class="entry-summary">
-    <?php the_excerpt(); ?>
+    <?php //the_excerpt(); ?>
+    <div class="articlePreview container">
+        <div class="row row-eq-height">
+            <div class="col-5">
+                <?php $date = get_the_date(); ?>
+                <a href="<?php the_permalink(); ?>"><img src="<?php the_post_thumbnail_url(); ?>" class="img-fluid" alt="..." ></a>
+            </div>
+            <div class="col-7 ">
+                <a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
+                <p class="articleDate publication-source"><?php echo $date; ?></p>
+                <div class="article_preview d-none d-sm-block"><?php the_excerpt(); ?></div>
+            </div>
+        </div>
+    </div> 
   </div>
 </article>
