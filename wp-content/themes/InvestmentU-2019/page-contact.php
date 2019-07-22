@@ -2,7 +2,7 @@
     <?php while (have_posts()) : the_post(); ?>
     <main>
         <div class="container">
-        <div class="row mt-4">
+        <div class="row my-5">
             <div class="col-12 col-md-12">
             <div class="row">
                 <div class="col-10 mx-auto">
