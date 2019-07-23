@@ -526,6 +526,7 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 
 .exp-headshot img {
   border-radius: 50%;
+  width: 200px;
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
