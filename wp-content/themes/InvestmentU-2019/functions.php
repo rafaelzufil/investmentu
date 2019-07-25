@@ -141,4 +141,13 @@ add_action( 'init', 'create_post_type' );
             return strftime( date( 'Y', $time ) == date( 'Y' ) ? TIMEBEFORE_FORMAT : TIMEBEFORE_FORMAT_YEAR, $time );
     }
 
+  // Add img-fluid class to all images
+  function add_image_responsive_class($content) {
+      global $post;
+      $pattern ="/<img(.*?)class=\"(.*?)\"(.*?)>/i";
+      $replacement = '<img$1class="$2 img-fluid"$3>';
+      $content = preg_replace($pattern, $replacement, $content);
+      return $content;
+   }
+   add_filter('the_content', 'add_image_responsive_class');
 
