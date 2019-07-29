@@ -1,5 +1,4 @@
 <div class="col-12 col-lg-3 d-none d-md-none d-lg-block" id="sidebar-banner-ad">
-    <!-- <img src="https://via.placeholder.com/1000x800?text=Inline+Ad" class="img-fluid"> -->
     <?php cfox_template(2);  ?>
     <center><p class="category-tag mt-1">Sponsored</p></center>
     <!-- <h5 class="p-blue m-0 pb-2" style="border-bottom: 1px solid #d3d3d3;">Popular Posts</h5>
@@ -11,8 +10,8 @@
         ?>
     </nav> -->
 </div>
-<div class="col-md-12 d-block d-md-block d-lg-none" id="sidebar-banner-ad">
-     <img src="https://via.placeholder.com/1000x150?text=Inline+Ad" class="img-fluid">
+<div class="col-md-12 d-block d-md-block d-lg-none" id="sidebar-banner-ad">    
+     <?php cfox_template(2);  ?>
     <center><p class="category-tag mt-1">Sponsored</p></center> 
 </div>
 
