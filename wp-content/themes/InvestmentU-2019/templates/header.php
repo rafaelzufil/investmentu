@@ -87,7 +87,7 @@
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
     <div class="row">
       <div class="container">
-        <form class="row justify-content-center form-inline my-2 my-md-0">
+        <!-- <form class="row justify-content-center form-inline my-2 my-md-0">
           <p class="p-0 m-0 pr-4">
             <strong>
               Sign up for this sheeeesh kebab.
@@ -95,7 +95,8 @@
           </p>
           <input class="form-control col-11 col-md-6 col-lg-5" type="text" placeholder="Email">
           <input class="form-control col-1 btn-default" type="submit" value="&#xbb;">
-        </form>
+        </form> -->
+        <?php cfox_template(1);  ?>
       </div>
     </div>
   </div>

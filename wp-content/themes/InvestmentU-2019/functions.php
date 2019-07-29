@@ -69,7 +69,7 @@ function get_related_author_posts() {
                     </a>
                     <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
-                      <span class="category-tag '. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
+                      <span class="category-tag generic-color '. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
                     </a>
                     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
                     <p class="date-posted m-0 category-tag">' . $date . '</p>
@@ -141,4 +141,13 @@ add_action( 'init', 'create_post_type' );
             return strftime( date( 'Y', $time ) == date( 'Y' ) ? TIMEBEFORE_FORMAT : TIMEBEFORE_FORMAT_YEAR, $time );
     }
 
+  // Add img-fluid class to all images
+  function add_image_responsive_class($content) {
+      global $post;
+      $pattern ="/<img(.*?)class=\"(.*?)\"(.*?)>/i";
+      $replacement = '<img$1class="$2 img-fluid"$3>';
+      $content = preg_replace($pattern, $replacement, $content);
+      return $content;
+   }
+   add_filter('the_content', 'add_image_responsive_class');
 

@@ -55,13 +55,13 @@
                     <div class="featured-article-excerpt pt-2">
                         <?php $category = get_the_category(); ?>
                         <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
-                            <span class="category-tag <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
+                            <span class="category-tag generic-color <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                         </a>
                         <a href="<?php the_permalink(); ?>">
                             <h4 class="small-title"><?php the_title(); ?></h4>
                         </a>
                         <div class="p-black e-margin"><?php the_excerpt(); ?></div>
-                        <span><a href="<?php the_permalink(); ?>" class="readmore">Read More &raquo;</a></span>
+                        <span><a href="<?php the_permalink(); ?>" class="readmore">Watch Now &raquo;</a></span>
                     </div>
                 </div>
                 
