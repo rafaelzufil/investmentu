@@ -58,12 +58,14 @@
   </script>
 
   <?php wp_head(); ?>
-  
+
     <script>
     <?php
-      $user_info = get_userdata( get_current_user_id() );
+      $post_id = get_the_ID();
+      $author_id = get_post_field( 'post_author', $post_id );
+      $post_author = get_the_author_meta( 'display_name', $author_id );
       if (get_the_author() !== null) {
-        echo "var author = '$user_info->user_nicename';\n";
+        echo "var author = '$post_author';\n";
       }
       if (get_the_category()  !== null) {
         echo "    ";
