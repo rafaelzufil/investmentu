@@ -24,7 +24,7 @@
             
             <div class="col-12 col-md-6 col-lg-3 main-featured-article-excerpt">
                 <?php $category = get_the_category(); ?>
-                <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+                <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
                     <span class="category-tag generic-color <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>    
                 </a>
                 <a href="<?php the_permalink(); ?>">
@@ -47,7 +47,7 @@
                 </a>
                 <div class="small-featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
-                    <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+                    <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
                         <span class="category-tag generic-color <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     
