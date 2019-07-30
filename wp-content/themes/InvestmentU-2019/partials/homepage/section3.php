@@ -16,7 +16,11 @@
                 <a href="<?php the_permalink(); ?>" class="featured-article-image" style="background-image: url(<?php the_post_thumbnail_url(); ?>)">
                 </a>
                 <a href="<?php the_permalink(); ?>">
-                <img src="<?php the_post_thumbnail_url(); ?>" class="featured-article-image img-fluid">
+                <?php if ( has_post_thumbnail() ) { ?>
+                    <img src="<?php the_post_thumbnail_url(); ?>" class="featured-article-image img-fluid">
+                <?php } else { ?>
+                    <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="featured-article-image img-fluid" alt="<?php the_title(); ?>" />
+                <?php } ?>
                 </a>
                 <div class="featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
@@ -27,7 +31,7 @@
                         <h4 class="small-title m-0"><?php the_title(); ?></h4>
                         <?php get_template_part('partials/homepage/article-date'); ?>
                     </a>
-                    <div class="p-black e-margin"><?php the_excerpt(); ?></div>
+                    <div class="p-black e-margin"><?php print_excerpt(150); ?></div>
                     <span><a href="<?php the_permalink(); ?>" class="readmore">Read More &raquo;</a></span>
                 </div>
             </div>
