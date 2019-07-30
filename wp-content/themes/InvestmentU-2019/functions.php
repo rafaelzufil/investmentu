@@ -151,3 +151,33 @@ add_action( 'init', 'create_post_type' );
    }
    add_filter('the_content', 'add_image_responsive_class');
 
+  // function custom_excerpt_length( $length ) {
+  //     return 20;
+  // }
+  // add_filter( 'excerpt_length', 'custom_excerpt_length', 999 );
+
+  // Variable & intelligent excerpt length.
+  function print_excerpt($length) { // Max excerpt length. Length is set in characters
+    global $post;
+    $text = $post->post_excerpt;
+    if ( '' == $text ) {
+        $text = get_the_content('');
+        $text = apply_filters('the_content', $text);
+        $text = str_replace(']]>', ']]>', $text);
+    }
+    $text = strip_shortcodes($text); // optional, recommended
+    $text = strip_tags($text); // use ' $text = strip_tags($text,'&lt;p&gt;&lt;a&gt;'); ' if you want to keep some tags
+
+    $text = substr($text,0,$length);
+    $excerpt = reverse_strrchr($text, '.', 1);
+    if( $excerpt ) {
+        echo apply_filters('the_excerpt',$excerpt);
+    } else {
+        echo apply_filters('the_excerpt',$text);
+    }
+  }
+
+  // Returns the portion of haystack which goes until the last occurrence of needle
+  function reverse_strrchr($haystack, $needle, $trail) {
+    return strrpos($haystack, $needle) ? substr($haystack, 0, strrpos($haystack, $needle) + $trail) : false;
+  }
