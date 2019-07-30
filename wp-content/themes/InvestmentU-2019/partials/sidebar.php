@@ -9,73 +9,36 @@
           $i = 0;
 
           foreach ($terms as $item) {
-
-            if ($item['slug'] === 'test') {
-
+            if ($item['slug'] === 'wealthy-retirement') {
               $zone = 11;
-
+              break;
             }
-
-            /*
-
-            if ($item['slug'] === 'test') {
-
-              echo '
-                <div id="revive-1"></div>
-                <script>
-                  revive.display(1);
-                </script>
-              ';
-
+            if ($item['slug'] === 'liberty-through-wealth') {
+              $zone = 12;
+              break;
             }
-
-            if ($item['slug'] === 'test') {
-
-              echo '
-                <div id="revive-1"></div>
-                <script>
-                  revive.display(1);
-                </script>
-              ';
-
+            if ($item['slug'] === 'early-investing') {
+              $zone = 13;
+              break;
             }
-
-            if ($item['slug'] === 'test') {
-
-              echo '
-                <div id="revive-1"></div>
-                <script>
-                  revive.display(1);
-                </script>
-              ';
-
+            if ($item['slug'] === 'manward-digest') {
+              $zone = 14;
+              break;
             }
-
-            if ($item['slug'] === 'test') {
-
-              echo '
-                <div id="revive-1"></div>
-                <script>
-                  revive.display(1);
-                </script>
-              ';
-
+            if ($item['slug'] === 'trade-of-the-day') {
+              $zone = 15;
+              break;
             }
-
-            if ($item['slug'] === 'test') {
-
-              echo '
-                <div id="revive-1"></div>
-                <script>
-                  revive.display(1);
-                </script>
-              ';
-
-            } */
-
+            if ($item['slug'] === 'profit-trends') {
+              $zone = 16;
+              break;
+            }
             $i++;
-
           };
+
+          if (!isset($zone)) {
+            $zone = 18;
+          }
 
           revive_display( $zone );
 
