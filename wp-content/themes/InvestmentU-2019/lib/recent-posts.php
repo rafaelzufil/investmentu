@@ -69,20 +69,20 @@ function IU_top_posts_shortcode($atts, $content = null) {
 	extract(shortcode_atts(array(
 		'cat'     => '',
 		'num'     => '5',
-        'offset'   => '0',
-        'meta_key' => '_custom_post_order',
-        'orderby' => 'meta_value',
-        'order' => 'ASC' 
+    'offset'   => '0',
+    'meta_key' => '_custom_post_order',
+    'orderby' => 'meta_value',
+    'order' => 'ASC' 
     
 	), $atts));
 	
 	$args = array(
 		'category_name'  => $cat,
 		'posts_per_page' => $num,
-        'offset'          => $offset,
-        'meta_key' => $meta_key,
-        'orderby' => $orderby,
-        'order' => $order
+    'offset'          => $offset,
+    'meta_key' => $meta_key,
+    'orderby' => $orderby,
+    'order' => $order
 	);
 	
 	$output = '';
