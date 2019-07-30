@@ -88,6 +88,9 @@ function iu_syndication_handler(WP_REST_Request $request) {
 		iu_syndication_insert_attachment_from_url($post_id, $post_body['post_thumbnail_url']);
 	}
 
+	// create tag for ad zones
+	wp_set_post_tags($post_id, 'zone: ' . $post_body['publisher_name'], TRUE);
+
 	echo $post_id;
 }
 
