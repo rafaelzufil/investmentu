@@ -165,7 +165,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
       } 
   
       /* only list posts that have a current custom post order value */
-      if ( !empty(get_post_meta( $post->ID, '_custom_post_order', true )) ) : 
+      //if ( !empty(get_post_meta( $post->ID, '_custom_post_order', true )) ) : 
   
       $category = get_the_category();
       $date = get_the_date();
@@ -186,7 +186,8 @@ function IU_top_posts_shortcode($atts, $content = null) {
                     </div>';
       
     
-      endif; }
+      //endif; 
+    }
 
       wp_reset_postdata();
       return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div>';
