@@ -58,21 +58,4 @@
   </script>
 
   <?php wp_head(); ?>
-
-    <script>
-    <?php
-      if (get_the_tags()  !== null) {
-        echo "    ";
-        echo 'var tags = [';
-        $terms = json_decode(json_encode(get_the_tags()), true);
-        $i = 0;
-        foreach ($terms as $item) {
-          if ($i > 0) { echo ","; };
-          echo "'".$item['slug']."'";
-          $i++;
-        }
-        echo "];\n";
-      }
-    ?>
-  </script>
 </head>
