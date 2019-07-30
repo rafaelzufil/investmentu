@@ -12,16 +12,19 @@ var revive = {
     document.cookie = name + "=" + value + expires + "; path=/";
   },
   display: function(zone_id) {
-    var embed_code = document.createTextNode(revive.generateCode(zone_id));
-    var ad_placement = document.getElementById(zone_id);
-    element.appendChild(embed_code);
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = revive.generateCode(zone_id);
+    document.getElementById( 'revive-' + zone_id).appendChild(script);
   },
   generateCode: function(zone_id) {
-    var m3_u = (location.protocol == 'https:' ? 'https://ads.web.oxfordclub.com/www/delivery/ajs.php' : '//ads.web.oxfordclub.com/www/delivery/ajs.php');
+    //var m3_u = (location.protocol == 'https:' ? 'https://ads.web.oxfordclub.com/www/delivery/ajs.php' : '//ads.web.oxfordclub.com/www/delivery/ajs.php');
+    var m3_u = 'https://ads.web.oxfordclub.com/www/delivery/ajs.php';
     var m3_r = Math.floor(Math.random() * 99999999999);
     var html = '';
     if (!document.MAX_used) document.MAX_used = ',';
-    html += "<scr" + "ipt type='text/javascript' src='" + m3_u;
+    //html += "<scr" + "ipt type='text/javascript' src='" + m3_u;
+    html += m3_u;
     html += "?zoneid=" + zone_id + "&amp;target=_blank&amp;block=1";
     if (typeof author != 'undefined') html += "&amp;author=" + author;
     if (typeof category != 'undefined') html += "&amp;cat=" + category;
@@ -36,7 +39,7 @@ var revive = {
     if (document.referrer) html += "&amp;referer=" + escape(document.referrer);
     if (document.context) html += "&context=" + escape(document.context);
     if (document.mmm_fo) html += "&amp;mmm_fo=1";
-    html += "'><\/scr" + "ipt>";
+    //html += "'><\/scr" + "ipt>";
     return html;
   },
   hasSignedUp: function() {

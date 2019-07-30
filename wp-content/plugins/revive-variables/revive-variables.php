@@ -10,6 +10,6 @@
  */
 
  function enqueue_js() {
-   wp_enqueue_script( 'revive-js', plugins_url() . '/' . basename(__DIR__)  . '/js/revive.js', array( 'jquery' ), $current_datetime, true );
+   wp_enqueue_script( 'revive-js', plugins_url() . '/' . basename(__DIR__)  . '/js/revive.js', array( 'jquery' ), $current_datetime, false );
  }
  add_action('wp_enqueue_scripts', 'enqueue_js');

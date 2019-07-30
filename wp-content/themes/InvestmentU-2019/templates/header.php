@@ -35,7 +35,7 @@
         </div>
       </li>
       <div id="top-search">
-        
+
       </div>
     </ul>
 
@@ -49,7 +49,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="collapse-nav">
-    
+
       <?php
         wp_nav_menu(array(
           'theme_location' => 'primary_navigation',
@@ -75,13 +75,13 @@
           </div>
         </li>
       </ul>
-    </div> 
+    </div>
     <div class="search-form-wrapper col-lg-12">
       <?php get_search_form(); ?>
     </div>
   </nav>
-  
-  
+
+
 
   <!-- sticky signup form -->
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
@@ -96,8 +96,7 @@
           <input class="form-control col-11 col-md-6 col-lg-5" type="text" placeholder="Email">
           <input class="form-control col-1 btn-default" type="submit" value="&#xbb;">
         </form> -->
-        <?php cfox_template(1);  ?>
+        <?php //cfox_template(1);  ?>
       </div>
     </div>
   </div>
-  
