@@ -88,21 +88,21 @@ function IU_top_posts_shortcode($atts, $content = null) {
 	$output = '';
 	
 	$posts = get_posts($args);
-	
+  
 	foreach($posts as $post) {
     
-    if ( has_post_thumbnail() ) { 
-        $img_url = get_the_post_thumbnail_url();
-    } else { 
-        $img_url = 'https://s3.amazonaws.com/assets.investmentu.com/images/iu-default-image.jpg';
-    } 
+    // if ( has_post_thumbnail() ) { 
+    //     $img_url = get_the_post_thumbnail_url();
+    // } else { 
+    //     $img_url = 'https://s3.amazonaws.com/assets.investmentu.com/images/iu-default-image.jpg';
+    // } 
 
 		setup_postdata($post);
     $category = get_the_category();
     $date = get_the_date();
     $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
                   <a href="'. get_the_permalink() .'">
-                    <img src="'. $img_url .'" class="small-featured-article-image img-fluid">
+                    <img src="'. get_the_post_thumbnail_url() .'" class="small-featured-article-image img-fluid">
                   </a>
                   <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
