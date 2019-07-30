@@ -23,7 +23,11 @@
 
     <div class="col-12 col-sm-6 col-lg-3">
         <a href="<?php the_permalink(); ?>">
-        <img src="<?php the_post_thumbnail_url(); ?>" class="small-featured-article-image img-fluid">
+            <?php if ( has_post_thumbnail() ) { ?>
+                <img src="<?php the_post_thumbnail_url(); ?>" class="small-featured-article-image img-fluid">
+            <?php } else { ?>
+                <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="small-featured-article-image img-fluid" alt="<?php the_title(); ?>" />
+            <?php } ?>
         </a>
         <div class="small-featured-article-excerpt">
         <?php $category = get_the_category(); ?>

@@ -19,7 +19,12 @@
                   <div class="row row-eq-height">
                       <div class="col-4">
                           <?php $date = get_the_date(); ?>
-                          <a href="<?php the_permalink(); ?>"><img src="<?php the_post_thumbnail_url(); ?>" class="img-fluid" alt="..." ></a>
+                          <a href="<?php the_permalink(); ?>">
+                            <?php if ( has_post_thumbnail() ) { ?>
+                                <img src="<?php the_post_thumbnail_url(); ?>" class="img-fluid">
+                            <?php } else { ?>
+                                <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="img-fluid" alt="<?php the_title(); ?>" />
+                            <?php } ?>
                       </div>
                       <div class="col-8 ">
                           <a href="<?php the_permalink(); ?>"><h4><?php the_title(); ?></h4></a>
