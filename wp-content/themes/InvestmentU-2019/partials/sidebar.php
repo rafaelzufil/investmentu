@@ -14,8 +14,6 @@
 
               $zone = 11;
 
-              exit;
-
             }
 
             /*
@@ -77,19 +75,11 @@
 
             $i++;
 
-          }
+          };
 
-          echo "
-            <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v4.2.1 -->
-            <ins
-            data-revive-zoneid="11"
-            data-revive-ct0="INSERT_ENCODED_CLICKURL_HERE"
-            data-revive-block="1"
-            data-revive-blockcampaign="1"
-            data-revive-id="e381927fbe56d09bfb1b715794e5c109"></ins>
-          ";
+          revive_display( $zone );
 
          ?>
-         <script async src="https://ads.web.oxfordclub.com/www/delivery/asyncjs.php"></script>
+
     </div>
 </div>
