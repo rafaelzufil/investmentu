@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
   <!-- IU Stylesheet -->
-  <link rel="stylesheet" href="assets/css/main.css" type="text/css">
   <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
   <!-- jQuery -->

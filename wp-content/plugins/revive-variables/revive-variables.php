@@ -54,8 +54,8 @@ function revive_display( $zone ) {
   <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v4.2.1 -->
   <ins
     data-revive-zoneid=\"$zone\"
-    data-revive-block=\"1\"
-    data-revive-blockcampaign=\"1\"
+    data-revive-block=\"0\"
+    data-revive-blockcampaign=\"0\"
     data-revive-id=\"e381927fbe56d09bfb1b715794e5c109\"
     data-revive-category=\"$all_categories\"
     data-revive-tags=\"$all_tags\"

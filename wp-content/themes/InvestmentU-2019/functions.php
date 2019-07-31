@@ -202,7 +202,7 @@ add_action( 'init', 'create_post_type' );
           $zone = 13;
           break;
         }
-        if ($item['slug'] === 'zone: Manward Digest') {
+        if ($item['slug'] === 'zone: Manward Press') {
           $zone = 14;
           break;
         }
@@ -220,7 +220,14 @@ add_action( 'init', 'create_post_type' );
       if (!isset($zone)) {
         $zone = 4;
       }
+    }
 
+    if ($location === 'sticky') {
+      $zone = 1;
+    }
+
+    if ($location === 'home-native') {
+      $zone = 2;
     }
 
     return $zone;
