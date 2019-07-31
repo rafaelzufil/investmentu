@@ -28,7 +28,11 @@
             
             <div class="col-12 col-md-6 col-lg-3 main-featured-article-excerpt">
                 <?php $category = get_the_category(); ?>
+                <?php if (in_category(array('dividend-stocks', 'marijuana-stocks', 'financial-freedom', 'financial-literacy', 'investment-opportunities', 'tech-stocks' ))) { ?>
+                <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+                <?php } else { ?> 
                 <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
+                <?php } ?>
                     <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>    
                 </a>
                 <a href="<?php the_permalink(); ?>">
@@ -56,7 +60,11 @@
                 </a>
                 <div class="small-featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
+                    <?php if (in_category(array('dividend-stocks', 'marijuana-stocks', 'financial-freedom', 'financial-literacy', 'investment-opportunities', 'tech-stocks' ))) { ?>
+                    <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+                    <?php } else { ?> 
                     <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
+                    <?php } ?>
                         <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     

@@ -24,7 +24,11 @@
                 </a>
                 <div class="featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
-                    <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
+                    <?php if (in_category(array('dividend-stocks', 'marijuana-stocks', 'financial-freedom', 'financial-literacy', 'investment-opportunities', 'tech-stocks' ))) { ?>
+                    <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+                    <?php } else { ?> 
+                    <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
+                    <?php } ?>
                         <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     <a href="<?php the_permalink(); ?>">
