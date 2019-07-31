@@ -80,7 +80,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		'posts_per_page' => $num,
     'meta_key' => $meta_key,
     'orderby' => $orderby,
-    'order' => $order
+    //'order' => $order
   );
 	
 	$output = '';
