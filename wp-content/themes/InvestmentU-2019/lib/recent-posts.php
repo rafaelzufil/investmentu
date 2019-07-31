@@ -97,7 +97,8 @@ function IU_top_posts_shortcode($atts, $content = null) {
         $img_url = 'https://s3.amazonaws.com/assets.investmentu.com/images/iu-default-image.jpg';
     } 
 
-		setup_postdata($post);
+    setup_postdata($post);
+    if ( !empty(get_post_meta( $post->ID, '_custom_post_order', true )) ) :
     $category = get_the_category();
     $date = get_the_date();
     $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
@@ -115,7 +116,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
                     </a>
                   </div>
                 </div>';
-		
+      endif; 	
 	}
 	
 	wp_reset_postdata();
