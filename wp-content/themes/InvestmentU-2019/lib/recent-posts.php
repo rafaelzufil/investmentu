@@ -40,7 +40,7 @@ function IU_recent_posts_shortcode($atts, $content = null) {
                   </a>
                   <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
-                      <span class="category-tag generic-color category-'. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
+                      <span class="category-tag generic-color cat-'. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
                     </a>
                     <a href="'. get_the_permalink() .'">
                       <h6>'. get_the_title() .'</h6>
@@ -106,7 +106,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
                   </a>
                   <div class="small-featured-article-excerpt">
                     <a href="'. esc_url(home_url()) .'/'.  $category[0]->slug .'/">
-                      <span class="category-tag generic-color category-'. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
+                      <span class="category-tag generic-color cat-'. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
                     </a>
                     
                     <a href="'. get_the_permalink() .'">

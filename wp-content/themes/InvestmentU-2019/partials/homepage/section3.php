@@ -5,7 +5,7 @@
         'post_status'=>'publish', 
         'posts_per_page'=>3,
         'offset' => 4,
-        'category__not_in' => array( 3275 ),
+        'category__not_in' => array( 7228 ),
     )); 
     
 ?>
@@ -25,7 +25,7 @@
                 <div class="featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
                     <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
-                        <span class="category-tag generic-color category-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
+                        <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     <a href="<?php the_permalink(); ?>">
                         <h4 class="small-title m-0"><?php the_title(); ?></h4>
