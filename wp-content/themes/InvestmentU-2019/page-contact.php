@@ -8,7 +8,7 @@
                 <div class="col-10 mx-auto">
                 <article>
                     <div class="article-header mb-2">
-                    <h3 class="page-title mb-4"><?php the_title(); ?></h3>
+                    <h1 class="page-title mb-4"><?php the_title(); ?></h1>
                     </div>
                     <?php the_content(); ?>
                     <div class="alert alert-secondary" id="alert" style="display: none;">

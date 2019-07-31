@@ -4,7 +4,7 @@
       <div class="col-8">
         <div class="row">
           <div class="col-12">
-            <h3 class="page-title"><?php echo get_the_author_meta( 'display_name' ); ?></h3>
+            <h1 class="page-title"><?php echo get_the_author_meta( 'display_name' ); ?></h1>
             <h5 class="expert-title"><?php echo types_render_usermeta("author-title"); ?></h5>
           </div>
         </div>

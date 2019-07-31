@@ -11,7 +11,7 @@
                   <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
                     <span class="category-tag <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                   </a>
-                  <h3 class="page-title"><?php the_title(); ?></h3>
+                  <h1 class="page-title"><?php the_title(); ?></h1>
                   <?php get_template_part('templates/entry-meta'); ?>
                 </div>
                 <!-- <img src="<?php //the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image"> -->

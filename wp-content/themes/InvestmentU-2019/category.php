@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row mt-4">
             <div class="col-12 col-md-8">
-                <h3 class="page-title"><?php single_cat_title(); ?></h3>
+                <h1 class="page-title"><?php single_cat_title(); ?></h1>
                 <?php if ( have_posts() ) : $count = 0;?>
                 <?php
                 // The Loop
