@@ -26,8 +26,8 @@
                                             <img class="img-fluid headshot" src="<?php the_sub_field('expert_headshot'); ?>" alt="<?php the_sub_field('expert_name'); ?>">
                                             </a>
                                         </div>
-                                        <div class="title-wrapper"><p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
-                                        <p> <?php the_sub_field('expert_title'); ?></p></div>
+                                        <div class="title-wrapper"><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></a></p>
+                                        <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"> <?php the_sub_field('expert_title'); ?></a></p></div>
                                     </div>
                                 </div>
                             <?php $count++; ?>
