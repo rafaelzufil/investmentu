@@ -83,7 +83,9 @@ function IU_top_posts_shortcode($atts, $content = null) {
     'meta_key' => $meta_key,
     'orderby' => $orderby,
     'order' => $order
-	);
+  );
+  
+  var_dump($args);
 	
 	$output = '';
 	
