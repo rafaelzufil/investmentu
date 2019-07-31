@@ -181,3 +181,6 @@ add_action( 'init', 'create_post_type' );
   function reverse_strrchr($haystack, $needle, $trail) {
     return strrpos($haystack, $needle) ? substr($haystack, 0, strrpos($haystack, $needle) + $trail) : false;
   }
+
+ 
+ 
