@@ -9,7 +9,7 @@
                 <div class="article-header mb-2">
                   <?php $category = get_the_category(); ?>
                   <a href="<?= esc_url(home_url('/')); ?>category/<?php echo $category[0]->slug; ?>/">
-                    <span class="category-tag generic-color <?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
+                    <span class="category-tag generic-color category-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                   </a>
                   <h3 class="page-title"><?php the_title(); ?></h3>
                   <?php get_template_part('templates/entry-meta'); ?>

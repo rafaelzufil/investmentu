@@ -605,32 +605,32 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
   padding: 0 5px;
 }
 
-.dividend-stocks {
+.category-dividend-stocks {
   border-left: 6px solid #2a5bbf;
   padding: 0 5px;
 }
 
-.marijuana-stocks {
+.category-marijuana-stocks {
   border-left: 6px solid #31ad37;
   padding: 0 5px;
 }
 
-.financial-freedom {
+.category-financial-freedom {
   border-left: 6px solid #41dde3;
   padding: 0 5px;
 }
 
-.investing-101 {
+.category-investing-101 {
   border-left: 6px solid #f81f1a;
   padding: 0 5px;
 }
 
-.investment-opportunities {
+.category-investment-opportunities {
   border-left: 6px solid #f4a316;
   padding: 0 5px;
 }
 
-.tech-stocks {
+.category-tech-stocks {
   border-left: 6px solid #c1cf22;
   padding: 0 5px;
 }

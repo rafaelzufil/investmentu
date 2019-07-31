@@ -62,11 +62,11 @@
       ?>
       <ul class="nav nav-social d-sm-none d-lg-flex">
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fab fa-facebook-square"></i></a>
+          <a class="nav-link" href="https://www.facebook.com/investmentu/"><i class="fab fa-facebook-square"></i></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fab fa-youtube"></i></a>
-        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
+        </li> -->
         <li class="nav-item d-none d-lg-inline-block">
           <div id="navbar" class="navbar-collapse collapse">
             <div class="hidden-xs navbar-form navbar-right">
