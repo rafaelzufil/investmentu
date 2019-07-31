@@ -97,6 +97,7 @@
           <input class="form-control col-1 btn-default" type="submit" value="&#xbb;">
         </form> -->
         <?php //cfox_template(1);  ?>
+        <?php revive_display( 1 ); ?>
       </div>
     </div>
   </div>

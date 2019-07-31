@@ -15,8 +15,9 @@
             <?php while (have_posts()) : the_post(); ?>
               <?php get_template_part('templates/content', 'search'); ?>
             <?php endwhile; ?>
-
-            <?php the_posts_navigation(); ?>
+            
+            <?php iu_pagination(); ?>
+            <?php //the_posts_navigation(); ?>
 
                 
             </div>
