@@ -68,21 +68,17 @@ function IU_top_posts_shortcode($atts, $content = null) {
 	
 	extract(shortcode_atts(array(
 		'cat'     => '',
-		'num'     => '5',
-    'offset'   => '0',
+		'num'     => '4',
     'meta_key' => '_custom_post_order',
-    'orderby' => 'meta_value',
-    'order' => 'ASC' 
+    'orderby' => 'meta_value_num', 
     
 	), $atts));
 	
 	$args = array(
 		'category_name'  => $cat,
 		'posts_per_page' => $num,
-    'offset'          => $offset,
     'meta_key' => $meta_key,
     'orderby' => $orderby,
-    'order' => $order
   );
 	
 	$output = '';
@@ -98,7 +94,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
     } 
 
     setup_postdata($post);
-    if ( !empty(get_post_meta( $post->ID, '_custom_post_order', true )) ) :
+    //if ( !empty(get_post_meta( $post->ID, '_custom_post_order', true )) ) :
     $category = get_the_category();
     $date = get_the_date();
     $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
@@ -116,7 +112,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
                     </a>
                   </div>
                 </div>';
-      endif; 	
+      // endif; 	
 	}
 	
 	wp_reset_postdata();
