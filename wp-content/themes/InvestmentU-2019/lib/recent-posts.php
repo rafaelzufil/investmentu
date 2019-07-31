@@ -71,6 +71,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		'num'     => '4',
     'meta_key' => '_custom_post_order',
     'orderby' => 'meta_value_num', 
+    'order' => 'ASC'
     
 	), $atts));
 	
@@ -79,6 +80,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		'posts_per_page' => $num,
     'meta_key' => $meta_key,
     'orderby' => $orderby,
+    'order' => $order
   );
 	
 	$output = '';
