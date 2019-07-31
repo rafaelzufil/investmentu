@@ -19,7 +19,7 @@ $sage_includes = [
   'lib/customizer.php', // Theme customizer
   'lib/pagination.php', // Pagination
   'lib/recent-posts.php' // category page recent posts
-  
+
 ];
 
 foreach ($sage_includes as $file) {
@@ -73,7 +73,7 @@ function get_related_author_posts() {
                     </a>
                     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
                     <p class="date-posted m-0 category-tag">' . $date . '</p>
-                    
+
                     </div>
                 </div>';
   }
@@ -102,7 +102,7 @@ function create_post_type() {
         'has_archive' => true,
       )
     );
-    
+
 }
 
 add_action( 'init', 'create_post_type' );
@@ -182,5 +182,46 @@ add_action( 'init', 'create_post_type' );
     return strrpos($haystack, $needle) ? substr($haystack, 0, strrpos($haystack, $needle) + $trail) : false;
   }
 
- 
- 
+  function revive_zone($location) {
+
+    $terms = json_decode(json_encode(get_the_tags()), true);
+    $i = 0;
+
+    if ($location === 'sidebar') {
+
+      foreach ($terms as $item) {
+        if ($item['slug'] === 'zone: Wealthy Retirement') {
+          $zone = 11;
+          break;
+        }
+        if ($item['slug'] === 'zone: Liberty Through Wealth') {
+          $zone = 12;
+          break;
+        }
+        if ($item['slug'] === 'zone: Early Investing') {
+          $zone = 13;
+          break;
+        }
+        if ($item['slug'] === 'zone: Manward Digest') {
+          $zone = 14;
+          break;
+        }
+        if ($item['slug'] === 'zone: Trade of the Day') {
+          $zone = 15;
+          break;
+        }
+        if ($item['slug'] === 'zone: Profit Trends') {
+          $zone = 16;
+          break;
+        }
+        $i++;
+      };
+
+      if (!isset($zone)) {
+        $zone = 4;
+      }
+
+    }
+
+    return $zone;
+  }

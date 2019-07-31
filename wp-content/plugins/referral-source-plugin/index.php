@@ -46,8 +46,6 @@ function set_referral_cookie() {
 
     }
 
-    echo "<script> var referral_source = '".$referral_source."';</script>";
-
   }
 
 }

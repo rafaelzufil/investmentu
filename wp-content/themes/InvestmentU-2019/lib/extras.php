@@ -31,5 +31,3 @@ add_filter('body_class', __NAMESPACE__ . '\\body_class');
 //   return ' &hellip; <a href="' . get_permalink() . '" class="readmore"><em>' . __('Read More', 'sage') . '</em></a>';
 // }
 // add_filter('excerpt_more', __NAMESPACE__ . '\\excerpt_more');
-
-
