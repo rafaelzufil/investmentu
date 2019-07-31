@@ -70,9 +70,9 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		'cat'     => '',
 		'num'     => '5',
     'offset'   => '0',
-    // 'meta_key' => '_custom_post_order',
-    // 'orderby' => 'meta_value',
-    // 'order' => 'ASC' 
+    'meta_key' => '_custom_post_order',
+    'orderby' => 'meta_value',
+    'order' => 'ASC' 
     
 	), $atts));
 	
@@ -80,9 +80,9 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		'category_name'  => $cat,
 		'posts_per_page' => $num,
     'offset'          => $offset,
-    // 'meta_key' => $meta_key,
-    // 'orderby' => $orderby,
-    // 'order' => $order
+    'meta_key' => $meta_key,
+    'orderby' => $orderby,
+    'order' => $order
 	);
 	
 	$output = '';
@@ -100,7 +100,8 @@ function IU_top_posts_shortcode($atts, $content = null) {
 		setup_postdata($post);
     $category = get_the_category();
     $date = get_the_date();
-    $output .= '<div class="col-12 col-sm-6 col-lg-3 my-3">
+    $output .= '<p>'.get_post_meta( $post->ID, '_custom_post_order', true ) .'</p>
+                <div class="col-12 col-sm-6 col-lg-3 my-3">
                   <a href="'. get_the_permalink() .'">
                     <img src="'. $img_url .'" class="small-featured-article-image img-fluid">
                   </a>
