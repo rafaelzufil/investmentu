@@ -25,7 +25,7 @@ function prefix_insert_post_ads( $content ) {
 </div>';
  
     if ( is_page( 'faq' ) || is_page( 'about-us' ) || is_single() && ! is_admin() ) {
-        return prefix_insert_after_paragraph( $ad_code, 10, $content );
+        return prefix_insert_after_paragraph( $ad_code, 7, $content );
     }
      
     return $content;
