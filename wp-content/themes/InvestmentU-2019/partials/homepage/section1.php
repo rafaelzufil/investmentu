@@ -10,7 +10,7 @@
                 'post_type'=>'post', 
                 'post_status'=>'publish', 
                 'posts_per_page'=>4,
-                'category__not_in' => array( 3275 ),
+                'category__not_in' => array( 7228 ),
             )); 
             if( $the_query->have_posts() ):
             while ( $the_query->have_posts() ) : $the_query->the_post(); 
@@ -29,7 +29,7 @@
             <div class="col-12 col-md-6 col-lg-3 main-featured-article-excerpt">
                 <?php $category = get_the_category(); ?>
                 <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
-                    <span class="category-tag generic-color category-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>    
+                    <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>    
                 </a>
                 <a href="<?php the_permalink(); ?>">
                     <h4 class="mb-0"><?php the_title(); ?></h4>
@@ -57,7 +57,7 @@
                 <div class="small-featured-article-excerpt pt-2">
                     <?php $category = get_the_category(); ?>
                     <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
-                        <span class="category-tag generic-color category-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
+                        <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
                     </a>
                     
                     <a href="<?php the_permalink(); ?>">

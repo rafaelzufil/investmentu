@@ -1,5 +1,5 @@
 <hr>
-<h6>Ad headline</h6>
+<!-- <h6>Ad headline</h6>
 <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. </p>
 <div class="native-leadgen-signup mb-4">
     <form>
@@ -8,4 +8,5 @@
         <button class="btn btn-block btn-primary form-control col-4" type="submit">Subscribe Now</button>
     </div>
     </form>
-</div>
+</div> -->
+<?php revive_display( 3 ); ?>
