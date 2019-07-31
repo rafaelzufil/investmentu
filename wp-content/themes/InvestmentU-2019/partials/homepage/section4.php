@@ -11,12 +11,11 @@
                         'posts_per_page'=>3,
                         'category_name' => 'video',
                         'meta_key' => '_custom_post_order',
-                        'orderby' => 'meta_value',
-                        'order' => 'ASC'
+                        'orderby' => 'meta_value_num',
+                        'order' => 'DESC'
                     )); 
                     if( $the_query->have_posts() ):
                     while ( $the_query->have_posts() ) : $the_query->the_post(); 
-                    //$order = get_field('order');
                     if($count == 0) {
                 ?>
                 <div class="col-12 col-lg-6">
