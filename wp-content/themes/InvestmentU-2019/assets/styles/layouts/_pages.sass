@@ -279,19 +279,35 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
     border-left: 6px solid #c1cf22
     padding: 0 5px
 
-.a2a_svg
-    background-color: #fff !important
-    path 
-        fill: #9a9a9a !important
+@media (min-width: 981px)    
+    .a2a_svg
+        background-color: #fff !important
+        path 
+            fill: #9a9a9a !important
 
-a.a2a_button_facebook, .a2a_button_twitter, .a2a_button_email 
-    border: 1px solid #9a9a9a
+    a.a2a_button_facebook, .a2a_button_twitter, .a2a_button_email 
+        border: 1px solid #9a9a9a
 
-.a2a_floating_style.a2a_default_style a, .a2a_overlay_style.a2a_default_style a
-    padding: 4px
-    width: 33.33%
-.a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style 
-    width: 100%
+    .a2a_floating_style.a2a_default_style a, .a2a_overlay_style.a2a_default_style a
+        padding: 4px
+        width: 33.33%
+    .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style 
+        width: 100%
 
-.title-wrapper 
-    height: 6rem
+    .title-wrapper 
+        height: 6rem
+
+
+@media (max-width: 980px)
+    .a2a_floating_style.a2a_default_style a, .a2a_overlay_style.a2a_default_style a
+        padding-left: 12% !important
+        width: 33.33%
+    .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style 
+        width: 100%
+
+    a.a2a_button_facebook 
+        background-color: rgb(59, 89, 152)
+    a.a2a_button_twitter
+        background-color: rgb(85, 172, 238)
+    a.a2a_button_email 
+        background-color: rgb(1, 102, 255)

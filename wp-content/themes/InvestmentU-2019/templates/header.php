@@ -85,6 +85,7 @@
 
   <!-- sticky signup form -->
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
+  <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
     <div class="row">
       <div class="container">
         <?php

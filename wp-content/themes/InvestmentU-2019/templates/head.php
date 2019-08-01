@@ -55,6 +55,14 @@
       });
     });
   </script>
+  <?php if (is_home()) { ?> 
+    <style>
+        .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
+            display: none;
+        }
+    </style>
+  <?php } ?>
+
 
   <?php wp_head(); ?>
 </head>
