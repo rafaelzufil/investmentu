@@ -20,7 +20,7 @@
     <a class="navbar-brand" href="<?= esc_url(home_url('/')); ?>">
       <img src="<?php bloginfo('template_directory');?>/assets/images/logo.png" alt="Investment U" class="mx-auto my-3 img-fluid" id="logo">
     </a>
-    <ul class="nav nav-social d-none d-sm-flex d-lg-none">
+    <!-- <ul class="nav nav-social d-none d-sm-flex d-lg-none">
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fab fa-facebook-square"></i></a>
       </li>
@@ -37,10 +37,14 @@
       <div id="top-search">
 
       </div>
-    </ul>
+    </ul> -->
 
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
-      <a href="#" class="nav-link"><i class="fas fa-search"></i></a>
+      
+          <div class="navbar-form navbar-right">
+              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
+          </div>
+        
     </div>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapse-nav"
@@ -85,7 +89,7 @@
 
   <!-- sticky signup form -->
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
-  <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
+  <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
     <div class="row">
       <div class="container">
         <?php

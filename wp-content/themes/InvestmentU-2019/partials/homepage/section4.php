@@ -39,7 +39,7 @@
                             <object style="width:100%;height:300px; float: none; clear: both; margin: 0 auto;"
                                 data="<?php echo $youtube; ?>"></object>
                         <?php } ?>
-                        <a href="<?php the_permalink(); ?>"><h3 class="mt-3 p-black"><?php the_title(); ?></h3></a>
+                        <a href="<?php the_permalink(); ?>"><h1 class="mt-3 p-black"><?php the_title(); ?></h1></a>
                     </div>
                 </div>
                 <?php

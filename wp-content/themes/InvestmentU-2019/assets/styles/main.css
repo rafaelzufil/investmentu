@@ -4,12 +4,20 @@ main {
   width: 100%;
 }
 
+h1 {
+  font-size: 1.75rem;
+}
+
 h2 {
   font-size: 1.1rem;
 }
 
-h1 {
-  font-size: 1.75rem;
+h3 {
+  font-size: 1rem;
+}
+
+strong {
+  font-weight: bold !important;
 }
 
 #small-signup-form {
@@ -245,6 +253,15 @@ footer nav ul li a:hover, footer nav ul li a:focus, footer nav ul li a:active {
 
 span.screen-reader-text {
   display: none;
+}
+
+@media (max-width: 980px) {
+  .search-form label {
+    width: 75%;
+  }
+  .search-form .search-submit {
+    width: 22%;
+  }
 }
 
 .carousel-control-next {

@@ -10,7 +10,7 @@
 ?>
 
 <div class="container py-4" id="section06">
-<h3 class="mb-3 small-title">Meet the Experts</h3>
+<h1 class="mb-3 small-title">Meet the Experts</h1>
     <div class="container text-center my-3">
     <div class="row mx-auto my-auto">
         <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
