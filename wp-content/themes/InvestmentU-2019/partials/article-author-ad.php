@@ -8,14 +8,5 @@ if ( ! empty ( $authorDescription ) ) {
     <h6>Like what you’re reading on Investment U? Sign up for our free e-letter</h6>
 <?php } ?>
 <div class="native-leadgen-signup">
-    <form action="https://signupapp2.com/signupapp/signups/process" method="post" name="SimpleSignUp" data-toggle="validator" role="form" id="lead-gen" "="" >
-    <div class="form-group row mx-auto my-3">
-        <input type="text" class="form-control col-8">
-        <button class="btn btn-block btn-primary form-control col-4" type="submit">Subscribe Now</button>
-        <input name="signup.sourceId" type="hidden" value="X300V727">
-          <input name="signup.listCode" type="hidden" value="INVESTME">
-          <input name="signup.redirectUrl" id="redirectUrl" type="hidden" value="">
-          <input name="signup.welcomeEmailTemplateName" type="hidden" value="">
-    </div>
-    </form>
+  <?php revive_display( 17 ); ?>
 </div>

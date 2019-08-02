@@ -20,7 +20,7 @@ function revive_display( $zone ) {
   $author_id = get_post_field( 'post_author', $post_id );
   $post_author = get_the_author_meta( 'display_name', $author_id );
   $source = isset($_COOKIE['referral_source']) ? $_COOKIE['referral_source'] : null;
-  if (get_the_category()  !== null) {
+  if (get_the_category()  !== false) {
     $all_categories = '';
     $categories = json_decode(json_encode(get_the_category()), true);
     $i = 0;
@@ -34,11 +34,11 @@ function revive_display( $zone ) {
   } else {
     $all_categories = null;
   }
-  if (get_the_tags()  !== null) {
+  if (get_the_tags()  !== false) {
     $all_tags = '';
-    $categories = json_decode(json_encode(get_the_tags()), true);
+    $tags= json_decode(json_encode(get_the_tags()), true);
     $i = 0;
-    foreach ($categories as $item) {
+    foreach ($tags as $item) {
       if ($i > 0) {
         $all_tags .= ',';
       }
