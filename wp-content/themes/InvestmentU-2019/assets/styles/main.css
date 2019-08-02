@@ -48,6 +48,7 @@ strong {
   height: calc(1em + .75rem + 2px);
   font-size: 1.5rem;
   padding: 0px;
+  cursor: pointer;
 }
 
 #sticky-lead-gen-ad p {
