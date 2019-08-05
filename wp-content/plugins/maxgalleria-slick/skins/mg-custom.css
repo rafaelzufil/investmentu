@@ -1,0 +1,26 @@
+
+.mg-slick-carousel.mg-custom p.mg-description.above {
+  padding: 10px 28px 44px;
+}
+.mg-slick-carousel.mg-custom p.mg-description.below {
+	padding-top: 0px;
+}
+.slick-slider button.slick-next, .slick-slider button.slick-prev {
+  color: gray;
+}
+.slick-slider button.slick-next:hover, .slick-slider button.slick-prev:hover {
+  color: #000;
+}
+.slick-next {
+  right: 4px;
+}
+.slick-prev {
+  left: 4px;
+}
+
+/*.slick-slider div.slick-list.draggable {
+	overflow: hidden;	
+}*/
+/*.slick-slider {
+	overflow: hidden;
+}*/

@@ -1,0 +1,24 @@
+.mg-slick-carousel.ghost {
+  position: relative;
+  border: 1px solid #333;
+  overflow: hidden;
+  padding: 0 40px;
+}
+
+.slick-slider button.slick-next, .slick-slider button.slick-prev {
+  color: gray;
+}
+.slick-slider button.slick-next:hover, .slick-slider button.slick-prev:hover {
+  color: #000;
+}
+.slick-next {
+  right: 49px;
+}
+
+.slick-prev {
+  left: 44px;
+}
+
+.slick-dots {
+  margin-left: -40px;
+}

@@ -1,0 +1,22 @@
+.mg-slick-carousel.borderless p.mg-description.above {
+    padding: 10px 28px 44px;
+}
+.mg-slick-carousel.borderless p.mg-description.below {
+	padding-top: 0px;
+}
+.slick-slider button.slick-next, .slick-slider button.slick-prev {
+  color: gray;
+}
+.slick-slider button.slick-next:hover, .slick-slider button.slick-prev:hover {
+  color: #000;
+}
+.slick-next {
+  right: 4px;
+}
+.slick-prev {
+  left: 4px;
+}
+
+.mg-slick-carousel.borderless .slick-slide {
+    border: none !important;
+}

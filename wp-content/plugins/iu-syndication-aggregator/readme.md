@@ -13,3 +13,6 @@ Aggregate articles from syndication publishers.
 - update IU_SYNDICATION_API_KEY
 - OR
 - copy the 2 defines to wp-config.php
+
+- create directories in shared: shared/wp-content/plugins/iu-syndication-aggregator
+- add file to capistranio deploy.rb linked_files:  'wp-content/plugins/iu-syndication-aggregator/iu-syndication-configs.php'

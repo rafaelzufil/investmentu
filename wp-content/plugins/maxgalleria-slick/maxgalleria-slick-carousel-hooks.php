@@ -1,0 +1,25 @@
+<?php
+// Actions
+define('MAXGALLERIA_SLICK_CAROUSEL_ACTION_BEFORE_ENQUEUE_STYLES', 'maxgalleria_slick_carousel_before_enqueue_styles');
+define('MAXGALLERIA_SLICK_CAROUSEL_ACTION_AFTER_ENQUEUE_STYLES', 'maxgalleria_slick_carousel_after_enqueue_styles');
+define('MAXGALLERIA_SLICK_CAROUSEL_ACTION_BEFORE_ENQUEUE_SCRIPTS', 'maxgalleria_slick_carousel_before_enqueue_scripts');
+define('MAXGALLERIA_SLICK_CAROUSEL_ACTION_AFTER_ENQUEUE_SCRIPTS', 'maxgalleria_slick_carousel_after_enqueue_scripts');
+
+// Filters
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_STYLESHEET', 'maxgalleria_slick_carousel_slider_stylesheet');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_MAIN_STYLESHEET', 'maxgalleria_slick_carousel_main_stylesheet');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SKIN_STYLESHEET', 'maxgalleria_slick_carousel_skin_stylesheet');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_SCRIPT', 'maxgalleria_slick_carousel_slider_script');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_MAIN_SCRIPT', 'maxgalleria_slick_carousel_main_script');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_BEFORE_GALLERY_OUTPUT', 'maxgalleria_slick_carousel_before_gallery_output');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_AFTER_GALLERY_OUTPUT', 'maxgalleria_slick_carousel_after_gallery_output');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_GALLERY_OUTPUT', 'maxgalleria_slick_carousel_gallery_output');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_BEFORE_SLIDER_IMAGE', 'maxgalleria_slick_carousel_before_slider_image');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_AFTER_SLIDER_IMAGE', 'maxgalleria_slick_carousel_after_slider_image');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_IMAGE', 'maxgalleria_slick_carousel_slider_image');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_IMAGE_WIDTH', 'maxgalleria_slick_carousel_slider_image_width');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_IMAGE_HEIGHT', 'maxgalleria_slick_carousel_slider_image_height');
+define('MAXGALLERIA_SLICK_CAROUSEL_FILTER_SLIDER_IMAGE_CROP', 'maxgalleria_slick_carousel_slider_image_crop');
+define('MAXGALLERIA_SLICK_THEME_CAROUSEL_FILTER_SLIDER_STYLESHEET', 'maxgalleria_slick_theme_carousel_slider_stylesheet');
+
+?>

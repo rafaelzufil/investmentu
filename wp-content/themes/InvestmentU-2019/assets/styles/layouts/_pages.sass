@@ -1,0 +1,313 @@
+body 
+    font-family: runda, sans-serif
+    font-style: normal
+    font-weight: 400
+
+.category-tag
+    color: $medium-grey
+    font-size: .74rem
+
+    &:hover, &:focus, &:active
+        color: $xdark-grey
+.p-black
+    color: $black !important
+
+.p-blue
+    color: $iu-blue
+
+.byline
+    a
+        color: $black
+        
+.big-featured-article-image, .featured-article-image, .small-featured-article-image, 
+    object-fit: cover
+    width: 100%
+
+.small-title
+    font-size: $mdl
+
+.main-featured-article-excerpt
+    a
+        color: $black
+
+        &:hover, &:focus, &:active
+            color: $iu-blue
+            text-decoration: none
+
+    p
+        color: $black
+
+.small-featured-article-excerpt
+    a
+        color: $black
+
+        &:hover, &:focus, &:active
+            color: $iu-blue
+            text-decoration: none
+
+    h6
+        font-weight: 700
+
+.featured-article-excerpt
+    a
+        color: $black
+
+        &:hover, &:focus, &:active
+            color: $iu-blue
+            text-decoration: none
+
+    p
+        color: $black
+
+article
+    .featured-image
+        width: 300px
+        max-width: 40%
+
+.articlePreview
+    padding-bottom: 2rem
+    padding: 2rem 0
+    border-bottom: 1px solid $lite-grey
+
+    h4 
+        color: $black
+    
+    a 
+        color: $black
+        img 
+            background-color: $white
+            border: 1px solid $lite-grey
+            padding: 4px
+
+.e-margin
+    p 
+        margin: 5px 0 !important
+
+#section02
+    background-color: $xlite-grey
+
+    h6
+        // font-size: $mdl
+        color: $iu-blue
+
+    p
+        // font-size: $md
+        padding: 0
+        margin: 0
+    img 
+        width: 80px
+
+#section04
+    background-color: $iu-blue-xlite
+
+#section05
+    p
+        margin: 0
+        padding: 0
+        padding-top: $globalUnit * 0.5
+        padding-bottom: $globalUnit * 0.5
+        border-bottom: 1px solid $lite-grey
+        text-transform: capitalize
+
+#section06
+    p
+        margin: 0
+        padding: 0
+        text-align: center
+
+a.readmore 
+    color: #1f82c5
+    text-decoration: underline
+
+.popular-posts a 
+    color: #1f82c5
+    font-weight: 500
+
+.h-popular-posts
+    list-style: none
+    li 
+        padding: 6px 0
+        border-bottom: 1px solid $lite-grey
+        a 
+            color: $black
+            font-weight: 500
+
+.anchor-offset 
+    display: block
+    position: relative
+    top: -70px
+
+
+@media screen and (min-width: 992px)    
+    .first-post 
+        height: 100% !important
+
+.category-article-preview-row
+    .small-featured-article-excerpt
+        h6
+            margin: 0
+            padding: 0
+
+#popular-posts
+    p
+        border-bottom: 1px solid $lite-grey
+        font-weight: bold
+        text-transform: capitalize
+        margin: 0
+        padding: 0
+
+    .small-featured-article-excerpt
+        border-bottom: 1px solid $lite-grey
+
+        &:last-of-type
+            border-bottom: none
+
+        h6
+            margin: 0
+            padding: 0
+
+.pagination 
+    display: -webkit-box
+    display: -ms-flexbox
+    display: flex
+    list-style: none
+    border-radius: 0.25rem
+    padding: 0.9rem 0
+
+    ul 
+        li 
+            display: inline-block
+
+            a 
+                margin: 0 0.5em 0 0
+                color: $dark-grey
+
+.navy-button
+    background-color: $iu-blue
+    color: $white
+
+input.form-control.form-control-lg, select.form-control.form-control-lg, textarea.form-control.form-control-lg 
+    margin-bottom: 1rem
+
+.exp-headshot img 
+    border-radius: 50%
+    width: 200px !important
+
+@media screen and (min-width: 768px) and (max-width: 991px) //md
+    .big-featured-article-image
+        height: 220px
+    .featured-article-image, .small-featured-article-image
+        height: 130px
+    #section02
+        img 
+            height: 80px
+    
+@media screen and (min-width: 992px) and (max-width: 1199px) //lg
+    .big-featured-article-image,.featured-article-image
+        height: 140px
+    .small-featured-article-image
+        height: 86px
+    
+@media screen and (min-width: 1200px) //xl
+    .big-featured-article-image,.featured-article-image
+        height: 160px
+    .small-featured-article-image
+        height: 100px
+
+
+/* Author Slider */
+
+@media (max-width: 992px) 
+    .carousel-inner .carousel-item > div 
+        display: none
+    
+    .carousel-inner .carousel-item > div:first-child 
+        display: block
+        
+    
+
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev 
+    display: flex
+    justify-content: center
+
+
+@media (min-width: 992px) 
+    .carousel-inner .carousel-item-right.active,
+    .carousel-inner .carousel-item-next 
+        transform: translateX(16.6%)
+    
+    
+    .carousel-inner .carousel-item-left.active, 
+    .carousel-inner .carousel-item-prev 
+        transform: translateX(-16.6%)
+    
+    
+
+.carousel-inner .carousel-item-right,
+.carousel-inner .carousel-item-left 
+    transform: translateX(0)
+    
+/* Category Colors */
+
+.generic-color
+    border-left: 6px solid $medium-grey
+    padding: 0 5px
+
+.cat-dividend-stocks
+    border-left: 6px solid #2a5bbf
+    padding: 0 5px
+
+.cat-marijuana-stocks
+    border-left: 6px solid #31ad37
+    padding: 0 5px
+
+.cat-financial-freedom
+    border-left: 6px solid #41dde3
+    padding: 0 5px
+
+.cat-investing-101
+    border-left: 6px solid #f81f1a
+    padding: 0 5px
+
+.cat-investment-opportunities
+    border-left: 6px solid #f4a316
+    padding: 0 5px
+
+.cat-tech-stocks
+    border-left: 6px solid #c1cf22
+    padding: 0 5px
+
+@media (min-width: 981px)    
+    .a2a_svg
+        background-color: #fff !important
+        path 
+            fill: #9a9a9a !important
+
+    a.a2a_button_facebook, .a2a_button_twitter, .a2a_button_email 
+        border: 1px solid #9a9a9a
+
+    .a2a_floating_style.a2a_default_style a, .a2a_overlay_style.a2a_default_style a
+        padding: 4px
+        width: 33.33%
+    .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style 
+        width: 100%
+
+    .title-wrapper 
+        height: 6rem
+
+
+@media (max-width: 980px)
+    .a2a_floating_style.a2a_default_style a, .a2a_overlay_style.a2a_default_style a
+        padding-left: 12% !important
+        width: 33.33%
+    .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style 
+        width: 100%
+
+    a.a2a_button_facebook 
+        background-color: rgb(59, 89, 152)
+    a.a2a_button_twitter
+        background-color: rgb(85, 172, 238)
+    a.a2a_button_email 
+        background-color: rgb(1, 102, 255)
