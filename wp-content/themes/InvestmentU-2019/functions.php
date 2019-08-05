@@ -189,31 +189,31 @@ function revive_zone($location) {
   if ($location === 'sidebar') {
     $terms = json_decode(json_encode(get_the_tags()), true);
     $i = 0;
-    var_dump($terms);
+
     if ($terms !== false) {
 
       foreach ($terms as $item) {
-        if ($item['slug'] === 'zone: Wealthy Retirement') {
+        if ($item['slug'] === 'zone-wealthy-retirement') {
           $zone = 11;
           break;
         }
-        if ($item['slug'] === 'zone: Liberty Through Wealth') {
+        if ($item['slug'] === 'zone-liberty-through-wealth') {
           $zone = 12;
           break;
         }
-        if ($item['slug'] === 'zone: Early Investing') {
+        if ($item['slug'] === 'zone-early-investing') {
           $zone = 13;
           break;
         }
-        if ($item['slug'] === 'zone: Manward Press') {
+        if ($item['slug'] === 'zone-manward-press') {
           $zone = 14;
           break;
         }
-        if ($item['slug'] === 'zone: Trade of the Day') {
+        if ($item['slug'] === 'zone-trade-of-the-day') {
           $zone = 15;
           break;
         }
-        if ($item['slug'] === 'zone: Profit Trends') {
+        if ($item['slug'] === 'zone-profit-trends') {
           $zone = 16;
           break;
         }
