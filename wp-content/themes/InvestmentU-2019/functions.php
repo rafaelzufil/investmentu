@@ -189,7 +189,7 @@ function revive_zone($location) {
   if ($location === 'sidebar') {
     $terms = json_decode(json_encode(get_the_tags()), true);
     $i = 0;
-
+    var_dump($terms);
     if ($terms !== false) {
 
       foreach ($terms as $item) {
