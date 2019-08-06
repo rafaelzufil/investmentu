@@ -59,8 +59,8 @@ if(!empty($_GET['welcome'])) {
 
 $sua_fields = array(
   'signup.emailAddress'=>$email,
-	'signup.listCode'=>$source,
-	'signup.sourceId'=>$list,
+	'signup.listCode'=>$list,
+	'signup.sourceId'=>$source,
 	'signup.welcomeEmailTemplateName'=>$welcome,
 );
 
@@ -136,6 +136,8 @@ if (strpos($carl_result, $list) === false) {
 
 	//close connection
 	curl_close($ch);
+
+  echo $sua_result;
 
 	echo '"success"';
 
