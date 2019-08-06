@@ -32,7 +32,7 @@ foreach ($sage_includes as $file) {
 unset($file, $filepath);
 
 function roots_scripts() {
-  wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
+  //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
   wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
 
   wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
