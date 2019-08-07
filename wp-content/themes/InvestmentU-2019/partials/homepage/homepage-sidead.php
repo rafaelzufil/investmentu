@@ -1,10 +1,10 @@
 <div class="col-12 col-lg-3 d-none d-md-none d-lg-block" id="sidebar-banner-ad">
 
   <?php
-    if (!isset($_COOKIE['INVESTME'])): 
+    if (!isset($_COOKIE['INVESTME'])) { 
         $zone = revive_zone('home-native');
         revive_display( $zone );
-    else :
+    } else {
   ?>
     <h5 class="p-blue m-0 pb-2" style="border-bottom: 1px solid #d3d3d3;">Popular Posts</h5>
 
@@ -15,7 +15,7 @@
         endif;
         ?>
     </nav>
-  <?php endif; ?>
+  <?php } ?>
 </div>
 <div class="col-md-12 d-block d-md-block d-lg-none pt-4" id="sidebar-banner-ad">
   <?php revive_display( 2 ); ?>
