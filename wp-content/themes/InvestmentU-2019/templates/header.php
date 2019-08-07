@@ -58,17 +58,18 @@
 $terms = json_decode(json_encode(get_the_tags()), true);
 $i = 0;
 
-if ($terms !== false) {
+if ($terms) {
 
   foreach ($terms as $item) {
-    if (strpos($item['slug'], 'zone')) {
+
+    if (strpos($item['slug'], 'zone') !== 0) {
       $is_syndicated = true;
-      break;
+
     }
   }
 }
 
-if (isset($is_syndicated)):
+if ($is_syndicated !== true):
 
 ?>
   <!-- sticky signup form -->
