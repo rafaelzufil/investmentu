@@ -57,11 +57,12 @@
 
 $terms = json_decode(json_encode(get_the_tags()), true);
 $i = 0;
-var_dump($terms);
+
 if ($terms) {
 
   foreach ($terms as $item) {
-    if (strpos($item['slug'], 'zone') !== 0) {
+
+    if (strpos($item['slug'], 'zone') !== false) {
       $is_syndicated = 'true';
       break;
     }
