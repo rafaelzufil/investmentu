@@ -66,7 +66,7 @@ function revive_display( $zone ) {
     data-revive-tags=\"$all_tags\"
     data-revive-author=\"$post_author\"
     data-revive-cookies=\"$cookies\"
-    data-revive-referral_source=\"$source\"
+    data-revive-referral-source=\"$source\"
     data-revive-lytics=\"$lytics\"
   ></ins>
   <script async src=\"https://ads.web.oxfordclub.com/www/delivery/asyncjs.php\"></script>";
