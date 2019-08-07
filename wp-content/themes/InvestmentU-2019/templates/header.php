@@ -58,7 +58,7 @@
 $terms = json_decode(json_encode(get_the_tags()), true);
 $i = 0;
 
-if ($terms) {
+if ($terms && !is_front_page()) {
 
   foreach ($terms as $item) {
 
@@ -69,7 +69,7 @@ if ($terms) {
   }
 }
 
-if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME']) && is_front_page() !== 1):
+if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 ?>
   <!-- sticky signup form -->
