@@ -83,5 +83,5 @@ if ($is_syndicated !== true):
   </div>
 
 <?php else: ?>
-  <hr style="color:#bdbdbd"/>
+  <hr style="color:#bdbdbd" class="my-0"/>
 <?php endif; ?>
