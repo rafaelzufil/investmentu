@@ -49,7 +49,11 @@ function revive_display( $zone ) {
     $all_tags = null;
   }
   $signup = isset($_COOKIE['signup']) ? $_COOKIE['signup'] : null;
-
+  $cookies = '';
+  foreach ($_COOKIE as $key=>$val)
+  {
+    $cookies .= $key.',';
+  }
   echo "
   <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v4.2.1 -->
   <ins
@@ -60,7 +64,7 @@ function revive_display( $zone ) {
     data-revive-category=\"$all_categories\"
     data-revive-tags=\"$all_tags\"
     data-revive-author=\"$post_author\"
-    data-revive-signup=\"$signup\"
+    data-revive-cookies=\"$cookies\"
     data-revive-referral_source=\"$source\"
   ></ins>
   <script async src=\"https://ads.web.oxfordclub.com/www/delivery/asyncjs.php\"></script>";
