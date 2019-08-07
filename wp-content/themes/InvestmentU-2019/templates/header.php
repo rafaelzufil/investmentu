@@ -1,18 +1,4 @@
-<!-- <header class="banner">
-  <div class="container">
-  <?php /* ?>
-    <a class="brand" href="<?= esc_url(home_url('/')); ?>"><img class="main-logo" src="<?php echo get_home_url() . '/wp-content/themes/' . get_template(); ?>/assets/images/logo.png" style="width: 150px;" /></a>
-    <nav class="nav-primary float-right">
-      <?php
-      if (has_nav_menu('primary_navigation')) :
-        wp_nav_menu(['theme_location' => 'primary_navigation', 'menu_class' => 'nav']);
-      endif; */
-      ?>
-      <br />
-      <span style="margin-right: 30px; color: #fff;"><strong>My Profile</strong></span><span style="color: #fff"><strong>Sign Out</strong></span>
-    </nav>
-  </div>
-</header> -->
+
 
 <!-- main nav -->
 <!-- main nav -->
@@ -20,25 +6,6 @@
     <a class="navbar-brand" href="<?= esc_url(home_url('/')); ?>">
       <img src="<?php bloginfo('template_directory');?>/assets/images/logo.png" alt="Investment U" class="mx-auto my-3 img-fluid" id="logo">
     </a>
-    <!-- <ul class="nav nav-social d-none d-sm-flex d-lg-none">
-      <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fab fa-facebook-square"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fab fa-youtube"></i></a>
-      </li>
-      <li class="nav-item d-none d-lg-inline-block">
-        <div id="navbar" class="navbar-collapse collapse">
-          <div class="hidden-xs navbar-form navbar-right">
-              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
-          </div>
-        </div>
-      </li>
-      <div id="top-search">
-
-      </div>
-    </ul> -->
-
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
 
           <div class="navbar-form navbar-right">
