@@ -58,18 +58,18 @@
 $terms = json_decode(json_encode(get_the_tags()), true);
 $i = 0;
 
-if ($terms) {
+if ($terms && !is_front_page()) {
 
   foreach ($terms as $item) {
 
-    if (strpos($item['slug'], 'zone') !== 0) {
-      $is_syndicated = true;
-
+    if (strpos($item['slug'], 'zone') !== false) {
+      $is_syndicated = 'true';
+      break;
     }
   }
 }
 
-if ($is_syndicated !== true):
+if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 ?>
   <!-- sticky signup form -->
