@@ -1,8 +1,8 @@
 <div class="col-12 col-lg-3 d-none d-md-none d-lg-block" id="sidebar-banner-ad">
 
   <?php
-    if (!isset($_COOKIE['INVESTME'])): 
-        $zone = revive_zone('home-native');
+    if (!isset($_COOKIE['INVESTME'])):
+        $zone = revive_zone(2);
         revive_display( $zone );
     else :
   ?>
