@@ -54,6 +54,7 @@ function revive_display( $zone ) {
   {
     $cookies .= $key.',';
   }
+  $lytics = $_COOKIE['ly_segs'];
   echo "
   <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v4.2.1 -->
   <ins
@@ -66,6 +67,7 @@ function revive_display( $zone ) {
     data-revive-author=\"$post_author\"
     data-revive-cookies=\"$cookies\"
     data-revive-referral_source=\"$source\"
+    data-revive-lytics=\"$lytics\"
   ></ins>
   <script async src=\"https://ads.web.oxfordclub.com/www/delivery/asyncjs.php\"></script>";
 
