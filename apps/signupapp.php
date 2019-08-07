@@ -101,12 +101,12 @@ $carl_result = curl_exec($ch);
 //close connection
 curl_close($ch);
 
-if (strpos($carl_result, $list) === false) {
+if (strpos($carl_result, $list) !== false) {
 
 	//If $email is already subscribed to the current list, output "duplicate" as the response
 
-	http_response_code(409);
-	echo "duplicate";
+	//http_response_code(409);
+	echo '"duplicate"';
 	exit();
 
 } else {
@@ -137,9 +137,11 @@ if (strpos($carl_result, $list) === false) {
 	//close connection
 	curl_close($ch);
 
-  echo $sua_result;
-
-	echo '"success"';
+  if ($sua_result === '') {
+    echo '"success"';
+  } else {
+    echo $sua_result;
+  }
 
 
 }
