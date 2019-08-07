@@ -13,7 +13,13 @@ $(document).on('submit', '#lead-gen', function(e) {
       type        : 'GET', // define the type of HTTP verb we want to use (POST for our form)
       url         : '/apps/signupapp.php?email='+emailAddress+'&source='+sourceId+'&list='+listCode+'&welcome='+welcomeEmail, // the url where we want to POST
       dataType    : 'json', // what type of data do we expect back from the server
-      encode          : true
+      encode          : true,
+      error: function(xhr) {
+        console.log(xhr.status);
+        if (xhr.status === 400) {
+          displayErrorModal();
+        };
+      }
   }) // using the done promise callback
   .done(function(data) {
 
@@ -88,6 +94,26 @@ function displayConfirmModal( list, status ) {
     '<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="text-align: right; padding: 10px 15px 0;">'+
     '<span aria-hidden="true">&times;</span></button>'+
     '<div style="padding:0 30px 15px">'+ welcomeMessage +
+    '</div></div></div></div>');
+
+  $('#modal_window').on('hidden.bs.modal', function (e) {
+    $('#modal_window').remove();
+    $('#modal_window').modal('dispose');
+    // console.log('Remove Existing #modal_window');
+  });
+
+  $('#modal_window').modal('show');
+
+};
+
+function displayErrorModal() {
+
+  $('body').append(
+    '<div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">'+
+    '<div class="modal-dialog" role="document"><div class="modal-content">'+
+    '<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="text-align: right; padding: 10px 15px 0;">'+
+    '<span aria-hidden="true">&times;</span></button>'+
+    '<div style="padding:0 30px 15px"><h2>Please enter a valid email address</h2>'+
     '</div></div></div></div>');
 
   $('#modal_window').on('hidden.bs.modal', function (e) {
