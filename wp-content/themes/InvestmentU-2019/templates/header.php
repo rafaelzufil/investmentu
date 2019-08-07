@@ -69,7 +69,7 @@ if ($terms) {
   }
 }
 
-if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
+if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME']) && is_front_page() !== 1):
 
 ?>
   <!-- sticky signup form -->
