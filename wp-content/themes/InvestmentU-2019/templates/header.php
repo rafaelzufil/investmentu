@@ -86,7 +86,24 @@
   </nav>
 
 
+<?php
 
+$terms = json_decode(json_encode(get_the_tags()), true);
+$i = 0;
+
+if ($terms !== false) {
+
+  foreach ($terms as $item) {
+    if (strpos($item['slug'], 'zone')) {
+      $is_syndicated = true;
+      break;
+    }
+  }
+}
+
+if (isset($is_syndicated)):
+
+?>
   <!-- sticky signup form -->
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
   <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
@@ -96,3 +113,7 @@
       </div>
     </div>
   </div>
+
+<?php else: ?>
+  <hr style="color:#bdbdbd"/>
+<?php endif; ?>
