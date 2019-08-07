@@ -40,11 +40,11 @@
     </ul> -->
 
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
-      
+
           <div class="navbar-form navbar-right">
               <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
           </div>
-        
+
     </div>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapse-nav"
@@ -92,10 +92,7 @@
   <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
     <div class="row">
       <div class="container">
-        <?php
-          $zone = revive_zone('sticky');
-          revive_display( $zone );
-        ?>
+        <?php revive_display( 1 ); ?>
       </div>
     </div>
   </div>
