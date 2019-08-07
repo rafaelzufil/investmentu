@@ -14,7 +14,7 @@
                   <h1 class="page-title"><?php the_title(); ?></h1>
                   <?php get_template_part('templates/entry-meta'); ?>
                 </div>
-                <img src="<?php the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image">
+                <!-- <img src="<?php //the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image"> -->
                 <?php the_content(); ?>
              <!-- Lead gen ad for whichever franchise fits best -->  
                 <?php // get_template_part('partials/article-mid-ad'); ?>
