@@ -61,7 +61,7 @@ $i = 0;
 if ($terms) {
 
   foreach ($terms as $item) {
-
+    echo $item['slug'];
     if (strpos($item['slug'], 'zone') !== 0) {
       $is_syndicated = true;
 
