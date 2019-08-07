@@ -57,7 +57,7 @@
 
 $terms = json_decode(json_encode(get_the_tags()), true);
 $i = 0;
-
+var_dump($terms);
 if ($terms) {
 
   foreach ($terms as $item) {
@@ -67,7 +67,7 @@ if ($terms) {
     }
   }
 }
-echo $is_syndicated;
+
 if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 ?>
