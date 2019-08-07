@@ -61,15 +61,14 @@ $i = 0;
 if ($terms) {
 
   foreach ($terms as $item) {
-    echo $item['slug'];
     if (strpos($item['slug'], 'zone') !== 0) {
-      $is_syndicated = true;
-
+      $is_syndicated = 'true';
+      break;
     }
   }
 }
-
-if ($is_syndicated !== true):
+echo $is_syndicated;
+if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 ?>
   <!-- sticky signup form -->
