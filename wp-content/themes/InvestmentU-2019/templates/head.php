@@ -55,6 +55,14 @@
       });
     });
   </script>
+  <script>
+      // $(document).ready(function() {
+      //     $('p').has('img.aligncenter').addClass('aligncenter');
+      // });
+      // $(document).ready(function() {
+      //     $('p:has(img.aligncenter)').addClass('aligncenter');
+      // });
+  </script>
   <?php if (is_home()) { ?> 
     <style>
         .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
