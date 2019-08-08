@@ -15,12 +15,14 @@
         <h6>Related Articles</h6>
     </div>
     <?php
-    $date = get_the_date();
+    
     $my_query = new wp_query( $args );
     if( $my_query->have_posts() ) {
     while( $my_query->have_posts() ) {
-    $my_query->the_post();?>
-
+    $my_query->the_post();
+    $date = get_the_date();
+    ?>
+   
     <div class="col-12 col-sm-6 col-lg-3">
         <a href="<?php the_permalink(); ?>">
             <?php if ( has_post_thumbnail() ) { ?>

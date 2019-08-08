@@ -51,6 +51,11 @@ strong {
   cursor: pointer;
 }
 
+.sticky-top p {
+  letter-spacing: 0.7px;
+  font-size: 1.1rem;
+}
+
 #sticky-lead-gen-ad p {
   text-align: center;
   color: #d3d3d3;
@@ -492,6 +497,10 @@ a.readmore {
   display: block;
   position: relative;
   top: -70px;
+}
+
+.aligncenter {
+  text-align: center;
 }
 
 @media screen and (min-width: 992px) {

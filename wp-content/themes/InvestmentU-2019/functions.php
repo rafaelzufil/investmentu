@@ -32,7 +32,7 @@ foreach ($sage_includes as $file) {
 unset($file, $filepath);
 
 function roots_scripts() {
-  wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
+  //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
   wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
 
   wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
@@ -64,7 +64,7 @@ function get_related_author_posts() {
   foreach ( $authors_posts as $authors_post ) {
     $category = get_the_category($authors_post->ID);
     $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
-    $date = get_the_date();
+    // $postdate = 
     $output .= '<div class="col-12 col-sm-6 col-lg-3">
     <a href="'. get_permalink( $authors_post->ID ) .'#">
     <img src="'. $thumb .'" class="small-featured-article-image img-fluid">
@@ -74,7 +74,7 @@ function get_related_author_posts() {
     <span class="category-tag generic-color cat-'. $category[0]->slug . ' ">'. $category[0]->cat_name .'</span>
     </a>
     <h6><a href="' . get_permalink( $authors_post->ID ) . '">' . apply_filters( 'the_title', $authors_post->post_title, $authors_post->ID ) . '</a></h6>
-    <p class="date-posted m-0 category-tag">' . $date . '</p>
+    <p class="date-posted m-0 category-tag">' . get_the_date('F j, Y', $authors_post->ID) . '</p>
 
     </div>
     </div>';
@@ -110,38 +110,6 @@ function create_post_type() {
 add_action( 'init', 'create_post_type' );
 
 
-// /* Tmestamp for Homepage Articles */
-
-//     define( TIMEBEFORE_NOW,         'now' );
-//     define( TIMEBEFORE_MINUTE,      '{num} minute ago' );
-//     define( TIMEBEFORE_MINUTES,     '{num} minutes ago' );
-//     define( TIMEBEFORE_HOUR,        '{num} hour ago' );
-//     define( TIMEBEFORE_HOURS,       '{num} hours ago' );
-//     define( TIMEBEFORE_YESTERDAY,   'yesterday' );
-//     define( TIMEBEFORE_FORMAT,      '%e %b' );
-//     define( TIMEBEFORE_FORMAT_YEAR, '%e %b, %Y' );
-
-//     function time_ago( $time )
-//     {
-//         $out    = ''; // what we will print out
-//         $now    = time(); // current time
-//         $diff   = $now - $time; // difference between the current and the provided dates
-
-//         if( $diff < 60 ) // it happened now
-//             return TIMEBEFORE_NOW;
-
-//         elseif( $diff < 3600 ) // it happened X minutes ago
-//             return str_replace( '{num}', ( $out = round( $diff / 60 ) ), $out == 1 ? TIMEBEFORE_MINUTE : TIMEBEFORE_MINUTES );
-
-//         elseif( $diff < 3600 * 24 ) // it happened X hours ago
-//             return str_replace( '{num}', ( $out = round( $diff / 3600 ) ), $out == 1 ? TIMEBEFORE_HOUR : TIMEBEFORE_HOURS );
-
-//         elseif( $diff < 3600 * 24 * 2 ) // it happened yesterday
-//             return TIMEBEFORE_YESTERDAY;
-
-//         else // falling back on a usual date format as it happened later than yesterday
-//             return strftime( date( 'Y', $time ) == date( 'Y' ) ? TIMEBEFORE_FORMAT : TIMEBEFORE_FORMAT_YEAR, $time );
-//     }
 
 // Add img-fluid class to all images
 function add_image_responsive_class($content) {
@@ -152,6 +120,15 @@ function add_image_responsive_class($content) {
   return $content;
 }
 add_filter('the_content', 'add_image_responsive_class');
+
+//Apply class to every paragraph that hold image
+add_filter( 'the_content', 'img_p_class_content_filter' ,20);
+function img_p_class_content_filter($content) {
+  // assuming you have created a page/post entitled 'debug'
+  $content = preg_replace("/(<p[^>]*)(\>.*)(\<img.*)(<\/p>)/im", "\$1 class='aligncenter'\$2\$3\$4", $content);
+
+  return $content;
+}
 
 // function custom_excerpt_length( $length ) {
 //     return 20;
@@ -193,27 +170,27 @@ function revive_zone($location) {
     if ($terms !== false) {
 
       foreach ($terms as $item) {
-        if ($item['slug'] === 'zone: Wealthy Retirement') {
+        if ($item['slug'] === 'zone-wealthy-retirement') {
           $zone = 11;
           break;
         }
-        if ($item['slug'] === 'zone: Liberty Through Wealth') {
+        if ($item['slug'] === 'zone-liberty-through-wealth') {
           $zone = 12;
           break;
         }
-        if ($item['slug'] === 'zone: Early Investing') {
+        if ($item['slug'] === 'zone-early-investing') {
           $zone = 13;
           break;
         }
-        if ($item['slug'] === 'zone: Manward Press') {
+        if ($item['slug'] === 'zone-manward-press') {
           $zone = 14;
           break;
         }
-        if ($item['slug'] === 'zone: Trade of the Day') {
+        if ($item['slug'] === 'zone-trade-of-the-day') {
           $zone = 15;
           break;
         }
-        if ($item['slug'] === 'zone: Profit Trends') {
+        if ($item['slug'] === 'zone-profit-trends') {
           $zone = 16;
           break;
         }
