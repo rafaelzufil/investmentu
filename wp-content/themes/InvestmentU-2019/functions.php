@@ -64,6 +64,12 @@ function get_related_author_posts() {
   foreach ( $authors_posts as $authors_post ) {
     $category = get_the_category($authors_post->ID);
     $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
+     if ( !empty($thumb) ) {
+        $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
+     } else { 
+        $thumb = 'https://s3.amazonaws.com/assets.investmentu.com/iu-default-image.jpg';
+     } 
+
     // $postdate = 
     $output .= '<div class="col-12 col-sm-6 col-lg-3">
     <a href="'. get_permalink( $authors_post->ID ) .'#">
@@ -81,7 +87,6 @@ function get_related_author_posts() {
   }
   return $output;
 }
-
 
 function custom_video_cat_template($single_template) {
   global $post;
