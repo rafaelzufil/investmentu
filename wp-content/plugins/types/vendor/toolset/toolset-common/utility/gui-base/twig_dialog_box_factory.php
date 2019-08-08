@@ -12,7 +12,7 @@ class Toolset_Twig_Dialog_Box_Factory {
 	 * Gets a Twig dialog box instance
 	 *
 	 * @param string $dialog_id Unique ID (at least within the page) used to reference the dialog in JS.
-	 * @param Twig_Environment $twig Prepared Twig environment.
+	 * @param \OTGS\Toolset\Twig\Environment $twig Prepared Twig environment.
 	 * @param array $context Twig context for the dialog template.
 	 * @param string $template_name Twig template name that will be recognized by the provided environment.
 	 * @param bool $late_register_assets Whether to run late_register_assets() or not.
@@ -28,7 +28,7 @@ class Toolset_Twig_Dialog_Box_Factory {
 	 * Gets a Twig dialog box instance
 	 *
 	 * @param string $dialog_id Unique ID (at least within the page) used to reference the dialog in JS.
-	 * @param Twig_Environment $twig_environment Prepared Twig environment.
+	 * @param \OTGS\Toolset\Twig\Environment $twig_environment Prepared Twig environment.
 	 * @param array $context Twig context for the dialog template.
 	 * @param string $template_name Twig template name that will be recognized by the provided environment.
 	 * @param bool $late_register_assets Whether to run late_register_assets() or not.
@@ -37,7 +37,7 @@ class Toolset_Twig_Dialog_Box_Factory {
 	 * @since 2.3
 	 * @deprecated Use DialogBoxFactory instead.
 	 */
-	public function create( $dialog_id, Twig_Environment $twig_environment, $context, $template_name, $late_register_assets = true ) {
+	public function create( $dialog_id, \OTGS\Toolset\Twig\Environment $twig_environment, $context, $template_name, $late_register_assets = true ) {
 		return new Toolset_Twig_Dialog_Box( $dialog_id, $twig_environment, $context, $template_name, $late_register_assets );
 	}
 

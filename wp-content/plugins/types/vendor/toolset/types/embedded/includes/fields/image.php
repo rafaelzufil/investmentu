@@ -695,8 +695,8 @@ function wpcf_fields_image_get_data( $image ) {
 /**
  * Strips GET vars from value.
  *
- * @param type $value
- * @return type
+ * @param $value
+ * @return mixed
  */
 function wpcf_fields_image_value_filter( $value ) {
     if ( is_string( $value ) && !apply_filters('wpcf_allow_questionmark_in_image_url', false) ) {
@@ -705,20 +705,41 @@ function wpcf_fields_image_value_filter( $value ) {
     return $value;
 }
 
+
 /**
  * Gets cache directory.
  *
+ * @param bool $suppress_filters
+ * @param bool $create_if_missing
+ *
  * @return \WP_Error
  */
-function wpcf_fields_image_get_cache_directory( $suppress_filters = false ) {
+function wpcf_fields_image_get_cache_directory( $suppress_filters = false, $create_if_missing = true ) {
     WPCF_Loader::loadView( 'image' );
     $utils = Types_Image_Utils::getInstance();
-    $cache_dir = $utils->getWritablePath();
+    $cache_dir = $utils->getWritablePath( null, $create_if_missing );
     if ( is_wp_error( $cache_dir ) ) {
         return $cache_dir;
     }
     if ( !$suppress_filters ) {
-        $cache_dir = apply_filters( 'types_image_cache_dir', $cache_dir );
+
+		/**
+		 * types_image_cache_dir
+		 *
+		 * Overwrite the path of a directory used for resized image cache.
+		 *
+		 * @param string $cache_dir Absolute path of the cache directory. Must exist and must be writable.
+		 *
+		 * @since unknown
+		 */
+		$cache_dir = apply_filters( 'types_image_cache_dir', $cache_dir );
+
+		if ( ! $create_if_missing && ! file_exists( $cache_dir ) ) {
+			// The cache directory doesn't exist but we explictly don't want it to be created.
+			return null;
+		}
+
+		// Make sure the directory actually exists.
         if ( !wp_mkdir_p( $cache_dir ) ) {
             return new WP_Error(
                 'wpcf_image_cache_dir',
@@ -1234,12 +1255,27 @@ class WPCF_Guid_Id {
 
 		$table_guid_id = $this->get_table_name();
 
-		return $this->wpdb->get_var(
+		$post_id = $this->wpdb->get_var(
 			$this->wpdb->prepare(
 				"SELECT post_id FROM $table_guid_id WHERE guid=%s LIMIT 1",
 				$guid
 			)
 		);
+
+		if( empty( $post_id ) ) {
+			return false;
+		}
+
+		$post = get_post( $post_id );
+
+		if( ! $post || $post->guid != $guid ) {
+			// no post for the post id OR guid does not match
+			$this->delete_by_post_id( $post_id );
+			return false;
+		}
+
+		// all good
+		return $post_id;
 	}
 
 	/**

@@ -43,11 +43,12 @@
     background: #fafafa;
     border: 1px solid #ddd;
 }
+.c-rgx--overflow-fix {
+    overflow: auto;
+}
 
 .c-rgx__body {
     position: relative;
-    overflow-x: auto;
-    overflow-y: hidden;
 }
 
 .c-rgx__title {
@@ -214,6 +215,18 @@
 .c-rgx__table--master .wpt-form-textfield,
 .c-rgx__table--master .wpt-form-textarea {
     min-width: 150px;
+}
+
+.c-rgx__table--master .wpt-wysiwyg {
+	min-width: 500px;
+}
+
+.c-rgy--nested .c-rgy--nested .wpt-wysiwyg {
+	/*
+		Overwrite the above min-width rule in third+ RFG nesting level in a vertical view.
+		But use 300px because an overflowing TinyMCE instance is better than an unusable TinyMCE instance.
+	*/
+	min-width: 300px;
 }
 
 .c-rgy__item--fields .wpt-form-textfield,
@@ -511,13 +524,21 @@
     top: 50%;
     transform: translate(0, -50%);
     width: 80%;
-    width: calc( 100% - 200px );
+    width: calc( 100% - 170px );
     min-width: 480px;
 }
 
 .c-rgy--nested .c-rgy--nested {
     width: 80%;
-    width: calc( 100% - 100px );
+    width: calc( 100% - 130px );
+}
+
+.c-rgy--overflow-fix {
+	overflow-y: scroll;
+}
+
+.c-rgy--overflow-fix-gutenberg {
+	width: calc( 100% - 280px ); /* 280px is usually the editor sidebar */
 }
 
 .c-rgy__body--nested {

@@ -60,7 +60,7 @@ function wpcf_admin_menu_edit_user_fields_hook() {
 	wp_enqueue_script(
 		'wpcf-admin-fields-form',
 		WPCF_RES_RELPATH . '/js/fields-form.js',
-		array(),
+		array( Toolset_Assets_Manager::SCRIPT_UTILS, 'wp-pointer' ),
 		WPCF_VERSION
 	);
 
@@ -285,42 +285,61 @@ function wpcf_admin_user_profile_save_hook( $user_id )
 class Usermeta_Access
 {
 
+	/**
+	 * Note that this property will be initialized only if Access is active.
+	 *
+	 * @var array|string
+	 */
     public static $user_groups = '';
 
     /**
      * Initialize plugin enviroment
      */
     public function __construct() {
+		if ( ! function_exists( 'wpcf_access_register_caps' ) ) {
+			// Nothing to do because Access is not active.
+			return;
+		}
+
         // setup custom capabilities
         self::$user_groups = wpcf_admin_fields_get_groups(TYPES_USER_META_FIELD_GROUP_CPT_NAME);
-        //If access plugin installed
-        if ( function_exists( 'wpcf_access_register_caps' ) ) { // integrate with Toolset Access
-            if ( !empty( self::$user_groups ) ) {
-				$access_version = apply_filters( 'toolset_access_version_installed', '1.0' );
-				// Since 2.1 we can define a custom tab on Access >= 2.1
-				if ( version_compare( $access_version, '2.0' ) > 0 ) {
-					// Add Types Fields tab
-					add_filter( 'types-access-tab', array( 'Usermeta_Access', 'register_access_types_fields_tab' ) );
-					//Add Usermeta Fields area
-					add_filter( 'types-access-area-for-types-fields',
-							array('Usermeta_Access', 'register_access_usermeta_area'),
-							20, 2 );
-				} else {
-					//Add Usermeta Fields area
-					add_filter( 'types-access-area',
-							array('Usermeta_Access', 'register_access_usermeta_area'),
-							10, 2 );
-				}
-                //Add Usermeta Fields groups
-                add_filter( 'types-access-group',
-                        array('Usermeta_Access', 'register_access_usermeta_groups'),
-                        10, 2 );
-                //Add Usermeta Fields caps to groups
-                add_filter( 'types-access-cap',
-                        array('Usermeta_Access', 'register_access_usermeta_caps'),
-                        10, 3 );
-            }
-        }
+
+		if ( empty( self::$user_groups ) ) {
+			return;
+		}
+
+		$access_version = apply_filters( 'toolset_access_version_installed', '1.0' );
+		// Since 2.1 we can define a custom tab on Access >= 2.1
+		if ( version_compare( $access_version, '2.0' ) > 0 ) {
+			// Add Types Fields tab
+			add_filter( 'types-access-tab', array( 'Usermeta_Access', 'register_access_types_fields_tab' ) );
+			//Add Usermeta Fields area
+			add_filter(
+				'types-access-area-for-types-fields',
+				array( 'Usermeta_Access', 'register_access_usermeta_area' ),
+				20, 2
+			);
+		} else {
+			//Add Usermeta Fields area
+			add_filter(
+				'types-access-area',
+				array( 'Usermeta_Access', 'register_access_usermeta_area' ),
+				10, 2
+			);
+		}
+		//Add Usermeta Fields groups
+		add_filter(
+			'types-access-group',
+			array( 'Usermeta_Access', 'register_access_usermeta_groups' ),
+			10, 2
+		);
+		//Add Usermeta Fields caps to groups
+		add_filter(
+			'types-access-cap',
+			array( 'Usermeta_Access', 'register_access_usermeta_caps' ),
+			10, 3
+		);
+
     }
 
     // register custom CRED Frontend capabilities specific to each group
@@ -410,46 +429,62 @@ class Usermeta_Access
 class Post_Fields_Access
 {
 
-    /**
-     * Initialize plugin enviroment
-     */
-    public static $fields_groups = '';
+	/**
+	 * Note that this property will be initialized only if Access is active.
+	 *
+	 * @var array|string
+	 */
+	public static $fields_groups = '';
 
-    public function __construct() {
-    	//Get list of groups
-    	self::$fields_groups = wpcf_admin_fields_get_groups();
-        // setup custom capabilities
-        //If access plugin installed
-        if ( function_exists( 'wpcf_access_register_caps' ) ) { // integrate with Types Access
-            if ( !empty( self::$fields_groups ) ) {
-				$access_version = apply_filters( 'toolset_access_version_installed', '1.0' );
-				// Since 2.1 we can define a custom tab on Access >= 2.1
-				if ( version_compare( $access_version, '2.0' ) > 0 ) {
-					// Add Types Fields tab
-					add_filter( 'types-access-tab', array( 'Post_Fields_Access', 'register_access_types_fields_tab' ) );
-					//Add Usermeta Fields area
-					add_filter( 'types-access-area-for-types-fields',
-							array('Post_Fields_Access', 'register_access_fields_area'),
-							10, 2 );
-				} else {
-					//Add Usermeta Fields area
-					add_filter( 'types-access-area',
-							array('Post_Fields_Access', 'register_access_fields_area'),
-							10, 2 );
-				}
-                //Add Fields groups
-                add_filter( 'types-access-group',
-                        array('Post_Fields_Access', 'register_access_fields_groups'),
-                        10, 2 );
 
-                //Add Fields caps to groups
-                add_filter( 'types-access-cap',
-                        array('Post_Fields_Access', 'register_access_fields_caps'),
-                        10, 3 );
-				//}
-            }
-        }
-    }
+	public function __construct() {
+		// setup custom capabilities
+		if ( ! function_exists( 'wpcf_access_register_caps' ) ) {
+			// Nothing to do because Access is not active.
+			return;
+		}
+
+		// integrate with Types Access
+		// Get list of groups - at this point we already know we need it.
+		self::$fields_groups = wpcf_admin_fields_get_groups();
+
+		if ( empty( self::$fields_groups ) ) {
+			return;
+		}
+
+		$access_version = apply_filters( 'toolset_access_version_installed', '1.0' );
+		// Since 2.1 we can define a custom tab on Access >= 2.1
+		if ( version_compare( $access_version, '2.0' ) > 0 ) {
+			// Add Types Fields tab
+			add_filter( 'types-access-tab', array( 'Post_Fields_Access', 'register_access_types_fields_tab' ) );
+			// Add Usermeta Fields area
+			add_filter(
+				'types-access-area-for-types-fields',
+				array( 'Post_Fields_Access', 'register_access_fields_area' ),
+				10, 2
+			);
+		} else {
+			//Add Usermeta Fields area
+			add_filter(
+				'types-access-area',
+				array( 'Post_Fields_Access', 'register_access_fields_area' ),
+				10, 2
+			);
+		}
+		//Add Fields groups
+		add_filter(
+			'types-access-group',
+			array( 'Post_Fields_Access', 'register_access_fields_groups' ),
+			10, 2
+		);
+
+		//Add Fields caps to groups
+		add_filter(
+			'types-access-cap',
+			array( 'Post_Fields_Access', 'register_access_fields_caps' ),
+			10, 3
+		);
+	}
 
     // register custom CRED Frontend capabilities specific to each group
     public static function register_access_fields_caps( $caps, $area_id, $group_id ) {

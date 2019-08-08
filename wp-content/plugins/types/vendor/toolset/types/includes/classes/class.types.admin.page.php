@@ -342,42 +342,6 @@ abstract class Types_Admin_Page
     }
 
 
-    public function add_box_howto($boxes)
-    {
-        $displaying_custom_content = include( WPCF_ABSPATH . '/marketing/displaying-custom-content/title-content.php' );
-
-        $boxes[__FUNCTION__] = array(
-            'callback' => array($this, 'box_howto'),
-            'title' => $displaying_custom_content['title'],
-            'default' => 'side',
-            'priority' => 'low',
-        );
-        return $boxes;
-    }
-
-    /**
-     * Summary.
-     *
-     * Description.
-     *
-     * @since x.x.x
-     * @access (for functions: only use if private)
-     *
-     * @see Function/method/class relied on
-     * @link URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description.
-     * @return type Description.
-     */
-    public function box_howto($medium = 'types')
-    {
-        $displaying_custom_content = include( WPCF_ABSPATH . '/marketing/displaying-custom-content/title-content.php' );
-        echo $displaying_custom_content['content'];
-    }
-
 	/**
 	 * Generate wrapper around form setup data.
 	 *
@@ -400,6 +364,7 @@ abstract class Types_Admin_Page
         );
 
         $form = array();
+        // phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.Changed
         $unique_id = wpcf_unique_id( serialize( func_get_args() ) );
 
         /**

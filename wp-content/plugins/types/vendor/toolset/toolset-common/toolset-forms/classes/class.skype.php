@@ -1,9 +1,5 @@
 <?php
 
-/**
- *
- *
- */
 require_once 'class.textfield.php';
 
 class WPToolset_Field_Skype extends WPToolset_Field_Textfield {
@@ -21,7 +17,7 @@ class WPToolset_Field_Skype extends WPToolset_Field_Textfield {
 
 		$attributes = $this->getAttr();
 		$shortcode_class = array_key_exists( 'class', $attributes ) ? $attributes['class'] : "";
-		$attributes['class'] = "js-wpt-skypename js-wpt-cond-trigger regular-text {$shortcode_class}"; // What is this js-wpt-cond-trigger classname for?
+		$attributes['class'] = "js-wpt-skypename js-wpt-cond-trigger regular-text form-control {$shortcode_class}"; // What is this js-wpt-cond-trigger classname for?
 
 		$wpml_action = $this->getWPMLAction();
 
@@ -31,7 +27,6 @@ class WPToolset_Field_Skype extends WPToolset_Field_Textfield {
 			'#title' => $this->getTitle(),
 			'#description' => $this->getDescription(),
 			'#name' => $this->getName(),
-			'#attributes' => array(),
 			'#value' => $value,
 			'#validate' => $this->getValidationData(),
 			'#attributes' => $attributes,
@@ -42,14 +37,6 @@ class WPToolset_Field_Skype extends WPToolset_Field_Textfield {
 		if ( ! Toolset_Utils::is_real_admin() ) {
 			return $form;
 		}
-
-		$wpcf_wpml_condition = defined( 'WPML_TM_VERSION' ) &&
-			intval( $wpml_action ) === 1 &&
-			function_exists( 'wpcf_wpml_post_is_original' ) &&
-			function_exists( 'wpcf_wpml_have_original' ) &&
-			! wpcf_wpml_post_is_original() &&
-			wpcf_wpml_have_original();
-
 
 		return $form;
 	}

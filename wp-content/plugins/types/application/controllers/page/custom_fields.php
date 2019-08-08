@@ -58,7 +58,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 	 * Twig class
 	 *
 	 * @since 2.3
-	 * @var Twig_Environment Twig Enviroment.
+	 * @var \OTGS\Toolset\Twig\Environment Twig Enviroment.
 	 */
 	private $twig;
 
@@ -259,7 +259,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 				Toolset_Assets_Manager::SCRIPT_KNOCKOUT,
 				Types_Asset_Manager::SCRIPT_ADJUST_MENU_LINK,
 				Types_Asset_Manager::SCRIPT_UTILS,
-				Types_Asset_Manager::SCRIPT_POINTER
+				Types_Asset_Manager::SCRIPT_POINTER,
 			),
 			TYPES_VERSION
 		);
@@ -270,9 +270,9 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 	/**
 	 * Retrieve a Twig environment initialized by the Toolset GUI base.
 	 *
-	 * @return Twig_Environment
+	 * @return \OTGS\Toolset\Twig\Environment
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since 2.3
-	 * @throws Twig_Error_Loader
 	 */
 	private function get_twig() {
 		if ( null === $this->twig ) {
@@ -300,9 +300,12 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 
 		$context = $this->build_page_context();
 
-		$twig = $this->get_twig();
-
-		echo $twig->render( '@custom_fields/main.twig', $context );
+		try {
+			$twig = $this->get_twig();
+			echo $twig->render( '@custom_fields/main.twig', $context );
+		} catch ( \OTGS\Toolset\Twig\Error\Error $e ) {
+			echo 'Error during rendering the page. Please contact the Toolset user support.';
+		}
 	}
 
 
@@ -323,7 +326,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 
 		$specific_context = array(
 			'strings' => $this->build_strings_for_twig(),
-			'tabs'		=> $this->get_tabs(),
+			'tabs'      => $this->get_tabs(),
 		);
 
 		$context = toolset_array_merge_recursive_distinct( $base_context, $specific_context );
@@ -418,9 +421,9 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 	 *
 	 * @since 2.3
 	 * @return array List of custom fields grouped by domain:
-	 *								[currentDomain] => actual domain, needed for tab selection
-	 *								[data]					=> array
-	 *									[domain1]			=> array (list of custom fields data)
+	 *      [currentDomain] => actual domain, needed for tab selection
+	 *      [data] => array
+	 *      [domain1] => array (list of custom fields data)
 	 */
 	private function build_custom_fields() {
 		$group_data = array();
@@ -647,7 +650,6 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 			),
 			'@custom_fields/delete_dialog.twig'
 		);
-
 	}
 
 
@@ -782,10 +784,10 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 	 *
 	 * Tabs will be included in @toolset/base.twig if self.tabs is not empty.
 	 * Format:
-	 *	[slug] => 					// Slug or DIV content ID.
-	 *		[text]  => string	// Tab text.
-	 *		[url]   => string	// Tab alternative URL (will be upload using Ajax)
-	 *		[class] => string // Additional classes
+	 *  [slug] =>                   // Slug or DIV content ID.
+	 *      [text]  => string   // Tab text.
+	 *      [url]   => string   // Tab alternative URL (will be upload using Ajax)
+	 *      [class] => string // Additional classes
 	 *
 	 * @since 2.3
 	 * @return array
@@ -808,7 +810,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 		 * @var array It contains [title, text, button, link]
 		 */
 		$tabs_field_control_box_texts = array(
-			Toolset_Field_Utils::DOMAIN_POSTS => array(
+			Toolset_Element_Domain::POSTS => array(
 				'title' => __( 'Post Field Control', 'wpcf' ),
 				'text' => __( 'You can control Post Fields by removing them from the groups, changing type or just deleting.', 'wpcf' ),
 				'button' => __( 'Post Field Control', 'wpcf' ),
@@ -820,7 +822,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 					admin_url( 'admin.php' )
 				),
 			),
-			Toolset_Field_Utils::DOMAIN_USERS => array(
+			Toolset_Element_Domain::USERS => array(
 				'title' => __( 'User Field Control', 'wpcf' ),
 				'text' => __( 'You can control User Fields by removing them from the groups, changing type or just deleting.', 'wpcf' ),
 				'button' => __( 'User Field Control', 'wpcf' ),
@@ -832,7 +834,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 					admin_url( 'admin.php' )
 				),
 			),
-			Toolset_Field_Utils::DOMAIN_TERMS => array(
+			Toolset_Element_Domain::TERMS => array(
 				'title' => __( 'Term Field Control', 'wpcf' ),
 				'text' => __( 'You can control Term Fields by removing them from the groups, changing type or just deleting.', 'wpcf' ),
 				'button' => __( 'Term Field Control', 'wpcf' ),
@@ -873,7 +875,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 		);
 
 		$tabs = array();
-		foreach ( Toolset_Field_Utils::get_domains() as $i => $domain ) {
+		foreach ( Toolset_Element_Domain::all() as $i => $domain ) {
 			$tabs[ $domain ] = array(
 				'text'  => $tabs_texts[ $domain ],
 				'url'   => esc_url_raw(
@@ -885,7 +887,7 @@ class Types_Page_Custom_Fields extends Types_Page_Persistent {
 						admin_url( 'admin.php' )
 					)
 				),
-				'class' => $domain === $this->get_current_domain()? 'nav-tab-active' : '',
+				'class' => $domain === $this->get_current_domain() ? 'nav-tab-active' : '',
 				// Field control box.
 				'field_control' => $tabs_field_control_box_texts[ $domain ],
 				// 'Add new' dialog.

@@ -455,30 +455,56 @@ if( typeof typesStatusBasicJsScript === 'undefined' ) {
         } );
     }
 
+	/**
+	 * auto create slugs on all fields wich needs this:
+	 *
+	 * - custom post slug
+	 * - custom taxonmy slug
+	 * - custom field slug
+	 * - user meta fields
+	 * - repeatable field groups
+	 *
+	 * @since 3.3.1 added a part that explicitly sets the slug when the slug source loses focus if the slug input is still empty.
+	 */
+	function wpcfBindAutoCreateSlugs() {
+		jQuery( document ).on( 'blur focus click', '.js-wpcf-slugize', function() {
+			var slug = jQuery( this ).val();
+			if ('' == slug) {
+				slug = jQuery( '.js-wpcf-slugize-source', jQuery( this ).closest( '.js-wpcf-slugize-container' ) ).val();
+			}
+			if ('' != slug) {
+				var validSlug = wpcf_slugize( slug );
 
-    /**
-     * auto create slugs on all fields wich needs this:
-     *
-     * - custom post slug
-     * - custom taxonmy slug
-     * - custom field slug
-     * - user meta fields
-     */
-    function wpcfBindAutoCreateSlugs() {
-        jQuery( document ).on( 'blur focus click', '.js-wpcf-slugize', function() {
-            var slug = jQuery( this ).val();
-            if( '' == slug ) {
-                slug = jQuery( '.js-wpcf-slugize-source', jQuery( this ).closest( '.js-wpcf-slugize-container' ) ).val();
-            }
-            if( '' != slug ) {
-                var validSlug = wpcf_slugize( slug );
+				if (validSlug != slug || jQuery( this ).val() == '') {
+					jQuery( this ).val( validSlug.substring( 0, 200 ) );
+				}
+			}
+		} );
 
-                if( validSlug != slug || jQuery( this ).val() == '' ) {
-                    jQuery( this ).val( validSlug.substring( 0, 200 ) );
-                }
-            }
-        } );
-    }
+		jQuery( document ).on( 'blur focusout', '.js-wpcf-slugize-source', function() {
+			var currentSourceValue = jQuery( this ).val();
+			if ('' === currentSourceValue) {
+				return;
+			}
+
+			// Make sure that we match only the slug input that is a descendant of the right container element.
+			// This prevents issues with nested containers for generating slugs (like in RFGs).
+			var $slugizeContainer = jQuery( this ).closest( '.js-wpcf-slugize-container' );
+			var $slugInput = $slugizeContainer.find( '.js-wpcf-slugize' ).filter( function(index, element) {
+				return jQuery( element ).closest( '.js-wpcf-slugize-container' ).is( $slugizeContainer );
+			} );
+
+			var slug = $slugInput.val();
+			if ('' !== slug) {
+				return;
+			}
+
+			$slugInput.val( wpcf_slugize( currentSourceValue ) );
+
+			// Just trigger the keyup event to revalidate the input after its value has changed
+			$slugInput.trigger('keyup');
+		} );
+	}
 
     /**
      * Searches for parameter inside string ('arg', 'edit.php?arg=first&arg2=sec')

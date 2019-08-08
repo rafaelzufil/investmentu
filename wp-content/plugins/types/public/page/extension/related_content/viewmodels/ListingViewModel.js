@@ -579,66 +579,15 @@ Types.page.extension.relatedContent.viewmodels.ListingViewModel = function(relat
 
 
 	/**
-	 * @var null|boolean
-	 */
-	self.isWpEditorAvailable = null;
-
-
-	/**
-	 * Check whether wp.editor is available
-	 *
-	 * @return {bool}
-	 */
-	self.checkWpEditorAvailable = function() {
-		if ( null == self.isWpEditorAvailable ) {
-			self.isWpEditorAvailable = (
-				_.has( window, 'wp' )
-				&& _.has( window.wp, 'editor' )
-				&& _.has( window.wp.editor, 'remove' )
-				&& _.has( window.wp.editor, 'initialize' )
-			);
-		}
-		return self.isWpEditorAvailable;
-	};
-
-
-	/**
 	 * Initialize WYSIWYG editors on demand
 	 *
 	 * If wp.editor is available (set by the textarea classname flag) use it to initialize the field;
 	 * otherwise, show just a textarea.
 	 *
-	 * @param {string} The underlying textarea id attribute.
-	 * @fires event:toolset:types:wysiwygFieldInited
+	 * @param {string} id The underlying textarea id attribute.
 	 */
 	self.initWysiwygField = function( id ) {
-		if ( self.checkWpEditorAvailable() ) {
-			// WordPress over 4.8, hence wp.editor is available and included
-			wp.editor.remove( id );
-			wp.editor.initialize( id, { tinymce: true, quicktags: true, mediaButtons: true } );
-			jQuery( '#wp-' + id + '-wrap .wp-media-buttons' ).attr( 'id', 'wp-' + id + '-media-buttons' );
-			/**
-			 * Broadcasts that the WYSIWYG field initialization was completed
-			 *
-			 * @param {string} The underlying textarea id attribute
-			 *
-			 * @event toolset:types:wysiwygFieldInited
-			 */
-			jQuery( document ).trigger( 'toolset:types:wysiwygFieldInited', [ id ] );
-		} else {
-			// WordPress below 4.8, hence wp-editor is not available
-			// so we turn those fields into simple textareas
-			jQuery( '#wp-' + id + '-editor-tools' ).remove();
-			jQuery( '#wp-' + id + '-editor-container' )
-				.removeClass( 'wp-editor-container' )
-				.find( '.mce-container' )
-					.remove();
-			jQuery( '#qt_' + id + '_toolbar' ).remove();
-			jQuery( '#' + id )
-				.removeClass( 'wp-editor-area' )
-				.show()
-				.css( { width: '100%' } );
-		}
+		Toolset.Types.Compatibility.TinyMCE.InitWysiwyg.initWysiwygField(id);
 	};
 
 	self.init();

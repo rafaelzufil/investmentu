@@ -133,6 +133,10 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	private $direct_edit_status_factory;
 
 
+	/** @var Toolset_WPML_Compatibility */
+	private $wpml_service;
+
+
 	/**
 	 * Constructor
 	 *
@@ -147,6 +151,8 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 * @param Toolset_Element_Factory|null $element_factory_di
 	 * @param DirectEditStatusFactory|null $direct_edit_status_factory
 	 *
+	 * @param Toolset_WPML_Compatibility|null $wpml_service
+	 *
 	 * @since m2m
 	 */
 	public function __construct(
@@ -159,7 +165,8 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		$can_connect_di = null,
 		Toolset_Post_Type_Repository $post_type_repository_di = null,
 		Toolset_Element_Factory $element_factory_di = null,
-		DirectEditStatusFactory $direct_edit_status_factory = null
+		DirectEditStatusFactory $direct_edit_status_factory = null,
+		Toolset_WPML_Compatibility $wpml_service = null
 	) {
 		parent::__construct( $ajax_manager );
 		$this->_gui_base = $gui_base_di;
@@ -171,6 +178,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		$this->post_type_repository = $post_type_repository_di;
 		$this->_element_factory = $element_factory_di;
 		$this->direct_edit_status_factory = $direct_edit_status_factory ?: new DirectEditStatusFactory();
+		$this->wpml_service = $wpml_service ?: Toolset_WPML_Compatibility::get_instance();
 	}
 
 
@@ -231,10 +239,10 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	/**
 	 * Returns the fields edit container viewmodel
 	 *
-	 * @param Toolset_Field_Definition[]  $fields Array of fields.
-	 * @param Twig_Environment            $twig Twig environment.
-	 * @param array                      $context Initial Twig context.
-	 * @param string                      $template Template path.
+	 * @param Toolset_Field_Definition[] $fields Array of fields.
+	 * @param \OTGS\Toolset\Twig\Environment $twig Twig environment.
+	 * @param array $context Initial Twig context.
+	 * @param string $template Template path.
 	 * @param Types_Viewmodel_Field_Input $viewmodel Viewmodel for getting formatted data.
 	 *
 	 * @return Types_Viewmodel_Fields_Edit_Container
@@ -247,12 +255,13 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		}
 	}
 
+
 	/**
 	 * Retrieve a Twig environment initialized by the Toolset GUI base.
 	 *
-	 * @return Twig_Environment
+	 * @return \OTGS\Toolset\Twig\Environment
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError In case of error
 	 * @since m2m
-	 * @throws Twig_Error_Loader In case of error.
 	 */
 	protected function get_twig() {
 		if ( null === $this->twig ) {
@@ -273,9 +282,9 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 *
 	 * @param array $arguments List of POST arguments.
 	 *
-	 * @since m2m
-	 * @throws Twig_Error_Loader
 	 * @throws Toolset_Element_Exception_Element_Doesnt_Exist
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @since m2m
 	 */
 	public function process_call( $arguments ) {
 		do_action( 'toolset_do_m2m_full_init' );
@@ -286,7 +295,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 			array(
 				'nonce' => $this->get_ajax_manager()->get_action_js_name( Types_Ajax::CALLBACK_RELATED_CONTENT_ACTION ),
 				'capability_needed' => $this->is_safe_action( $action ) ? 'read' : 'edit_posts',
-				'is_public' => toolset_getarr( $_REQUEST, 'skip_capability_check', false )
+				'is_public' => toolset_getarr( $_REQUEST, 'skip_capability_check', false ),
 			)
 		);
 
@@ -306,7 +315,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 				$this->disconnect_association();
 				break;
 			case self::ACTION_DELETE:
-				$this->delete_association();
+				$this->trash_related_posts();
 				break;
 			case self::ACTION_SEARCH_RELATED_CONTENT:
 				$this->search_related_content();
@@ -348,8 +357,8 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	/**
 	 * Updates related content fields, both post and relationship fields
 	 *
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since m2m
-	 * @throws Twig_Error_Loader
 	 */
 	private function update() {
 		$association = $this->get_association();
@@ -390,14 +399,13 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 			$results[0]['fields'] = $this->format_field_data( $results[0]['fields'], $association->get_uid() );
 		}
 
-		if( $role == Toolset_Relationship_Role::CHILD ) {
+		if ( $role == Toolset_Relationship_Role::CHILD ) {
 			// legacy action 'wpcf_relationship_save_child'
 			$child_post = get_post( $association->get_element_id( new Toolset_Relationship_Role_Child() ) );
 			$parent_post = get_post( $association->get_element_id( new Toolset_Relationship_Role_Parent() ) );
 
 			do_action( 'wpcf_relationship_save_child', $child_post, $parent_post );
 		}
-
 
 		/*
 		 * Action 'toolset_post_update'
@@ -451,9 +459,9 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 *
 	 * @param boolean $action It insert is needed.
 	 *
-	 * @since m2m
-	 * @throws Twig_Error_Loader
 	 * @throws Toolset_Element_Exception_Element_Doesnt_Exist
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @since m2m
 	 */
 	private function insert_connect( $action = true ) {
 		$current_post_id = toolset_getpost( 'post_id' );
@@ -629,17 +637,18 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		return $related_post;
 	}
 
+
 	/**
 	 * Formats fields data
 	 * It receives unformatted fields data for post and relationship and format them into preview and HTML input
 	 * elements.
 	 *
-	 * @param Toolset_Field_Instance[] $fields An array of fields.
+	 * @param Toolset_Field_Instance[][] $fields An array of fields.
 	 * @param int $association_uid Association UID.
 	 *
 	 * @return array Formatted data
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since m2m
-	 * @throws Twig_Error_Loader
 	 */
 	private function format_field_data( $fields, $association_uid ) {
 		$ajax_controller = Types_Ajax::get_instance();
@@ -697,7 +706,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		);
 
 		// Intermediary Title
-		if( $intermediary_title_data = \Types_Page_Extension_Meta_Box_Related_Content::get_table_data_for_intermediary_title( $association_uid ) ) {
+		if ( $intermediary_title_data = \Types_Page_Extension_Meta_Box_Related_Content::get_table_data_for_intermediary_title( $association_uid ) ) {
 			$fields_data['preview']['relationship']['intermediary-title'] = $intermediary_title_data;
 		}
 
@@ -767,7 +776,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 *
 	 * @since
 	 */
-	private function update_unchecked_checkboxes( $fields, IToolset_Association $association, $related_post_id) {
+	private function update_unchecked_checkboxes( $fields, IToolset_Association $association, $related_post_id ) {
 		$hidden_inputs_for_empty_checkboxes = toolset_getpost( '_wptoolset_checkbox', array() );
 
 		// hidden checkboxes inputs for related post (to unchecked / 0)
@@ -874,33 +883,33 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 
 
 	/**
-	 * Delete related post and disconnect the association
-	 * It uses the driver to remove the association and intermediary post if exists.
+	 * Trash the related post and its translations.
 	 *
 	 * @since m2m
 	 */
-	private function delete_association() {
-		$result = $this->do_disconnect_association();
-
-		if ( ! $result->is_success() ) {
-			$this->fail( __( 'Something was wrong, please try again.', 'wpcf' ) );
-		}
-
+	private function trash_related_posts() {
 		$post_id = toolset_getpost( 'post_id' );
-		$post = get_post( $post_id );
 		if ( ! $post_id ) {
 			$this->fail( __( 'Post not found.', 'wpcf' ) );
 		}
-		$post->post_status = 'trash';
-		wp_update_post( $post );
 
-		$can_connect_another = $this->can_connect_another();
+		$post_translations = $this->wpml_service->get_post_translations_directly( $post_id );
+		// If $post_translations is not empty, it will also include $post_id.
+		foreach ( $post_translations as $post_translation_id ) {
+			wp_trash_post( $post_translation_id );
+		}
+		if ( empty( $post_translations ) ) {
+			// If there is no WPML or the post type is not translatable, we need to delete at least the
+			// one given post.
+			wp_trash_post( $post_id );
+		}
 
 		$this->get_ajax_manager()->ajax_finish(
 			array(
-				'message' => __( 'Related post moved to Trash and association disconnected successfully.', 'wpcf' ),
-				'canConnectAnother' => $can_connect_another,
-			), true
+				'message' => __( 'Related post moved to Trash successfully.', 'wpcf' ),
+				'canConnectAnother' => $this->can_connect_another(),
+			),
+			true
 		);
 	}
 
@@ -935,7 +944,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 				(int) toolset_getpost( 'current_post_id' )
 			);
 		} catch ( Toolset_Element_Exception_Element_Doesnt_Exist $e ) {
-			$this->get_ajax_manager()->ajax_finish( array( 'items' => array(), ), false );
+			$this->get_ajax_manager()->ajax_finish( array( 'items' => array() ), false );
 			return;
 		}
 
@@ -970,11 +979,11 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 
 		$formatted_posts = array();
 		foreach ( $posts as $post ) {
-			if( ! $user_can_edit_any
-			    && (
-			    	! $user_can_edit_own
-				    || ( $user_can_edit_own && $post->get_underlying_object()->post_author != $user->ID )
-			    )
+			if ( ! $user_can_edit_any
+				&& (
+					! $user_can_edit_own
+					|| ( $user_can_edit_own && $post->get_underlying_object()->post_author != $user->ID )
+				)
 			) {
 				// user is not allowed to edit this post
 				continue;
@@ -1106,7 +1115,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 				foreach ( $translated_ids as $lang => $tid ) {
 					$item = array(
 						'title' => get_the_title( $tid ),
-						'flag' => array_key_exists( $lang, $language_flags ) ? '<img src="' . $language_flags[ $lang ] . '" />': '',
+						'flag' => array_key_exists( $lang, $language_flags ) ? '<img src="' . $language_flags[ $lang ] . '" />' : '',
 					);
 					// Default language is stored in a different var, so it can be placed in first position.
 					if ( $lang === $current_language ) {
@@ -1205,7 +1214,10 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 * @since m2m
 	 */
 	private function fail( $message, $type = 'error' ) {
-		$this->get_ajax_manager()->ajax_finish( array( 'message' => $message, 'messageType' => $type ), false );
+		$this->get_ajax_manager()->ajax_finish( array(
+			'message' => $message,
+			'messageType' => $type,
+		), false );
 	}
 
 
@@ -1213,6 +1225,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 	 * Checks if the relationships admits another association
 	 *
 	 * @return boolean
+	 * @throws Toolset_Element_Exception_Element_Doesnt_Exist
 	 * @since m2m
 	 */
 	private function can_connect_another() {
@@ -1311,7 +1324,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 		);
 		foreach ( $data as $_post_type => $fields_list ) {
 			foreach ( $fields_list as $i => $fields ) {
-				$relationship_settings = new $classes[$_post_type][$i]( $_post_type, $definition );
+				$relationship_settings = new $classes[ $_post_type ][ $i ]( $_post_type, $definition );
 				$relationship_settings->set_fields_list_related_content( $fields );
 				$relationship_settings->save_data();
 			}
@@ -1338,7 +1351,7 @@ class Types_Ajax_Handler_Related_Content_Action extends Toolset_Ajax_Handler_Abs
 
 
 	private function get_element_factory() {
-		if( null === $this->_element_factory ) {
+		if ( null === $this->_element_factory ) {
 			$this->_element_factory = new Toolset_Element_Factory();
 		}
 

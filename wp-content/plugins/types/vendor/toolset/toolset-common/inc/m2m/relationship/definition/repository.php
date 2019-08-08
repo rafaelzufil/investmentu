@@ -126,25 +126,16 @@ class Toolset_Relationship_Definition_Repository {
 
 		do_action( 'toolset_before_delete_relationship', $slug );
 
-		// fixme: abstract this away
 		if( $do_cleanup ) {
-			// delete associations of relationship
-			$toolset_results[] = $this->get_database_operations()->delete_associations_by_relationship( $definition->get_row_id() );
-
-			$intermediary_post_type = $definition->get_intermediary_post_type();
-			if( null !== $intermediary_post_type ) {
-				$post_type_repository = Toolset_Post_Type_Repository::get_instance();
-				$intermediary_post_type = $post_type_repository->get( $intermediary_post_type );
-				if( $intermediary_post_type instanceof IToolset_Post_Type_From_Types ) {
-					$group_factory = Toolset_Field_Group_Post_Factory::get_instance();
-					$groups = $group_factory->get_groups_by_post_type( $intermediary_post_type->get_slug() );
-					foreach( $groups as $group ) {
-						wp_delete_post( $group->get_id() );
-					}
-
-					$post_type_repository->delete( $intermediary_post_type );
-				}
-			}
+			$relationship_cleanup = new \OTGS\Toolset\Common\Relationships\Relationship\Cleanup(
+				$definition,
+				$this->get_database_operations(),
+				new Toolset_Association_Cleanup_Factory(),
+				Toolset_Cron::get_instance(),
+				Toolset_Post_Type_Repository::get_instance(),
+				Toolset_Field_Group_Post_Factory::get_instance()
+			);
+			$relationship_cleanup->do_cleanup();
 		}
 		unset( $this->definitions[ $slug ] );
 		$this->get_definition_persistence()->delete_definition( $definition );

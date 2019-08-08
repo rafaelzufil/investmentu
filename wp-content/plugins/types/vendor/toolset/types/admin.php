@@ -5,7 +5,6 @@
  *
  *
  */
-require_once WPCF_ABSPATH.'/marketing.php';
 require_once WPCF_ABSPATH.'/includes/classes/class.wpcf.roles.php';
 WPCF_Roles::getInstance();
 /*
@@ -73,8 +72,6 @@ if ( defined( 'DOING_AJAX' ) ) {
         }
     }
 }
-include_once WPCF_ABSPATH.'/includes/classes/class.wpcf.marketing.messages.php';
-new WPCF_Types_Marketing_Messages();
 
 /**
  * last edit flag
@@ -453,13 +450,13 @@ function wpcf_admin_enqueue_group_edit_page_assets() {
 	wp_enqueue_script(
 		'wpcf-fields-form',
 		WPCF_EMBEDDED_RES_RELPATH.'/js/fields-form.js',
-		array( 'wpcf-js', Types_Asset_Manager::SCRIPT_UTILS ),
+		array( 'wpcf-js', Toolset_Assets_Manager::SCRIPT_UTILS ),
 		WPCF_VERSION
 	);
 	wp_enqueue_script(
 		'wpcf-admin-fields-form',
 		WPCF_RES_RELPATH.'/js/fields-form.js',
-		array( 'types-conditional' ),
+		array( 'types-conditional', Toolset_Assets_Manager::SCRIPT_UTILS, 'wp-pointer' ),
 		WPCF_VERSION
 	);
 
@@ -606,7 +603,6 @@ function wpcf_admin_menu_edit_type_hook()
     require_once WPCF_INC_ABSPATH . '/fields.php';
     do_action( 'wpcf_admin_page_init' );
     require_once WPCF_EMBEDDED_INC_ABSPATH . '/custom-types.php';
-    require_once WPCF_INC_ABSPATH . '/custom-types-form.php';
     require_once WPCF_INC_ABSPATH . '/post-relationship.php';
     wp_enqueue_script( 'wpcf-custom-types-form',
             WPCF_RES_RELPATH . '/js/'
@@ -622,7 +618,8 @@ function wpcf_admin_menu_edit_type_hook()
         )
     );
 
-			add_action( 'admin_footer', 'wpcf_admin_types_form_js_validation' );
+	// Note that the 0 parameter count is important. The callback needs to use its default value for the first parameter.
+	add_action( 'admin_footer', 'wpcf_form_render_js_validation', 10, 0 );
     wpcf_post_relationship_init();
 
 	// New page controller script.
@@ -983,13 +980,17 @@ function wpcf_settings_clear_cache_images() {
 		wp_send_json_error( $data );
 	}
 	require_once WPCF_EMBEDDED_INC_ABSPATH . '/fields/image.php';
-	$cache_dir = wpcf_fields_image_get_cache_directory( true );
+	$cache_dir = wpcf_fields_image_get_cache_directory( true, false );
 	if ( is_wp_error( $cache_dir ) ) {
 		$data = array(
 			'type' => 'error',
 			'message' => $cache_dir->get_error_message()
 		);
 		wp_send_json_error( $data );
+	} elseif( null === $cache_dir ) {
+		// There is no cache dir at all, there's nothing to clear.
+		wp_send_json_success();
+		return;
 	}
 	$posted_settings = isset( $_POST['settings'] ) ? sanitize_text_field( $_POST['settings'] ) : '';
 	if ( ! in_array( $posted_settings, array( 'all', 'outdated' ) ) ) {
@@ -1126,7 +1127,6 @@ add_filter( 'toolset_filter_toolset_register_settings_custom-content_section',	'
 
 function wpcf_admin_settings_for_custom_field_metabox( $sections ) {
 	$settings = wpcf_get_settings();
-	$section_content = '';
 	$form['hide_standard_custom_fields_metabox'] = array(
 		'#id' => 'hide_standard_custom_fields_metabox',
 		'#name' => 'wpcf_hide_standard_custom_fields_metabox',

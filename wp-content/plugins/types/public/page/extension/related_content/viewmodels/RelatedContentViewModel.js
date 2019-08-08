@@ -258,14 +258,11 @@ Types.page.extension.relatedContent.viewmodels.RelatedContentViewModel = functio
 
 
 	/**
-	 * Disconnect row action
+	 * Trash row action
 	 *
-	 * @param {object} object KO object
-	 * @param {Event} event Event triggered
 	 * @since m2m
 	 */
-	self.onDeleteAction = function(object, event) {
-		var $button = jQuery(event.target);
+	self.onDeleteAction = function() {
 
 		var deleteRelationship = function(isAccepted) {
 			if(isAccepted) {
@@ -277,7 +274,7 @@ Types.page.extension.relatedContent.viewmodels.RelatedContentViewModel = functio
 					listingModel.displayMessage(response.data.message, 'info');
 					listingModel.loadAjaxData(listingModel.getCurrentSortBy(), listingModel.currentPage(), true);
 					listingModel.canConnectAnotherElement(response.data.canConnectAnother);
-				}
+				};
 				self.beginAction(model);
 				Types.page.extension.relatedContent.doAjax(
 					'delete',
@@ -290,7 +287,7 @@ Types.page.extension.relatedContent.viewmodels.RelatedContentViewModel = functio
 					function() {}
 				);
 			}
-		}
+		};
 
 		if ( listingModel.hasTranslatableContent() ) {
 			confirmTranslatableContent(
@@ -300,9 +297,9 @@ Types.page.extension.relatedContent.viewmodels.RelatedContentViewModel = functio
 				Types.page.extension.relatedContent.strings.button['delete']
 			);
 		} else {
-			Types.page.extension.relatedContent.viewmodels.DeleteDialogViewModel(deleteRelationship).display();
+			deleteRelationship(true);
 		}
-	}
+	};
 
 
 	/**

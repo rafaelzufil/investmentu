@@ -18,6 +18,9 @@ final class Types_Page_Dashboard extends Types_Page_Abstract {
 	protected $types_by_3rd;
 	protected $types_by_wordpress;
 
+	/** @var Toolset_Post_Type_Exclude_List */
+	private $excluded_post_type_list;
+
 	private static $instance;
 
 	public static function get_instance() {
@@ -29,9 +32,14 @@ final class Types_Page_Dashboard extends Types_Page_Abstract {
 		return self::$instance;
 	}
 
-	private function __construct() { }
 
-	private function __clone() { }
+	/**
+	 * Types_Page_Dashboard constructor.
+	 */
+	private function __construct() {
+		$this->excluded_post_type_list = new Toolset_Post_Type_Exclude_List();
+	}
+
 
 	public function on_load_page() {
 		add_filter( 'screen_settings', array( Types_Page_Dashboard::$instance, 'screen_settings' ), 10, 2 );
@@ -270,22 +278,26 @@ final class Types_Page_Dashboard extends Types_Page_Abstract {
 
 		$post_type_service = Toolset_Post_Type_Repository::get_instance();
 
-		$cpts_raw = get_post_types( array( 'public' => true ) );
+		$cpt_slugs = array_keys( get_post_types( array( 'public' => true ) ) );
 		$cpts = array();
-		foreach( $cpts_raw as $cpt_slug => $cpt_raw ) {
-			if( ! $post_type = $post_type_service->get( $cpt_slug ) ) {
+		foreach ( $cpt_slugs as $cpt_slug ) {
+			if ( $this->excluded_post_type_list->is_excluded( $cpt_slug ) ) {
+				continue;
+			}
+
+			if ( ! $post_type = $post_type_service->get( $cpt_slug ) ) {
 				continue;
 			};
 
-			if( $post_type->has_special_purpose() ) {
+			if ( $post_type->has_special_purpose() ) {
 				continue;
 			}
 
-			if( ! isset( $post_type->get_wp_object()->name ) ) {
+			if ( ! isset( $post_type->get_wp_object()->name ) ) {
 				continue;
 			}
 
-			$cpts[$cpt_slug] = new Types_Post_Type( $post_type->get_slug() );
+			$cpts[ $cpt_slug ] = new Types_Post_Type( $post_type->get_slug() );
 		}
 
 		$cpts = array_diff_key( $cpts, $this->get_types_by_wordpress(), $this->get_types_by_toolset() );
@@ -516,6 +528,8 @@ final class Types_Page_Dashboard extends Types_Page_Abstract {
 			$is_gutenberg_available = new Toolset_Condition_Plugin_Gutenberg_Active();
 			$is_gutenberg_available = $is_gutenberg_available->is_met();
 
+			$toolset_block_active_condition = new Toolset_Condition_Plugin_Toolset_Blocks_Active();
+
 			$row = $this->get_twig()->render(
 				'/page/dashboard/table/tbody-row.twig',
 				array(
@@ -530,6 +544,7 @@ final class Types_Page_Dashboard extends Types_Page_Abstract {
 					'table'     => $info_post_type,
 					'post_type_edit_link' => $post_type_edit_link,
 					'is_block_editor_available' => $is_gutenberg_available,
+					'is_toolset_blocks_available' => $toolset_block_active_condition->is_met(),
 				)
 			);
 

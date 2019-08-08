@@ -71,13 +71,35 @@ class WPToolset_Field_Checkbox extends FieldFactory {
             'wpml_action' => $this->getWPMLAction(),
         );
 
-        if ( $output == 'bootstrap' ) {
-            $form = array_merge($form, array(
-                '#before' => sprintf( '<ul class="wpt-form-set wpt-form-set-checkboxes wpt-form-set-checkboxes-wpcf-checkboxes-field"><li class="wpt-form-item wpt-form-item-checkbox checkbox"><label class="wpt-form-label wpt-form-checkbox-label" for="%s">', $this->getName() ),
-                '#after' => $this->getTitle() . '</label></li></ul><input type="hidden" name="_wptoolset_checkbox[' . $this->getId() . ']" value="1" />',
-                '#pattern' => '<BEFORE><PREFIX><ELEMENT><ERROR><SUFFIX><DESCRIPTION><AFTER>'
-            ));
-        }
+		if ( $output === 'bootstrap' ) {
+			switch ( Toolset_Settings::get_instance()->bootstrap_version_numeric ) {
+				case \OTGS\Toolset\Common\Settings\BootstrapSetting::NUMERIC_BS4:
+					$form = array_merge( $form, array(
+						'#before' => sprintf( '
+							<ul class="wpt-form-set wpt-form-set-checkboxes wpt-form-set-checkboxes-wpcf-checkboxes-field">
+								<li class="wpt-form-item wpt-form-item-checkbox form-check">'
+						),
+						'#after' => sprintf(
+							'<label class="wpt-form-label wpt-form-checkbox-label form-check-label" for="%s">%s</label>
+							</li></ul><input type="hidden" name="_wptoolset_checkbox[' . $this->getId() . ']" value="1" />',
+							$this->getName(),
+							$this->getTitle()
+						),
+						'#pattern' => '<BEFORE><PREFIX><ELEMENT><ERROR><SUFFIX><DESCRIPTION><AFTER>',
+					) );
+					break;
+				default:
+					$form = array_merge( $form, array(
+						'#before' => sprintf( '<ul class="wpt-form-set wpt-form-set-checkboxes wpt-form-set-checkboxes-wpcf-checkboxes-field"><li class="wpt-form-item wpt-form-item-checkbox checkbox"><label class="wpt-form-label wpt-form-checkbox-label" for="%s">', $this->getName() ),
+						'#after' => $this->getTitle()
+							. '</label></li></ul><input type="hidden" name="_wptoolset_checkbox['
+							. $this->getId()
+							. ']" value="1" />',
+						'#pattern' => '<BEFORE><PREFIX><ELEMENT><ERROR><SUFFIX><DESCRIPTION><AFTER>',
+					) );
+					break;
+			}
+		}
 
         return array($form);
     }

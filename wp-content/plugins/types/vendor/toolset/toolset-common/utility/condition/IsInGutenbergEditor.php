@@ -37,7 +37,9 @@ class IsInGutenbergEditor extends \Toolset_Condition_Plugin_Gutenberg_Active {
 			&& use_block_editor_for_post_type( $post->post_type )
 		);
 
-		return ( $is_plugin_gutenberg_page || $is_using_block_editor );
+		$is_gutenberg_user_editor_active = apply_filters( 'toolset_filter_toolset_gutenberg_user_editor_active', false );
+
+		return ( $is_plugin_gutenberg_page || $is_using_block_editor || $is_gutenberg_user_editor_active );
 	}
 
 

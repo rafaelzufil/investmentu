@@ -503,27 +503,27 @@ function wpcf_message_is_dismissed( $message_id ) {
 /**
  * Adds dismissed message to record.
  *
- * @param type $ID
+ * @param $ID
  */
 function wpcf_admin_message_set_dismissed( $ID ) {
     $messages = get_option( 'wpcf_dismissed_messages', array() );
     if ( !in_array( $ID, $messages ) ) {
         $messages[] = $ID;
-        update_option( 'wpcf_dismissed_messages', $messages );
+        update_option( 'wpcf_dismissed_messages', $messages, true );
     }
 }
 
 /**
  * Removes dismissed message from record.
  *
- * @param type $ID
+ * @param $ID
  */
 function wpcf_admin_message_restore_dismissed( $ID ) {
     $messages = get_option( 'wpcf_dismissed_messages', array() );
     $key = array_search( $ID, $messages );
     if ( $key !== false ) {
         unset( $messages[$key] );
-        update_option( 'wpcf_dismissed_messages', $messages );
+        update_option( 'wpcf_dismissed_messages', $messages, true );
     }
 }
 
@@ -693,7 +693,7 @@ function wpcf_get_post_meta_field_names() {
  * Forces 'Insert into post' link when called from our WYSIWYG.
  *
  * @param array $args
- * @return boolean
+ * @return array
  */
 function wpcf_get_media_item_args_filter( $args ) {
     if ( strpos( $_SERVER['SCRIPT_NAME'], '/media-upload.php' ) === false ) {
@@ -709,7 +709,7 @@ function wpcf_get_media_item_args_filter( $args ) {
 /**
  * Gets post.
  *
- * @return type
+ * @return WP_Post|array
  */
 function wpcf_admin_get_edited_post() {
     // Global $post_ID holds post IDs for new posts too.

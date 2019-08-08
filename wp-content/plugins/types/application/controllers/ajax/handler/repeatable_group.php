@@ -1,5 +1,7 @@
 <?php
 
+use OTGS\Toolset\Common\Utils\RequestMode;
+
 /**
  * Class Types_Ajax_Handler_Repeatable_Group
  *
@@ -29,6 +31,11 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	 * @var array
 	 */
 	private $field_conditions_collection = array();
+
+
+	/** @var bool True if there has been a WYSIWYG field rendered during processing of the current AJAX request. */
+	private $has_wysiwyg_field = false;
+
 
 	/**
 	 * @param array $arguments Original action arguments.
@@ -118,14 +125,16 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	private function json_repeatable_group() {
 		if ( ! $repeatable_group = $this->get_repeatable_group_by_post_data() ) {
 			// shouldn't happen as long as the user doesn't manipulate the DOM
-			$this->get_ajax_manager()->ajax_finish( __( 'Technical issue. Please reload the page and try again.',
-				'wpcf' ), false );
+			$this->get_ajax_manager()->ajax_finish(
+				__( 'Technical issue. Please reload the page and try again.', 'wpcf' ), false
+			);
 		}
 
 		if ( ! $parent_post = $this->get_parent_post_by_post_data() ) {
 			// shouldn't happen as long as the user doesn't manipulate the DOM
-			$this->get_ajax_manager()->ajax_finish( __( 'Technical issue. Please reload the page and try again.',
-				'wpcf' ), false );
+			$this->get_ajax_manager()->ajax_finish(
+				__( 'Technical issue. Please reload the page and try again.', 'wpcf' ), false
+			);
 		}
 
 		// get Translation Mode of current post
@@ -141,7 +150,7 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 
 		// only load items when translation mode is supported (or wpml is inactive)
 		$items = $wpml_is_translation_mode_supported
-			? $this->get_rfg_items( $parent_post, $repeatable_group )
+			? $this->get_rfg_items( $parent_post, $repeatable_group, 1 )
 			: array();
 
 		// field conditions
@@ -151,12 +160,11 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 		$controls_active = $this->is_default_language_active()
 		                   || $parent_translation_mode == Toolset_WPML_Compatibility::MODE_DONT_TRANSLATE;
 
-		
 		// rfg item title introduction active
 		$is_title_introduction_active = Toolset_Admin_Notices_Manager::is_notice_dismissed_by_notice_id( self::NOTICE_KEY_FOR_RFG_ITEM_INTRODUCTION )
 			? false
 			: true;
-		
+
 		$repeatable_group_array = array(
 			'id'                                 => $repeatable_group->get_id(),
 			'parent_post_id'                     => $parent_post->ID,
@@ -170,7 +178,10 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 			'fieldConditions'                    => $this->field_conditions_collection
 		);
 
-		$this->get_ajax_manager()->ajax_finish( array( 'repeatableGroup' => $repeatable_group_array ) );
+		$response = array( 'repeatableGroup' => $repeatable_group_array );
+		$response = $this->maybe_add_tinymce_settings( $response );
+
+		$this->get_ajax_manager()->ajax_finish( $response );
 	}
 
 
@@ -184,8 +195,9 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	private function json_repeatable_group_add_item() {
 		if ( ! $repeatable_group = $this->get_repeatable_group_by_post_data() ) {
 			// shouldn't happen as long as the user doesn't manipulate the DOM
-			$this->get_ajax_manager()->ajax_finish( __( 'Technical issue. Please reload the page and try again.',
-				'wpcf' ), false );
+			$this->get_ajax_manager()->ajax_finish(
+				__( 'Technical issue. Please reload the page and try again.', 'wpcf' ), false
+			);
 		}
 
 		if ( ! $parent_post = $this->get_parent_post_by_post_data() ) {
@@ -218,6 +230,7 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 
 		wp_update_post( $new_post );
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$association_result = $relationship_definition->create_association( $parent_post, $new_post );
 
 		if( $association_result instanceof \Toolset_Result && $association_result->is_error() ) {
@@ -246,10 +259,13 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 		// field conditions
 		$this->add_to_field_conditions_collection_by_items( $new_item );
 
-		$this->get_ajax_manager()->ajax_finish( array(
+		$response = array(
 			'item' => $new_item[0],
-			'fieldConditions' => $this->field_conditions_collection )
+			'fieldConditions' => $this->field_conditions_collection
 		);
+		$response = $this->maybe_add_tinymce_settings( $response );
+
+		$this->get_ajax_manager()->ajax_finish( $response );
 	}
 
 	/**
@@ -316,7 +332,7 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	private function json_repeatable_group_field_original_translation() {
 		$rfg_id   = sanitize_text_field( toolset_getpost( 'repeatable_group_id' ) );
 		$meta_key = sanitize_text_field( toolset_getpost( 'field_meta_key' ) );
-		
+
 		$original_meta = apply_filters( 'wpml_custom_field_original_data', null, $rfg_id, $meta_key );
 
 		if( ! isset( $original_meta['value'] ) ){
@@ -449,24 +465,26 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 		return $this->_is_default_language_active;
 	}
 
+
 	/**
 	 * Returns items of group
 	 *
 	 * @param WP_Post $parent_post
 	 * @param Types_Field_Group_Repeatable $repeatable_group
+	 * @param int|null $depth Number of nesting levels that should be loaded, or null to load everything.
 	 *
 	 * @return array
-	 * @internal param $parent_post_type
 	 */
-	private function get_rfg_items( WP_Post $parent_post, Types_Field_Group_Repeatable $repeatable_group ) {
+	private function get_rfg_items( WP_Post $parent_post, Types_Field_Group_Repeatable $repeatable_group, $depth ) {
 		$items = array();
 
 		foreach ( (array) $repeatable_group->get_posts() as $rfg_item ) {
-			$items[] = $this->get_rfg_item( $rfg_item->get_wp_post(), $parent_post, $repeatable_group );
+			$items[] = $this->get_rfg_item( $rfg_item->get_wp_post(), $parent_post, $repeatable_group, $depth );
 		}
 
 		return $items;
 	}
+
 
 	/**
 	 * Single item by item (post) id
@@ -474,13 +492,15 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	 * @param WP_Post $item_post
 	 * @param WP_Post $parent_post
 	 * @param Types_Field_Group_Repeatable $repeatable_group
+	 * @param int|null $depth Number of nesting levels that should be loaded, or null to load everything.
 	 *
 	 * @return array
 	 */
 	private function get_rfg_item(
 		WP_Post $item_post,
 		WP_Post $parent_post,
-		Types_Field_Group_Repeatable $repeatable_group
+		Types_Field_Group_Repeatable $repeatable_group,
+		$depth = null
 	) {
 		$item = array(
 			'id'     => $item_post->ID,
@@ -488,14 +508,15 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 			'fields' => array()
 		);
 
+		$next_depth = ( null === $depth ) ? null : $depth - 1;
+
 		foreach ( $repeatable_group->get_field_slugs() as $field_slug ) {
 
-			if ( $nested_repeatable_group = $this->service_rg->get_object_from_prefixed_string( $field_slug,
-				$item_post )
-			) {
+			if ( $nested_repeatable_group = $this->service_rg->get_object_from_prefixed_string( $field_slug, $item_post ) ) {
 				// nested group
-				$item['fields'][] = $this->format_rfg_for_response( $nested_repeatable_group, $parent_post,
-					$item_post );
+				$item['fields'][] = $this->format_rfg_for_response(
+					$nested_repeatable_group, $parent_post, $item_post, $next_depth
+				);
 				continue;
 			}
 
@@ -512,30 +533,40 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 	 * @param Types_Field_Group_Repeatable $rfg
 	 * @param WP_Post $belongs_to_post
 	 * @param WP_Post $item
+	 * @param int|null $depth Number of nesting levels that should be loaded, or null to load everything.
 	 *
 	 * @return array
 	 */
 	private function format_rfg_for_response(
 		Types_Field_Group_Repeatable $rfg,
 		WP_Post $belongs_to_post,
-		WP_Post $item
+		WP_Post $item,
+		$depth = null
 	) {
+		$is_max_depth_reached = ( 0 === $depth );
+
 		// field conditions
-		$items = $this->get_rfg_items( $item, $rfg );
+		if( ! $is_max_depth_reached ) {
+			$items = $this->get_rfg_items( $item, $rfg, $depth );
+		} else {
+			$items = array();
+		}
 		$this->add_to_field_conditions_collection_by_items( $items );
 
-		// return formated rfg
-		return array(
+		$response = array(
 			'repeatableGroup' => array(
-				'id'                              => $rfg->get_id(),
-				'parent_post_id'                  => $belongs_to_post->ID,
-				'title'                           => $rfg->get_display_name(),
-				'headlines'                       => $this->get_headlines_of_group( $rfg ),
-				'controlsActive'                  => $this->is_default_language_active(),
-				'items'                           => $items,
+				'id' => $rfg->get_id(),
+				'parent_post_id' => $belongs_to_post->ID,
+				'title' => $rfg->get_display_name(),
+				'headlines' => $this->get_headlines_of_group( $rfg ),
+				'controlsActive' => $this->is_default_language_active(),
+				'items' => $items,
 				'wpmlFilterExistsForOriginalData' => class_exists( 'WPML_Custom_Fields_Post_Meta_Info' ),
-			)
+				'isPopulated' => ! $is_max_depth_reached,
+			),
 		);
+		// return formated rfg
+		return $response;
 	}
 
 	/**
@@ -563,11 +594,12 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 
 		$wpml_is_copied = wpcf_wpml_field_is_copied( $field_definition->get_definition_array() );
 
+		/** @var Toolset_Field_Renderer_Toolset_Forms_Repeatable_Group $renderer */
 		$renderer = $field_definition
 			->get_type()
 			->get_renderer(
 				Toolset_Field_Renderer_Purpose::INPUT_REPEATABLE_GROUP,
-				Toolset_Common_Bootstrap::MODE_ADMIN, $field,
+				RequestMode::ADMIN, $field,
 				array( 'hide_field_title' => true )
 			);
 
@@ -579,6 +611,8 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 			'htmlInput'    => $renderer->render( false, $rfg->get_wp_post()->ID ),
 			'fieldConfig'  => $renderer->get_field_config( $rfg->get_wp_post()->ID ),
 		);
+
+		$this->has_wysiwyg_field = ( $this->has_wysiwyg_field || $field_definition->get_type_slug() === Toolset_Field_Type_Definition_Factory::WYSIWYG );
 
 		if( TOOLSET_TYPES_YOAST ) {
 			$field_repository = new \OTGS\Toolset\Types\Compatibility\Yoast\Field\Repository(
@@ -674,5 +708,24 @@ class Types_Ajax_Handler_Repeatable_Group extends Toolset_Ajax_Handler_Abstract 
 
 		// title updated
 		$this->get_ajax_manager()->ajax_finish( 'Title updated.' );
+	}
+
+
+	/**
+	 * If there has been a WYSIWYG field added during processing this AJAX call, append settings for the TinyMCE toolbar
+	 * to the response array.
+	 *
+	 * @param array $response Associative array with the AJAX call response.
+	 *
+	 * @return array Modified response.
+	 * @since 3.3.1
+	 */
+	private function maybe_add_tinymce_settings( $response ) {
+		if ( $this->has_wysiwyg_field ) {
+			$tinymce_helper = new Types_Helper_TinyMCE();
+			$response['tinyMCEToolbarSettings'] = $tinymce_helper->get_toolbar_settings_for_dynamic_tinymce();
+		}
+
+		return $response;
 	}
 }

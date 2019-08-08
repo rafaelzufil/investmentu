@@ -11,7 +11,7 @@ namespace OTGS\Toolset\Common\CodeSnippets;
 class CreateCommand {
 
 
-	const EMPTY_SNIPPET_CODE = "<?php\n/**\n * New custom code snippet.\n */\n\ntoolset_snippet_security_check() or die( 'Direct access is not allowed' );";
+	const EMPTY_SNIPPET_CODE = "<?php\n/**\n * New custom code snippet (replace this with snippet description).\n */\n\ntoolset_snippet_security_check() or die( 'Direct access is not allowed' );\n\n// Put the code of your snippet below this comment.";
 	const INDEX_PHP_CONTENTS = "<?php\n// Don't delete this file for security reasons.";
 
 

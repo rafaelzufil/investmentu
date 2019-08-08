@@ -12,6 +12,8 @@
  */
 
 // Include conditional field code
+use OTGS\Toolset\Common\Field\Group\GroupDisplayResult;
+
 require_once WPCF_EMBEDDED_ABSPATH . '/includes/conditional-display.php';
 
 /**
@@ -230,9 +232,8 @@ function wpcf_add_meta_boxes( $post_type, $post ) {
 						}
 
 						// start: support legacy field conditions
-						$meta   = get_post_meta( $post->ID, $field['meta_key'] );
 						$config = wptoolset_form_filter_types_field( $field, $post->ID );
-						wptoolset_form_field( 'post',$config, $meta );
+						wptoolset_form_field( 'post',$config, array( $field_object->get_value() ) );
 						$field_additional_classes = apply_filters('toolset_field_additional_classes', '', $config);
 						// end support legacy field conditions
 						$group['html'][] = $view_post_reference_field->render( $field_object, $field_additional_classes );
@@ -405,8 +406,8 @@ function wpcf_admin_post_meta_box_preview( $post, $group, $echo = '' ) {
 				$repeatable_group_service = new Types_Field_Group_Repeatable_Service();
 				$repeatable_group = $repeatable_group_service->get_object_from_prefixed_string( $field );
 				$group_output .= '<tr class="wpcf-profile-field-line-' . $repeatable_group->get_slug() . '">' .
-						'<td scope="row">' . $repeatable_group->get_name() . '</td>'.
-						'<td><em>' . esc_html__( 'Read-only mode is not available.', 'wpcf' ) . '</em></td>' .
+					'<td scope="row">' . $repeatable_group->get_name() . '</td>'.
+					'<td><em>' . esc_html__( 'Read-only mode is not available.', 'wpcf' ) . '</em></td>' .
 					'</tr>';
 			} else if ( is_array( $field ) && 'post' === $field['type'] ) {
 				$field_definition_service = Toolset_Field_Definition_Factory_Post::get_instance();
@@ -514,7 +515,7 @@ function wpcf_admin_post_meta_box( $post, $group, $echo = '', $open_style_editor
 	}
 	if ( ! empty( $echo ) ) {
 		$group_output = '<h3>This Preview generated for latest post "' . $post->post_title . '"</h3>' . "\n" .
-		                '<!-- Previous lines visible only in Admin Style Editor.-->' . "\n\n";
+			'<!-- Previous lines visible only in Admin Style Editor.-->' . "\n\n";
 		$group_output .= '<div id="wpcf-group-' . $group['id'] . '" class="postbox " >
             <h3 class=\'hndle\'><span>' . $name . '</span></h3>
             <div class="inside">' . "\n";
@@ -551,7 +552,7 @@ function wpcf_admin_post_meta_box( $post, $group, $echo = '', $open_style_editor
 		// Display description
 		if ( ! empty( $group['args']['description'] ) ) {
 			$group_output .= '<div class="wpcf-meta-box-description">'
-			                 . wpautop( $group_wpml->translate_description() ) . '</div>';
+				. wpautop( $group_wpml->translate_description() ) . '</div>';
 		}
 		foreach ( $group['args']['fields'] as $field_slug => $field ) {
 			if ( empty( $field ) || ! is_array( $field ) ) {
@@ -587,7 +588,7 @@ function wpcf_admin_post_meta_box( $post, $group, $echo = '', $open_style_editor
 				$group_output .= '<div id="wpcf-textarea-textarea-wrapper" class="form-item form-item-textarea wpcf-form-item wpcf-form-item-textarea">';
 				$group_output .= isset( $field['#before'] ) ? $field['#before'] : '';
 				$group_output .= '<label class="wpcf-form-label wpcf-form-textarea-label">'
-				                 . stripslashes( $field['#title'] ) . '</label>';
+					. stripslashes( $field['#title'] ) . '</label>';
 				$group_output .= '<div class="description wpcf-form-description wpcf-form-description-textarea description-textarea">
                     ' . wpautop( $field['#description'] ) . '</div>';
 				ob_start();
@@ -681,21 +682,21 @@ function wpcf_admin_post_save_post_hook( $post_ID, $post ) {
 	$wpcf_form_data = toolset_ensarr( toolset_getarr( $_POST, 'wpcf' ) );
 
 	// For parent saving we need to add all checkbox/radio fields (even unchecked) to
-    // make sure save 0 is applied. This is NOT needed for the child update at this point
-    // (Including child post here will add all checkbox fields to children, even if the fields
-    // are not assigned to the child post cpt)
-    if( ! $is_child_post_update ) {
-	    // Check wpcf_adjust_form_input_for_checkboxlike_fields() for information about side effects.
-	    $wpcf_form_data = wpcf_adjust_form_input_for_checkboxlike_fields(
-		    $wpcf_form_data,
-		    toolset_ensarr( toolset_getarr( $_POST, '_wptoolset_checkbox' ) )
-	    );
+	// make sure save 0 is applied. This is NOT needed for the child update at this point
+	// (Including child post here will add all checkbox fields to children, even if the fields
+	// are not assigned to the child post cpt)
+	if( ! $is_child_post_update ) {
+		// Check wpcf_adjust_form_input_for_checkboxlike_fields() for information about side effects.
+		$wpcf_form_data = wpcf_adjust_form_input_for_checkboxlike_fields(
+			$wpcf_form_data,
+			toolset_ensarr( toolset_getarr( $_POST, '_wptoolset_checkbox' ) )
+		);
 
-	    $wpcf_form_data = wpcf_adjust_form_input_for_checkboxlike_fields(
-		    $wpcf_form_data,
-		    toolset_ensarr( toolset_getarr( $_POST, '_wptoolset_radios' ) )
-	    );
-    }
+		$wpcf_form_data = wpcf_adjust_form_input_for_checkboxlike_fields(
+			$wpcf_form_data,
+			toolset_ensarr( toolset_getarr( $_POST, '_wptoolset_radios' ) )
+		);
+	}
 
 	if ( count( $wpcf_form_data ) ) {
 		$add_error_message = true;
@@ -731,25 +732,25 @@ function wpcf_admin_post_save_post_hook( $post_ID, $post ) {
 				continue;
 			}
 			// Checking if the field belongs to post type.
-            if( $post_type && ! $post_type->is_repeating_field_group() ) {
-                // only do the check for non-rfgs
-	            $groups = Toolset_Field_Group_Post_Factory::get_instance()->get_groups_for_element( $post_model );
-	            if ( empty( $groups ) ) {
-		            continue;
-	            }
+			if( $post_type && ! $post_type->is_repeating_field_group() ) {
+				// only do the check for non-rfgs
+				$groups = Toolset_Field_Group_Post_Factory::get_instance()->get_groups_for_element( $post_model );
+				if ( empty( $groups ) ) {
+					continue;
+				}
 
-	            $valid = false;
-	            foreach ( $groups as $group ) {
-		            $valid = in_array( $field_slug, $group->get_field_slugs(), true );
-		            if ( $valid ) {
-		                // important to break the loop, once we detected the field is in one of them
-			            break;
-		            }
-	            }
-	            if ( ! $valid ) {
-		            continue;
-	            }
-            };
+				$valid = false;
+				foreach ( $groups as $group ) {
+					$valid = in_array( $field_slug, $group->get_field_slugs(), true );
+					if ( $valid ) {
+						// important to break the loop, once we detected the field is in one of them
+						break;
+					}
+				}
+				if ( ! $valid ) {
+					continue;
+				}
+			};
 
 			// Skip copied fields
 			if ( isset( $_POST['wpcf_repetitive_copy'][ $field['slug'] ] ) ) {
@@ -1152,7 +1153,7 @@ function wpcf_admin_post_process_field( $field_object ) {
 		 * Set Unique ID
 		 */
 		$field_id = 'wpcf-' . $field['type'] . '-' . $field['slug'] . '-'
-		            . wpcf_unique_id( serialize( $field_object->__current_form_element ) );
+			. wpcf_unique_id( serialize( $field_object->__current_form_element ) );
 
 		/*
 		 * Get inherited field
@@ -1327,9 +1328,9 @@ function wpcf_admin_post_process_field( $field_object ) {
 		// TODO WPML move Set WPML locked icon
 		if ( wpcf_wpml_field_is_copied( $field ) ) {
 			$element['#title'] .= '<img src="' . WPCF_EMBEDDED_RES_RELPATH . '/images/locked.png" alt="'
-			                      . __( 'This field is locked for editing because WPML will copy its value from the original language.',
+				. __( 'This field is locked for editing because WPML will copy its value from the original language.',
 					'wpcf' ) . '" title="'
-			                      . __( 'This field is locked for editing because WPML will copy its value from the original language.',
+				. __( 'This field is locked for editing because WPML will copy its value from the original language.',
 					'wpcf' ) . '" style="position:relative;left:2px;top:2px;" />';
 		}
 
@@ -1453,22 +1454,28 @@ function wpcf_admin_post_get_post_groups_fields( $post = false, $context = 'grou
 		return array();
 	}
 	$group_factory = Toolset_Field_Group_Post_Factory::get_instance();
-	$selected_groups = $group_factory->get_groups_for_element( $element );
+	$group_display_results = $group_factory->get_groups_for_element( $element, true );
 
 	// Translate the results from $selected_groups into the legacy format and apply legacy filters.
-	$selected_group_ids = array_map( function( Toolset_Field_Group_Post $field_group ) {
-	    return $field_group->get_id();
-    }, $selected_groups );
+	// Also filter out groups that haven't actually been selected.
+	$selected_group_ids = array_map(
+		function( GroupDisplayResult $field_group_display_result ) {
+			return $field_group_display_result->get_group()->get_id();
+		},
+		array_filter( $group_display_results, function( GroupDisplayResult $field_group_display_result ) {
+			return $field_group_display_result->is_selected();
+		} )
+	);
 
 	/**
 	 * wpcf_post_groups_all
-     *
-     * This filter is deprecated since Types 3.3. Use toolset_show_field_group_for_post instead.
+	 *
+	 * This filter is deprecated since Types 3.3. Use toolset_show_field_group_for_post instead.
 	 */
 	$all_groups_legacy = apply_filters( 'wpcf_post_groups_all', wpcf_admin_fields_get_groups(), $post, $context );
 	$selected_legacy_groups = array_filter( $all_groups_legacy, function( $legacy_group ) use( $selected_group_ids ) {
-	    return in_array( (int) toolset_getarr( $legacy_group, 'id' ), $selected_group_ids );
-    } );
+		return in_array( (int) toolset_getarr( $legacy_group, 'id' ), $selected_group_ids );
+	} );
 
 	$selected_legacy_groups_augmented = array_map( function( $legacy_group ) use( $post, $context ) {
 		/**
@@ -1481,27 +1488,34 @@ function wpcf_admin_post_get_post_groups_fields( $post = false, $context = 'grou
 		$legacy_group['fields'] = wpcf_admin_fields_get_fields_by_group(
 			$legacy_group['id'],
 			'slug',
-            true,
-            false,
-            true
-        );
+			true,
+			false,
+			true
+		);
 		return $legacy_group;
-    }, $selected_legacy_groups );
+	}, $selected_legacy_groups );
 
 	/**
 	 * wpcf_post_groups
 	 *
 	 * This filter is deprecated since Types 3.3. Use toolset_show_field_group_for_post instead.
 	 */
-	$selected_legacy_groups_augmented = apply_filters( 'wpcf_post_groups', $selected_legacy_groups_augmented, $post, $context );
+	$selected_legacy_groups_augmented = apply_filters( 'wpcf_post_groups', $selected_legacy_groups_augmented, $post, $context, $group_display_results );
+
+	// Notice that here, we are using $group_display_results which contains also results for groups that
+	// are not being currently displayed. But if any of those groups feels like it *might* be displayed after
+	// something changes on the Edit Post page, we will kindly ask for a page refresh.
+	$require_page_reload_after_saving = array_reduce( $group_display_results, function( $carry, GroupDisplayResult $item ) {
+		return $carry || $item->requires_page_refresh_after_saving();
+	}, false );
+
+	if( $require_page_reload_after_saving ) {
+		add_filter( 'types_reload_post_after_saving', '__return_true' );
+	}
 
 	return $selected_legacy_groups_augmented;
 }
 
-function wpcf_admin_post_marketing_displaying_custom_content() {
-	$displaying_custom_content = include( WPCF_ABSPATH . '/marketing/displaying-custom-content/title-content.php' );
-	echo $displaying_custom_content['content'];
-}
 
 function wpcf_post_preview_warning() {
 	$post = wpcf_admin_get_edited_post();
@@ -1514,14 +1528,14 @@ function wpcf_post_preview_warning() {
 		wp_enqueue_script( 'wp-pointer' );
 
 		?>
-        <script type="text/javascript">
-            if( "undefined" != typeof typesPostScreen ) {
-                typesPostScreen.previewWarning(
-                    '<?php esc_attr_e( 'Preview warning', 'wpcf' ); ?>',
-                    '<?php echo esc_attr( sprintf( __( 'Custom field changes cannot be previewed until %s is updated',
+		<script type="text/javascript">
+			if( "undefined" != typeof typesPostScreen ) {
+				typesPostScreen.previewWarning(
+					'<?php esc_attr_e( 'Preview warning', 'wpcf' ); ?>',
+					'<?php echo esc_attr( sprintf( __( 'Custom field changes cannot be previewed until %s is updated',
 						'wpcf' ), $post->post_type ) ); ?>' );
-            }
-        </script><?php
+			}
+		</script><?php
 	}
 }
 

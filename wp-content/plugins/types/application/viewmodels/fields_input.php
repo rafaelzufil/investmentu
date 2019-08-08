@@ -23,7 +23,7 @@ class Types_Viewmodel_Field_Input {
 	/**
 	 * Constructor
 	 *
-	 * @param Toolset_Field_Definition[] $fields List of fields.
+	 * @param Toolset_Field_Definition[]|Toolset_Field_Instance[] $fields List of fields.
 	 * @since m2m
 	 */
 	public function __construct( $fields ) {

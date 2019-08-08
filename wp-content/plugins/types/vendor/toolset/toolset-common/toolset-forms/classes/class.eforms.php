@@ -82,23 +82,49 @@ class Enlimbo_Forms {
 		$this->form_settings = array(
 			'has_media_button' => true,
 			'has_toolset_buttons' => true,
+			'has_media_manager' => true,
 			'use_bootstrap' => false,
 		);
 		$this->_id = $id;
 		if ( ! Toolset_Utils::is_real_admin() ) {
-			$cred_form_id = preg_replace( '/^cred_form_(\d+)_\d+$/', "$1", $this->_id );
-			$cred_form_id = preg_replace( '/^cred_user_form_(\d+)_\d+$/', "$1", $cred_form_id );
-			$form_settings = get_post_meta( $cred_form_id, '_cred_form_settings', true );
-			if ( isset( $form_settings->form ) ) {
-				$this->form_settings = $form_settings->form;
+			$form_settings = array();
+
+			if (
+				false !== strpos( $this->_id, 'cred_form_' )
+				|| false !== strpos( $this->_id, 'cred_user_form_' )
+			) {
+				$cred_form_id = preg_replace( '/^cred_form_(\d+)_\d+$/', '$1', $this->_id );
+				$cred_form_id = preg_replace( '/^cred_user_form_(\d+)_\d+$/', '$1', $cred_form_id );
+				$form_settings_object = get_post_meta( $cred_form_id, '_cred_form_settings', true );
+				if (
+					isset( $form_settings_object->form )
+					&& is_array( $form_settings_object->form )
+				) {
+					$form_settings = $form_settings_object->form;
+				}
 			}
-			unset( $form_settings );
+
+			if ( false !== strpos( $this->_id, 'cred_relationship_form_' ) ) {
+				$cred_form_id = preg_replace( '/^cred_relationship_form_(\d+)$/', '$1', $this->_id );
+				$form_settings_candidate = get_post_meta( $cred_form_id, 'form_settings', true );
+				if ( is_array( $form_settings_candidate ) ) {
+					$form_settings = $form_settings_candidate;
+				}
+			}
+
+			foreach ( $this->form_settings as $setting_key => $setting_value ) {
+				// Note that relationship forms store their values as strings with boolean-ish values
+				$this->form_settings[ $setting_key ] = 'false' === toolset_getarr( $form_settings, $setting_key, $setting_value )
+					? 0
+					: (bool) toolset_getarr( $form_settings, $setting_key, $setting_value );
+			}
+
 			/**
 			 * check CRED setting for bootstrap: only on frontend
 			 */
 			$cred_cred_settings = get_option('cred_cred_settings');
-			if (is_array($cred_cred_settings)) {
-				$this->form_settings['use_bootstrap'] = array_key_exists('use_bootstrap', $cred_cred_settings) && $cred_cred_settings['use_bootstrap'];
+			if ( is_array( $cred_cred_settings ) ) {
+				$this->form_settings['use_bootstrap'] = (bool) toolset_getarr( $cred_cred_settings, 'use_bootstrap', $this->form_settings['use_bootstrap'] );
 			}
 		}
 
@@ -477,6 +503,14 @@ class Enlimbo_Forms {
 			case 'required';
 				$element['#attributes']['data-parsley-required'] = 'true';
 				$element['#attributes']['data-parsley-required-message'] = $element['#validate'][ $what_to_validate ]['message'];
+			case 'credfilesize':
+				$element['#attributes']['data-parsley-credfilesize'] = wp_max_upload_size();
+				break;
+			case 'credfiletype':
+				$element['#attributes']['data-parsley-credfiletype'] = $element['#validate'][ $what_to_validate ]['args'][1];
+				break;
+			case 'extension':
+				$element['#attributes']['data-parsley-extension'] = $element['#validate'][ $what_to_validate ]['args'][1];
 				break;
 		}
 
@@ -499,6 +533,7 @@ class Enlimbo_Forms {
 		$classes[] = $this->css_class . '-' . $element['#type'];
 		$classes[] = 'form-' . $element['#type'];
 
+		// Note: the use_bootstrap parameter is deprecated and used only for legacy forms, not to be re-used for any purpose!
 		if ($this->form_settings['use_bootstrap']) {
 			switch ($element['#type']) {
 				case 'hidden':

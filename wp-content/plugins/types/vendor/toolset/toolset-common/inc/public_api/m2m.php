@@ -91,6 +91,7 @@ function toolset_get_related_posts(
 
 	if ( $is_legacy_mode ) {
 		$keys = array( 'query_by_role', 'limit', 'offset', 'args', 'return', 'role_to_return', 'orderby', 'order', 'need_found_rows', 'ignored_found_rows' );
+		// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 		$elements = array_slice( func_get_args(), 2 );
 		$keys = array_slice( $keys, 0, count( $elements ) );
 		$arguments = array_combine( $keys, $elements  );

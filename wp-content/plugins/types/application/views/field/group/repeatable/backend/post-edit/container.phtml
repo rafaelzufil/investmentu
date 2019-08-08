@@ -32,9 +32,11 @@ $tag_y = $selected_view == self::KEY_HORIZONTAL_VIEW
             <?php /* Buttons for switching between vertical & horizontal view */ ?>
             <<?php echo $tag_x; ?> data-tooltip="<?php _e( 'You need to save your changes, before you can change the view.', 'wpcf' ); ?>"
                href="<?php echo add_query_arg( array( self::KEY_GET_VIEW_SETTING => self::KEY_VERTICAL_VIEW ) ) ?>"
+			   data-view-setting="<?php esc_attr_e( self::KEY_VERTICAL_VIEW ); ?>"
                class="<?php echo $class_y; ?>"><i class="fa fa-bars fa-rotate-90"></i>
             </<?php echo $tag_x; ?>><<?php echo $tag_y; ?> data-tooltip="<?php _e( 'You need to save your changes, before you can change the view.', 'wpcf' ); ?>"
                href="<?php echo add_query_arg( array( self::KEY_GET_VIEW_SETTING => self::KEY_HORIZONTAL_VIEW ) ) ?>"
+			   data-view-setting="<?php esc_attr_e( self::KEY_HORIZONTAL_VIEW ); ?>"
                class="<?php echo $class_x; ?>"><i class="fa fa-bars"></i></<?php echo $tag_y; ?>>
         </div>
 

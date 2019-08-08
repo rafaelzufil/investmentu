@@ -46,7 +46,7 @@
         self = this;
         self.index = index;
         self.isVisible = ko.observable( false );
-    }
+    };
 
     /**
      * Group model
@@ -68,6 +68,36 @@
         self.wpmlIsTranslationModeSupported = data.wpmlIsTranslationModeSupported || 0;
         self.wpmlFilterExistsForOriginalData = data.wpmlFilterExistsForOriginalData || 0;
         self.visible = ko.observable( false );
+
+		/**
+		 * Determines if self.items is filled with group items or if they need to be loaded first.
+		 * @since 3.3.2
+		 */
+		self.isPopulated = ko.observable( typeof(data.isPopulated) !== 'undefined' ? data.isPopulated : true );
+
+		/**
+		 * Note: Works only for the vertical view (not relevant for the horizontal one).
+		 *
+		 * @returns {*|jQuery|HTMLElement}
+		 * @since 3.3.2
+		 */
+        self.getElement = function() {
+        	var selector = '.c-rgx [data-rfg-id=' + self.id + ']';
+        	if( !! self.getParent()) {
+        		selector += '[data-parent-post-id=' + self.getParent() + ']';
+			}
+        	return $(selector);
+		};
+
+		/**
+		 * Get the parent RFG item ID (if it exists).
+		 *
+		 * @returns {null|int}
+		 * @since 3.3.2
+		 */
+		self.getParent = function() {
+			return ( !!self.field && !!self.field.item ? self.field.item.id : null );
+		};
 
         // Map Headlines
         self.headlines = ko.observableArray( ko.utils.arrayMap( data.headlines || [],
@@ -112,7 +142,7 @@
                     50,
                     col
                 );
-            }
+            };
 
             self._calculateIsColVisible = function( col ) {
                 var fieldVisible = false;
@@ -133,7 +163,7 @@
 
                 // just to be sure there are no glitches on the position fixed elements
                 setTimeout( Types.RepeatableGroup.Functions.cssExtension, 200 );
-            }
+            };
 
             /**
              * table cols
@@ -148,7 +178,7 @@
 				for (let i = 0; i < self.cols().length; i++) {
 					self.calculateIsColVisible( self.cols()[i] );
 				}
-			}
+			};
 
 			// do refresh once on group init
 			self.refreshColVisibility();
@@ -165,21 +195,29 @@
             // for vertical view
             if( self.visible && $( '.js-rgy' ).length ) {
                 // only one group per level should be visible
-                if( lastActiveGroupPerLevel[self.level] && lastActiveGroupPerLevel[self.level] != self  ) {
+                if( lastActiveGroupPerLevel[self.level] && lastActiveGroupPerLevel[self.level] !== self  ) {
                     lastActiveGroupPerLevel[self.level].visible( false );
                 }
 
                 lastActiveGroupPerLevel[self.level] = self;
             }
 
-            if( self.field === null ) {
+            // Pass the visibility information down to the group items if we're in the horizontal view: They're
+			// visible immediately.
+            if(isHorizontalViewActive) {
+				_.each( self.items(), function( item ) {
+					item.toggleVisibility();
+				} );
+			}
+
+			if( self.field === null ) {
                 // nothing else to do for a non nested group
                 return;
             }
 
             // nested group - count active groups (for rowspan)
             if( self.visible() ) {
-                if( self.field.item.currentNestedActiveGroup !== null && self.field.item.currentNestedActiveGroup != self ) {
+                if( self.field.item.currentNestedActiveGroup !== null && self.field.item.currentNestedActiveGroup !== self ) {
                     self.field.item.currentNestedActiveGroup.toggleGroupVisibility();
                 }
                 self.field.item.activeNestedGroups( self.field.item.activeNestedGroups() + 1 );
@@ -190,15 +228,17 @@
 
             Types.RepeatableGroup.Functions.initLegacyFields();
             Types.RepeatableGroup.Functions.cssExtension();
-        }
+
+            _.defer(self.determineOverflowFix);
+        };
 
         self.startItemDeletion = function( item ) {
             item.startDeletionCountdown();
-        }
+        };
 
         /**
          * Remove item from group
-         * @param data
+         * @param item
          */
         self.removeItem = function( item ) {
             $.ajax( {
@@ -216,7 +256,7 @@
                 success: function( response ) {
                     if( response.success ) {
                         self.items.remove( item );
-                        if( self.items().length == 0 ) {
+                        if( self.items().length === 0 ) {
                             self.visible( false );
                         }
                     } else {
@@ -234,6 +274,9 @@
             Types.RepeatableGroup.Functions.cssExtension();
         };
 
+
+        self.isAddingItem = ko.observable(false);
+
         /**
          * Add item to group
          * @param field
@@ -242,6 +285,8 @@
             var parentPostId =  typeof field.item !== 'undefined'
                 ? field.item.id
                 : self.parent_post_id;
+
+            self.isAddingItem(true);
 
             // ajax call to create new item... return will be the form inputs
             $.ajax( {
@@ -258,47 +303,66 @@
                 dataType: 'json',
                 success: function( response ) {
                     if( response.success ) {
-                        if( self.items().length == 0 ) {
+                        if( self.items().length === 0 ) {
                             self.toggleGroupVisibility();
                         }
 
-                        var newItem = new Types.RepeatableGroup.Model.Item( response.data.item, self );
-                        self.items.push( newItem );
-                        newItem.toggleVisibility();
-                        newItem.title( '' );
-                        newItem.editTitleStart();
-                        Types.RepeatableGroup.Functions.cssExtension();
+                        Types.RepeatableGroup.Functions.applyTinyMCEToolbarSettings(response.data);
 
-                        // legacy control of file fields must be initialized again
-                        Types.RepeatableGroup.Functions.initLegacyFields();
+                        var newItem = self.processAddedItem(response.data.item, response.data.fieldConditions);
 
-                        // trigger WYSIWYG reInit
-                        jQuery( document ).trigger( 'toolset:types:reInitWYSIWYG', response.data.item);
-
-                        // set field conditions for new item
-                        Types.RepeatableGroup.Functions.setFieldConditions( response.data.fieldConditions );
-
-                        // Yoast integration
-                        initYoastFields( [ response.data.item ] );
-
-                        // Refresh col visibility for horizontal view
-						if( isHorizontalViewActive ) {
-							newItem.group.refreshColVisibility();
-						}
-                    } else {
+						newItem.toggleVisibility();
+						newItem.title( '' );
+						newItem.editTitleStart();
+						Types.RepeatableGroup.Functions.cssExtension();
+					} else {
 						if( response.data.message ) {
 							alert( response.data.message );
 						}
 					}
                 },
-
                 error: function( response ) {
                     console.log( response );
-                }
+                },
+				complete: function() {
+                	self.isAddingItem(false);
+				}
             } );
+        };
 
-            return;
-        }
+		/**
+		 * Process a new item that needs to be added to the group.
+		 *
+		 * Disregarding if it's a newly created item or if the group is being populated additionally.
+		 *
+		 * @param itemData
+		 * @param fieldConditions
+		 * @returns {Types.RepeatableGroup.Model.Item}
+		 * @since 3.3.2
+		 */
+		self.processAddedItem = function(itemData, fieldConditions) {
+			var newItem = new Types.RepeatableGroup.Model.Item( itemData, self );
+			self.items.push( newItem );
+
+			// set field conditions for new item
+			if( 'undefined' !== typeof fieldConditions ) {
+				Types.RepeatableGroup.Functions.setFieldConditions( fieldConditions );
+			}
+
+			// Yoast integration
+			initYoastFields( [ itemData ] );
+
+			// Refresh col visibility for horizontal view
+			if( isHorizontalViewActive ) {
+				newItem.group.refreshColVisibility();
+			}
+
+			// legacy control of file fields must be initialized again
+			Types.RepeatableGroup.Functions.initLegacyFields(newItem);
+
+			return newItem;
+		};
+
 
         self.listHeadlines = function() {
             var headlinesList = '';
@@ -306,7 +370,7 @@
                 headlinesList += headline.title + '<br />';
             } );
             return headlinesList;
-        }
+        };
 
         // Disable Item Title Introduction
         self.itemTitleIntroductionActive = ko.observable( data.itemTitleIntroductionActive );
@@ -329,12 +393,192 @@
                 success: function( response ) {},
                 error: function( response ) {}
             } );
-        }
+        };
 
+		/**
+		 * True means that the group's pop-up in the vertical mode is larger than the viewport and needs to be
+		 * adjusted. Updated by self.determineOverflowFix().
+		 *
+		 * @since 3.3.2
+		 */
+		self.needsOverflowFix = ko.observable(false);
 
-         /**
-         * Hook on WPToolset_Form_Conditional script toggle event to determine if a rfg field should be shown or not
-         */
+		/**
+		 * Used for overwriting the "transform" style of a nested group in the vertical mode.
+		 *
+		 * See self.determineOverflowFix() for more information.
+		 *
+		 * @since 3.3.2
+		 */
+		self.verticalTransformStyle = ko.observable(null);
+
+		/**
+		 * Determine the HTML class for the nested group in the vertical mode.
+		 *
+		 * @since 3.3.2
+		 */
+        self.nestedContainerElementClass = ko.computed(function() {
+        	if( Types.RepeatableGroup.VIEW_VERTICAL === Types.RepeatableGroup.Functions.getViewMode()) {
+				var elementClass = 'c-rgx c-rgy__body--nested';
+				if(self.needsOverflowFix()) {
+					elementClass += ' c-rgy--overflow-fix';
+
+					if( Toolset.hooks.applyFilters( 'types-gutenberg-is-active', false ) ) {
+						elementClass += ' c-rgy--overflow-fix-gutenberg';
+					}
+ 				}
+				return elementClass;
+			}
+		});
+
+		/**
+		 * Determine height of the nested group in the vertical mode.
+		 *
+		 * @since 3.3.2
+		 */
+		self.nestedContainerElementMaxHeight = ko.computed(function() {
+			if( Types.RepeatableGroup.VIEW_VERTICAL === Types.RepeatableGroup.Functions.getViewMode()) {
+				var elementMaxHeight = 'none';
+				if(self.needsOverflowFix()) {
+					elementMaxHeight = $(window).innerHeight()*0.9 + 'px';
+				}
+
+				return elementMaxHeight;
+			}
+		});
+
+		/**
+		 * Determine width of the nested group in the horizontal mode.
+		 *
+		 * @since 3.3.2
+		 */
+		self.nestedContainerElementMaxWidth = ko.computed(function() {
+			if( Types.RepeatableGroup.VIEW_HORIZONTAL === Types.RepeatableGroup.Functions.getViewMode()) {
+				var elementMaxWidth = $('.c-rg').innerWidth() - 60 + 'px';
+
+				return elementMaxWidth;
+			}
+		});
+
+		/**
+		 * Determine if an overflow fix is needed for a nested field group in the vertical mode.
+		 *
+		 * @since 3.3.2
+		 */
+		self.determineOverflowFix = function() {
+        	if( ! self.visible() ) {
+				self.needsOverflowFix(false);
+				return;
+			}
+
+        	var viewportHeight = $(window).height();
+			var $el = self.getElement();
+			if(! $el.length) {
+				return;
+			}
+
+			var elementHeight = $el.height();
+
+			if(elementHeight > viewportHeight) {
+				self.needsOverflowFix( true );
+			} else {
+				// If we're already in the "overflow fix" mode, the $el will never be longer than the viewport,
+				// because the overflow fix is already applied. So, instead we check the nested element with
+				// the list of children.
+				var $innerEl = $el.find('.c-rgy__items--nested');
+				if( self.needsOverflowFix() && $innerEl.length && $innerEl.height() > viewportHeight) {
+					self.needsOverflowFix( true );
+				} else {
+					self.needsOverflowFix( false );
+				}
+			}
+
+			// If the overflow fix is being applied and the element escapes from the top of the screen,
+			// adjust the "transform" rule to shift it directly below the admin bar.
+			// 42px = 32px admin bar + 10px margin
+			// Applied in vertical mode only.
+			if(self.needsOverflowFix() && $el.offset().top < 42) {
+				self.verticalTransformStyle('translate(0, calc(-50% - (' + $el.offset().top + 'px - 42px)))');
+			} else {
+				self.verticalTransformStyle(null);
+			}
+		};
+
+		self.visible.subscribe(function() { _.defer(self.determineOverflowFix) } );
+
+		self.items.subscribe(function() { _.defer(self.determineOverflowFix) });
+
+		self.isPopulating = ko.observable(false);
+
+		self.showButtonClick = function() {
+			if(self.isPopulated()) {
+				self.toggleGroupVisibility();
+			} else {
+				self.populateGroup(self.toggleGroupVisibility);
+			}
+		};
+
+		/**
+		 * Populate this group with items if it hasn't been done already.
+		 *
+		 * @param {function|null} successCallback If provided, will be called after the group has been populated.
+		 * @since 3.3.2
+		 */
+		self.populateGroup = function(successCallback) {
+			if(self.isPopulated() || self.isPopulating()) {
+				return;
+			}
+			self.isPopulating(true);
+
+			$.ajax( {
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: staticData.action.name,
+					skip_capability_check: true,
+					wpnonce: staticData.action.nonce,
+					parent_post_id: self.getParent(),
+					repeatable_group_action: 'json_repeatable_group',
+					repeatable_group_id: self.id
+				},
+				dataType: 'json',
+				success: function( response ) {
+					if( response.success ) {
+						Types.RepeatableGroup.Functions.applyTinyMCEToolbarSettings(response.data);
+
+						_.each(response.data.repeatableGroup.items, function( item ) {
+							self.processAddedItem(item)
+						});
+
+						// set field conditions for rfg items
+						Types.RepeatableGroup.Functions.setFieldConditions( response.data.repeatableGroup.fieldConditions );
+
+						// run field validation after fields are loaded
+						jQuery( document ).trigger( 'toolset_ajax_fields_loaded', [{form_id: 'post'}] );
+
+						Types.RepeatableGroup.Functions.cssExtension();
+
+						self.isPopulated(true);
+
+						if(!!successCallback) {
+							successCallback();
+						}
+					} else {
+						console.log( 'Repeatable Field Group with ID "' + self.id + '" could not be loaded.' );
+					}
+				},
+				error: function( response ) {
+					console.log( response );
+				},
+				complete: function() {
+					self.isPopulating(false);
+				}
+			} );
+		};
+
+		/**
+		 * Hook on WPToolset_Form_Conditional script toggle event to determine if a rfg field should be shown or not
+		 */
         jQuery( document ).on( 'js_event_toolset_forms_conditional_field_toggled', function( e, data ) {
             var fieldName = data.container.attr( 'name' );
             if( ! fieldName || ! fieldName.startsWith( "types-repeatable-group" ) ) {
@@ -345,12 +589,12 @@
             // get id and field slug
             var explodeName = fieldName.match(/\[(.*?)\]\[(.*?)\]/);
 
-            var itemId = explodeName[1],
+            var itemId = parseInt( explodeName[1] ),
                 fieldSlug = explodeName[2];
 
             // find affected item by item id
             var affectedItem = ko.utils.arrayFirst( self.items(), function( item ) {
-                return item.id == itemId;
+                return item.id === itemId;
             });
 
             if( ! affectedItem ) {
@@ -360,7 +604,7 @@
 
             // find affected field by field slug
             var affectedField = ko.utils.arrayFirst( affectedItem.fields(), function( field ) {
-                return field.metaKey == fieldSlug || field.metaKey == 'wpcf-' + fieldSlug;
+                return field.metaKey === fieldSlug || field.metaKey === 'wpcf-' + fieldSlug;
             });
 
             if( ! affectedField ) {
@@ -369,7 +613,7 @@
             }
 
             // set visibility
-            affectedField.fieldConditionsMet( data.visible ? true : false );
+            affectedField.fieldConditionsMet( !!data.visible );
 
             // Horizontal specific - col visibility
             if( isHorizontalViewActive ) {
@@ -377,7 +621,8 @@
                 affectedField.item.group.calculateIsColVisible( affectedField.item.group.cols()[indexOfField] );
             }
         } );
-    }
+    };
+
 
     /**
      * Headline model
@@ -389,7 +634,8 @@
         this.group = group;
         this.title = data.title || '';
         this.wpmlIsCopied = data.wpmlIsCopied || 0;
-    }
+    };
+
 
     /**
      * Item model
@@ -517,7 +763,7 @@
                     self.shouldBeDeletedSeconds( self.shouldBeDeletedSeconds() - 1 );
                 }
             }, 1000 );
-        }
+        };
 
         /*
          * Stop Deletion
@@ -526,7 +772,7 @@
             self.shouldBeDeleted( false );
             self.shouldBeDeletedSeconds( self.secondsToDelete );
             clearInterval( self.shouldBeDeletedCountdown );
-        }
+        };
 
         /*
          * We need to store the element, because otherwise the element will be re-applied
@@ -534,7 +780,7 @@
          */
         self.storeItemForSortable = function( el ) {
             ko.utils.domData.set( el, 'originalItem', self );
-        }
+        };
 
         self.updateFields = function() {
             ko.utils.arrayForEach( this.fields(), function( field ) {
@@ -546,7 +792,7 @@
 
                 field.typesUpdateHtmlInput();
             } );
-        }
+        };
 
         /**
          * Toggle visibility
@@ -562,7 +808,6 @@
 
             self.visible( ! self.visible() );
             Types.RepeatableGroup.Functions.initLegacyFields();
-            Types.RepeatableGroup.Functions.cssExtension();
 
 	        // Fire 'toolset_types_rfg_item_toggle' event when the item is toggled
 	        $( document ).trigger( 'toolset_types_rfg_item_toggle', [ self ] );
@@ -570,7 +815,6 @@
 	        if( self.visible() ) {
                 // disable summary on open
                 self.summaryString( '' );
-
             } else {
                 // update summary if closed
                 ko.utils.arrayForEach( this.fields(), function( field ) {
@@ -584,7 +828,55 @@
 
             // Have to remove these classes because if don't it is not uploaded.
             jQuery( '[data-item-id=' + self.id + '] .js-wpt-remove-on-submit' ).removeClass( 'js-wpt-remove-on-submit' );
-        }
+
+	        if(self.visible()) {
+				// trigger WYSIWYG reInit once the item becomes visible
+				jQuery( document ).trigger( 'toolset:types:reInitWYSIWYG', data);
+			}
+
+	        // This cannot happen sooner because re-initializing WYSIWYG fields may change their height
+			// (when initializing for the first time) and that influences the correct height of the
+			// item deletion overlay.
+			Types.RepeatableGroup.Functions.cssExtension();
+
+	        if(self.group) {
+	        	_.defer(function() { self.group.determineOverflowFix(); });
+	        }
+
+			if(self.visible() && self.hasNestedGroups()) {
+				// When this item is displayed, directly populate all nested RFGs it contains.
+				// That will speed things up for the user considerably.
+				_.defer(function() {
+					_.each(self.nestedGroups(), function(group) {
+						if(!group.isPopulated()) {
+							group.populateGroup(null);
+						}
+					})
+				});
+			}
+		};
+
+		/**
+		 * An array of nested groups within this item.
+		 * @return array
+		 * @since 3.3.2
+		 */
+		self.nestedGroups = ko.computed(function() {
+        	return _.map(
+        		_.filter(self.fields(), function(field) { return null !== field.repeatableGroup; }),
+				function(field) {
+        			return field.repeatableGroup;
+				}
+			);
+		});
+
+		/**
+		 * @return bool
+		 * @since 3.3.2
+		 */
+        self.hasNestedGroups = ko.computed(function() {
+        	return self.nestedGroups().length > 0;
+		});
 
 
         self.updateSummary = function() {
@@ -592,7 +884,7 @@
             ko.utils.arrayForEach( this.fields(), function( field ) {
                 if( field.repeatableGroup === null ) {
                     field.updateUserValue();
-                    if( field.userValue != '' ) {
+                    if( field.userValue !== '' ) {
                         newSummaryString = newSummaryString + field.userValue + ', ';
                     }
                 }
@@ -602,10 +894,34 @@
             newSummaryString = newSummaryString.slice(0, 100) + ( newSummaryString.length > 100 ? '...' : '' );
 
             self.summaryString( newSummaryString );
-        }
+        };
 
         self.updateSummary();
-    }
+
+		/**
+		 * When a particular element needs to be highlighted, make sure the group with the RFG item is visible.
+		 *
+		 * Handle recursively for nested RFGs.
+		 *
+		 * @since 3.3
+		 */
+		Toolset.hooks.addAction( 'toolset-validation-highlight-element', function( itemId ) {
+			if (itemId !== self.id) {
+				return;
+			}
+
+			// If the group is nested, show the parents first.
+			//
+			// The recursion is constructed so that it starts showing groups from the top level to the deepest one.
+			if (null !== self.group.field && null !== self.group.field.item) {
+				Toolset.hooks.doAction( 'toolset-validation-highlight-element', self.group.field.item.id );
+			}
+
+			if (!self.group.visible()) {
+				self.group.toggleGroupVisibility();
+			}
+		} );
+    };
 
     /**
      * Field model
@@ -635,11 +951,11 @@
 
         self.setElement = function( el ) {
             self.element = el;
-        }
+        };
 
         self.typesUpdateHtmlInput = function() {
             self.htmlInput = $( self.element ).typesUpdateHtml();
-        }
+        };
 
         self.updateUserValue = function() {
             var newValue = '';
@@ -657,11 +973,11 @@
             } );
 
             self.userValue = newValue.replace( /,\s*$/, '' );
-        }
+        };
+
 
         /**
          * Get original translation data
-         * @param data
          */
         self.getOriginalTranslation = function( field, trigger ) {
            var $el = $( trigger.target );
@@ -699,7 +1015,7 @@
             $tooltip.toggle();
             $el.toggleClass( 'field-translation-trigger-active' );
         };
-    }
+    };
 
     /**
      * Collection of generic functions
@@ -758,23 +1074,34 @@
 
         },
 
-        /*
+        /**
          * Make legacy fields work
+		 *
+		 * @param {Types.RepeatableGroup.Model.Item|undefined} newItem If an item model is provided, the validation
+		 *     will be initialized for its fields. Useful when adding new items after the validation has already
+		 *     been initialized for the whole page.
          */
-        'initLegacyFields': function() {
-            if( typeof wptDate != 'undefined' ) {
+        'initLegacyFields': function( newItem ) {
+            if( typeof wptDate !== 'undefined' ) {
                 wptDate.init('body');
             }
 
-            if( typeof wptColorpicker != 'undefined' ) {
+            if( typeof wptColorpicker !== 'undefined' ) {
                 wptColorpicker.init('body');
             }
 
-            if( typeof wptValidation != 'undefined' ) {
+            if( typeof wptValidation !== 'undefined' ) {
                 wptValidation.init();
+
+                // When we're in the classic editor, we also need to apply validation rules on a new item when it's added.
+				// In the block editor, all rules are automatically (re)applied before form submission and this would only break stuff.
+                if ( typeof newItem !== 'undefined' && ! Toolset.hooks.applyFilters( 'types-gutenberg-is-active', false ) ) {
+					var itemSelector = 'tbody[data-item-id=' + newItem.id + '] .c-rgy__item--fields';
+					wptValidation.applyRules(itemSelector);
+				}
             }
 
-            if( typeof wptSkype != 'undefined' ) {
+            if( typeof wptSkype !== 'undefined' ) {
                 wptSkype.init();
             }
         },
@@ -788,7 +1115,7 @@
 
                 // wptCond.addConditionals( conditions ) fails when the triggers/fields for formId are undefined
                 // better fixing it here to prevent any side effects (for which this behaviour might be necessary)
-                _.each( conditions, function ( condition, formID) {
+                _.each( conditions, function ( condition, formID ) {
                     if ( _.size( condition.triggers ) && typeof wptCondTriggers[formID] == 'undefined' ) {
                         wptCondTriggers[formID] = {};
                     }
@@ -841,12 +1168,39 @@
             } );
 
             return ids;
-        }
+        },
+
+		/**
+		 * If an AJAX response includes toolbar settings for the TinyMCE editor,
+		 * extract it and apply it on the types_tinymce_compatibility_l10n global variable.
+		 *
+		 * @param ajaxResponseData
+		 * @since 3.3.1
+		 */
+		applyTinyMCEToolbarSettings: function (ajaxResponseData) {
+			if (!_.has(ajaxResponseData, 'tinyMCEToolbarSettings')) {
+				return;
+			}
+
+			if ('undefined' !== typeof types_tinymce_compatibility_l10n) {
+				return;
+			}
+
+			window.types_tinymce_compatibility_l10n = {
+				'editor_settings': ajaxResponseData['tinyMCEToolbarSettings']
+			};
+		},
+
+		getViewMode: function() {
+			return $( '.js-rgy' ).length ? Types.RepeatableGroup.VIEW_VERTICAL : Types.RepeatableGroup.VIEW_HORIZONTAL;
+		}
+    };
+
+	Types.RepeatableGroup.VIEW_VERTICAL = 'rgy';
+	Types.RepeatableGroup.VIEW_HORIZONTAL = 'rgx';
 
 
-    }
-
-    /**
+	/**
      * Mapper for the autogenerated (using ko.mapping) viewModel
      */
     Types.RepeatableGroup.Mapper = {
@@ -855,7 +1209,8 @@
                 return new Types.RepeatableGroup.Model.Group( options.data, 0 );
             }
         }
-    }
+    };
+
 
     /**
      * Sortable Items
@@ -868,7 +1223,7 @@
                 sortableContainer = $( '.c-rgx__body' );
 
             if( list().length ) {
-                if( list()[0].group.controlsActive == 0 ) {
+                if( list()[0].group.controlsActive === 0 ) {
                     return;
                 }
             }
@@ -942,73 +1297,14 @@
         }
     };
 
-
-
     /**
-     * @type {bool}
-     */
-    var isWpEditorAvailable = null;
-
-
-    /**
-     * Check whether wp.editor is available
-     *
-     * @return {bool}
-     */
-    function checkWpEditorAvailable() {
-        if ( null == isWpEditorAvailable ) {
-            isWpEditorAvailable = (
-                _.has( window, 'wp' )
-                && _.has( window.wp, 'editor' )
-                && _.has( window.wp.editor, 'remove' )
-                && _.has( window.wp.editor, 'initialize' )
-            );
-        }
-        return isWpEditorAvailable;
-    };
-
-
-    /**
-     * TODO: Since we are using this code on the two places, it would be good to move it in common maybe
-     *
      * Initialize WYSIWYG editors on demand
      *
-     * If wp.editor is available (set by the textarea classname flag) use it to initialize the field;
-     * otherwise, show just a textarea.
-     *
-     * @param {string} The underlying textarea id attribute.
-     * @fires event:toolset:types:wysiwygFieldInited
+     * @param {string} id The underlying textarea id attribute.
      */
     function initWysiwygField( id ) {
-        if ( checkWpEditorAvailable() ) {
-            // WordPress over 4.8, hence wp.editor is available and included
-            wp.editor.remove( id );
-            wp.editor.initialize( id, { tinymce: true, quicktags: true, mediaButtons: true } );
-            jQuery( '#wp-' + id + '-wrap .wp-media-buttons' ).attr( 'id', 'wp-' + id + '-media-buttons' );
-            /**
-             * Broadcasts that the WYSIWYG field initialization was completed
-             *
-             * @param {string} The underlying textarea id attribute
-             *
-             * @event toolset:types:wysiwygFieldInited
-             */
-            jQuery( document ).trigger( 'toolset:types:wysiwygFieldInited', [ id ] );
-
-        } else {
-            // WordPress below 4.8, hence wp-editor is not available
-            // so we turn those fields into simple textareas
-            jQuery( '#wp-' + id + '-editor-tools' ).remove();
-            jQuery( '#wp-' + id + '-editor-container' )
-                .removeClass( 'wp-editor-container' )
-                .find( '.mce-container' )
-                .remove();
-            jQuery( '#qt_' + id + '_toolbar' ).remove();
-            jQuery( '#' + id )
-                .removeClass( 'wp-editor-area' )
-                .show()
-                .css( { width: '100%' } );
-        }
-    };
+    	Toolset.Types.Compatibility.TinyMCE.InitWysiwyg.initWysiwygField(id);
+    }
 
     /**
      * To init YOAST fields
@@ -1056,11 +1352,12 @@
             repeatableGroups.each( function() {
                 var repeatableGroup = $( this );
 
-                if( staticData.post_id == 0 && jQuery( '#post_ID' ).length ) {
-                    staticData.post_id = jQuery( '#post_ID' ).val();
+                var $postIdEl = jQuery( '#post_ID' );
+                if( parseInt( staticData.post_id ) === 0 && $postIdEl.length ) {
+                    staticData.post_id = $postIdEl.val();
                 }
 
-                if( staticData.post_id == 0 ) {
+                if( parseInt( staticData.post_id ) === 0 ) {
                     repeatableGroup.find( '.js-rgx__notice_loading' ).hide();
                     repeatableGroup.find( '.js-rgx__notice_save_post_first' ).show();
                 } else {
@@ -1079,7 +1376,8 @@
                         success: function( response ) {
                             if( response.success ) {
                                 repeatableGroup.html( tplRepeatableGroup );
-                                isHorizontalViewActive = $( '.js-rgx' ).length ? true : false;
+                                isHorizontalViewActive = !!$( '.js-rgx' ).length;
+								Types.RepeatableGroup.Functions.applyTinyMCEToolbarSettings(response.data);
                                 ko.applyBindings( ko.mapping.fromJS( response.data, Types.RepeatableGroup.Mapper ), repeatableGroup.get( 0 ) );
                                 Types.RepeatableGroup.Functions.cssExtension();
                                 if( positioningInit === false ) {
@@ -1141,7 +1439,7 @@
     } );
 
     // block vertical / horizontal view switch when there was some change done
-    $( document ).on( 'keydown.rfgBlockViewSwitch change.rfgBlockViewSwitch', ':input', function() {
+    $( document ).on( 'keydown.rfgBlockViewSwitch change.rfgBlockViewSwitch', '.c-rg :input', function() {
         if( typeof Types.RFGSetFieldConditionsRunning != 'undefined' && Types.RFGSetFieldConditionsRunning ) {
             return;
         }
@@ -1156,7 +1454,20 @@
         $( '.js-rfg-view-switch-disabled' ).on( 'click', function( e ) {
             e.preventDefault();
         } );
-    });
+    } );
+
+    // when switching vertical / horizontal view, override the link URL and refresh the page
+	// using the current URL instead - it may have changed since the page has been loaded,
+	// for example when saving a new post in the block editor
+    $( document ).on( 'click', '.js-rfg-view-switch', function( e ) {
+    	e.preventDefault();
+
+    	var $switch = $(this),
+			selectedView = $switch.data('view-setting'),
+    		urlToRedirect = WPV_Toolset.Utils.updateUrlQuery( 'rgview', selectedView );
+
+    	window.location = urlToRedirect;
+	} );
 
     // Saving draft button when post is not saved yet
     $( document ).on( 'click', '#wpcf-save-post', function() {

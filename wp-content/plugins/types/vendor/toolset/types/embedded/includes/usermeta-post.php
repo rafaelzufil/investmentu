@@ -78,8 +78,8 @@ function wpcf_admin_userprofile_init($user_id){
                     if ( empty( $group['fields'] ) ) continue;
 
                     $output = '<div class="wpcf-group-area wpcf-group-area_'
-                    . $group['slug'] . '">' . "\n\n" . '<h3>'
-                    . $group_wpml->translate_name() . '</h3>' . "\n\n";
+                    . $group['slug'] . '">' . "\n\n" . '<h2>'
+                    . $group_wpml->translate_name() . '</h2>' . "\n\n";
 
                     if ( !empty( $group['description'] ) ) {
                         $output .= '<span>' . wpautop( $group_wpml->translate_description() )
@@ -418,7 +418,7 @@ function wpcf_admin_render_fields( $group, $user_id, $echo = '') {
 	$group_wpml = new Types_Wpml_Field_Group( Toolset_Field_Group_User_Factory::load( $group['slug'] ) );
 
 	$output = '<div class="wpcf-group-area wpcf-group-area_' . $group['slug'] . '">' . "\n\n";
-	$output .= '<h3>'. $group_wpml->translate_name() .'</h3>' . "\n\n";
+	$output .= '<h2>'. $group_wpml->translate_name() .'</h2>' . "\n\n";
 	if ( !empty( $group['fields'] ) ) {
         // Display description
         if ( !empty( $group['description'] ) ) {

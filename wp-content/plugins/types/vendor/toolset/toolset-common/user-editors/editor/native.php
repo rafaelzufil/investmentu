@@ -29,6 +29,8 @@ class Toolset_User_Editors_Editor_Native
 	protected $option_name = '_toolset_user_editors_native';
 
 	public function initialize() {
+		$this->name = __( 'Classic Editor', 'wpv-views' );
+
 		if ( $this->is_native_editor_for_cts() ) {
 			add_action( 'init', array( $this, 'add_support_for_ct_edit_by_native_editor' ), 9 );
 
@@ -69,7 +71,7 @@ class Toolset_User_Editors_Editor_Native
 	 */
 	public function is_native_editor_for_cts() {
 		global $pagenow;
-		
+
 		if ( 'post.php' !== $pagenow ) {
 			return false;
 		}

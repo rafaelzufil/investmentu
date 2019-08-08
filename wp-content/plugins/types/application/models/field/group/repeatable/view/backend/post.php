@@ -66,6 +66,12 @@ class Types_Field_Group_Repeatable_View_Backend_Post {
 			'jquery',
 			Types_Asset_Manager::SCRIPT_KNOCKOUT_MAPPING,
 			Types_Asset_Manager::SCRIPT_UTILS,
+			Types_Asset_Manager::SCRIPT_TINYMCE_COMPATIBILITY,
+			\Toolset_Assets_Manager::SCRIPT_TOOLSET_EVENT_MANAGER,
+			// These scripts are required but won't be included by the legacy code if there are no custom fields
+			// outside of a RFG or a related content metabox.
+			Toolset_Assets_Manager::SCRIPT_WPTOOLSET_FORM_CONDITIONAL,
+			Toolset_Assets_Manager::SCRIPT_WPTOOLSET_FORM_VALIDATION,
 		);
 
 		/* todo DELETE WITHOUT REPLACEMENT WHEN https://core.trac.wordpress.org/ticket/45289 is fixed */
@@ -97,6 +103,11 @@ class Types_Field_Group_Repeatable_View_Backend_Post {
 			WPTOOLSET_FORMS_VERSION,
 			true
 		);
+
+		// Make sure generic assets related to input forms are loaded even if there are no custom fields
+		// on the page (outside of a RFG)
+		require_once WPTOOLSET_FORMS_ABSPATH . '/classes/class.form_factory.php';
+		new FormFactory( 'post' );
 
 		// form conditional js
 		WPToolset_Forms_Conditional::load_scripts();

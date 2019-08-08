@@ -42,12 +42,9 @@ class Types_Page_Relationships_Inactive extends Types_Page_Persistent {
 
 	/**
 	 * Render the page.
-	 *
-	 * @throws Twig_Error_Loader
-	 * @throws Twig_Error_Runtime
-	 * @throws Twig_Error_Syntax
 	 */
 	public function render_page() {
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->renderer->render(
 			$this->template_repository->get( Types_Output_Template_Repository::RELATIONSHIPS_PAGE_M2M_INACTIVE ),
 			array()
@@ -71,7 +68,7 @@ class Types_Page_Relationships_Inactive extends Types_Page_Persistent {
 				'jquery',
 				Toolset_Assets_Manager::SCRIPT_HEADJS,
 				Toolset_Assets_Manager::SCRIPT_TOOLSET_EVENT_MANAGER,
-				Types_Page_Extension_M2m_Migration_Dialog::MAIN_ASSET_HANDLE
+				Types_Page_Extension_M2m_Migration_Dialog::MAIN_ASSET_HANDLE,
 			),
 			TYPES_VERSION
 		);

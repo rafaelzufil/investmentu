@@ -3,6 +3,20 @@
 class Toolset_User_Editors_Editor_Screen_Visual_Composer_Frontend
 	extends Toolset_User_Editors_Editor_Screen_Abstract {
 
+	/**
+	 * Store IDs for the Content Templates which custom CSS has been logged already.
+	 *
+	 * @var array
+	 */
+	private $custom_css_rendered = array();
+
+	/**
+	 * Accumulative custom CSS for Content Templates using the Visual Composer editor.
+	 *
+	 * @var string
+	 */
+	private $custom_css = '';
+
 	public function initialize() {
 		add_action( 'init', array( $this, 'map_all_vc_shortcodes' ) );
 
@@ -19,6 +33,8 @@ class Toolset_User_Editors_Editor_Screen_Visual_Composer_Frontend
 		// current post in the loop to the top current post. The switch happens because the module calls the "the_widget()"
 		// method which ultimately calls WP_Widget_Text::widget.
 		add_filter( 'vc_wp_text_widget_shortcode', 'wpv_do_shortcode' );
+
+		add_action( 'wp_footer', array( $this, 'maybe_render_custom_css' ), 1 );
 	}
 
 	/**
@@ -47,13 +63,16 @@ class Toolset_User_Editors_Editor_Screen_Visual_Composer_Frontend
 		) {
 			$content_template = get_post_meta( get_the_ID(), '_views_template', true );
 
-			if( $content_template && ! isset( $this->log_rendered_css[$content_template] ) ) {
+			if (
+				$content_template
+				&& ! toolset_getarr( $this->custom_css_rendered, $content_template, false )
+			) {
 				$vcbase = new Vc_Base();
 				ob_start();
 				$vcbase->addPageCustomCss( $content_template );
 				$vcbase->addShortcodesCustomCss( $content_template );
-				$content .= ob_get_clean();
-				$this->log_rendered_css[$content_template] = true;
+				$this->custom_css .= ob_get_clean();
+				$this->custom_css_rendered[ $content_template ] = true;
 			}
 		}
 		return $content;
@@ -107,5 +126,14 @@ class Toolset_User_Editors_Editor_Screen_Visual_Composer_Frontend
 		}
 
 		return $shortcode;
+	}
+
+	/**
+	 * Render the accumulated custom CSS from Content Templates using the Visual Composer editor.
+	 *
+	 * @since 2.8.1
+	 */
+	public function maybe_render_custom_css() {
+		echo $this->custom_css;
 	}
 }

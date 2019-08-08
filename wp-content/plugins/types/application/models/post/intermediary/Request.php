@@ -232,6 +232,7 @@ class Request {
 		$results = $association_query
 			->add( $association_query->element( $intermediary_post, $this->role_intermediary ) )
 			->add( $association_query->relationship( $relationship ) )
+			->do_not_add_default_conditions()
 			->limit( 1 )
 			->get_results();
 

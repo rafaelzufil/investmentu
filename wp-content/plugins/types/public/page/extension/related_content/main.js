@@ -157,7 +157,6 @@ Types.page.extension.relatedContent.Class = function() {
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/ListingViewModel.js?ver=' + typesVersion,
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/RelatedContentViewModel.js?ver=' + typesVersion,
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/DisconnectDialogViewModel.js?ver=' + typesVersion,
-			Types.page.extension.relatedContent.jsPath + '/viewmodels/DeleteDialogViewModel.js?ver=' + typesVersion,
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/AddNewDialogViewModel.js?ver=' + typesVersion,
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/ConnectExistingDialogViewModel.js?ver=' + typesVersion,
 			Types.page.extension.relatedContent.jsPath + '/viewmodels/TranslatableContentDialogViewModel.js?ver=' + typesVersion,

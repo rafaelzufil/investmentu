@@ -363,8 +363,15 @@ Toolset.shortcodeManager = function( $ ) {
 		 */
 		Toolset.hooks.addAction( 'toolset-action-set-shortcode-attributes-quote-character', self.setAttributesQuoteCharacter );
 
-		return self;
+		/**
+		 * Set a shortcode atribute selector as invalid.
+		 *
+		 * @since unknown
+		 * @since Views 2.7.3
+		 */
+		Toolset.hooks.addAction( 'toolset-action-set-shortcode-attribute-selector-invalid', self.setSelectorInvalid );
 
+		return self;
 	};
 
 	/**
@@ -525,10 +532,10 @@ Toolset.shortcodeManager = function( $ ) {
 		 * @since 2.5.4
 		 */
 		if ( ! $( '#js-toolset-shortcode-generator-target-dialog' ).length ) {
-			$( 'body' ).append( '<div id="js-toolset-shortcode-generator-target-dialog" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-gui-dialog-container"></div>' );
+			$( 'body' ).append( '<div id="js-toolset-shortcode-generator-target-dialog" class="js-toolset-shortcode-generator-target-dialog"></div>' );
 		}
 		self.dialogs.target = $( '#js-toolset-shortcode-generator-target-dialog' ).dialog({
-			dialogClass: 'toolset-ui-dialog',
+			dialogClass: 'toolset-dialog',
 			autoOpen:	false,
 			modal:		true,
 			width:		self.dialogMinWidth,
@@ -555,8 +562,128 @@ Toolset.shortcodeManager = function( $ ) {
 			}
 		});
 
+		$( window ).resize( self.resizeWindowEvent );
+
 		return self;
 	};
+
+	/**
+	 * Callback for the window.resize event.
+	 *
+	 * @since 3.4.1
+	 */
+	self.resizeWindowEvent = _.debounce( function() {
+		self.repositionDialog();
+	}, 200);
+
+	/**
+	 * Reposition the dialogs based on the current window size.
+	 *
+	 * @since 3.4.1
+	 */
+	self.repositionDialog = function() {
+		var winH = $( window ).height() - 60,
+			winW = $( window ).width() - 60,
+			dialogWidth = Math.min( winW, self.dialogMinWidth ),
+			position = {
+				my:        "center top+30",
+				at:        "center top",
+				of:        window,
+				collision: "none"
+			};
+
+		_.each( self.dialogs, function( singleDialog, index, list ) {
+			singleDialog.dialog( "option", "maxHeight", winH );
+			singleDialog.dialog( "option", "width", dialogWidth );
+			singleDialog.dialog( "option", "position", position );
+		});
+	};
+
+	self.markInstances = {};
+
+	/**
+	 * Hide empty groups in the dialog to select which shortcode to generate.
+	 *
+	 * @param instance $container
+	 * @since 3.4.1
+	 */
+	self.hideEmptyItemGroups = function( $container ) {
+		var $groups = $container.find( '.js-toolset-collapsible' );
+
+		$( $groups ).each( function() {
+			var $group = $( this ),
+				visibleGroup = false;
+
+			$( $group ).find( '.js-toolset-shortcode-button' ).each( function() {
+				if ( 'inline-block' === $( this ).css( 'display' ) ) {
+					visibleGroup = true;
+					return false;
+				}
+			});
+
+			if ( visibleGroup ) {
+				$group.show();
+			} else {
+				$group.hide();
+			}
+		});
+	};
+
+	/**
+	 * Search items given a search input and its value.
+	 *
+	 * @param instance $searchInput
+	 * @since 3.4.1
+	 */
+	self.searchItems = function( $searchInput ) {
+		var searchInputId = $searchInput.attr( 'id' ),
+			$container = $searchInput.closest( '.js-toolset-dialog__body' ).find( '.js-toolset-shortcodes__wrapper' ),
+			searchTerm = $searchInput.val(),
+			$searchItems = $container.find( '.js-toolset-shortcode-button' );
+
+		searchTerm = searchTerm.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+
+		if ( ! _.has( self.markInstances, searchInputId ) ) {
+			self.markInstances[ searchInputId ] = new Mark( $searchItems );
+		}
+
+		$( $searchItems ).each( function() {
+			if (
+				'' === searchTerm
+				|| $( this ).text().search( new RegExp( searchTerm, 'i' ) ) > -1
+			) {
+				$( this ).css( 'display', 'inline-block' );
+			}
+			else {
+				$( this ).css( 'display', 'none' );
+			}
+		});
+
+		self.markInstances[ searchInputId ].unmark()
+
+		if ( '' !== searchTerm ) {
+			self.markInstances[ searchInputId ].mark( searchTerm, {
+				className: 'search-active',
+				element: 'span'
+			});
+		}
+
+		self.hideEmptyItemGroups( $container );
+	};
+
+	self.searchItemsDebounce = _.debounce( self.searchItems, 600 );
+
+	$( document ).on( 'keyup search input', '.js-toolset-shortcodes__search-input', function() {
+		var $searchInput = $( this );
+		self.searchItemsDebounce( $searchInput );
+	});
+
+	/**
+	 * Collapse or show groups in shortcodes dialog.
+	 */
+	$( document ).on( 'click', '.js-toolset-collapsible__toggle', function() {
+		$( this ).closest( '.js-toolset-collapsible' ).toggleClass( 'is-opened' );
+	});
 
 	/**
 	 * Control the item selector behavior for options that have further settings.
@@ -581,9 +708,9 @@ Toolset.shortcodeManager = function( $ ) {
 	 * @since 2.5.4
 	 */
 	self.initSelect2Attributes = function() {
-		$( '.js-toolset-shortcode-gui-dialog-container .js-toolset-shortcode-gui-field-select2:not(.js-toolset-shortcode-gui-field-select2-inited)' ).each( function() {
+		$( '.js-toolset-dialog__body .js-toolset-shortcode-gui-field-select2:not(.js-toolset-shortcode-gui-field-select2-inited)' ).each( function() {
 			var selector = $( this ),
-				selectorParent = selector.closest( '.js-toolset-shortcode-gui-dialog-container' );
+				selectorParent = selector.closest( '.js-toolset-dialog__body' );
 
 			selector
 				.addClass( 'js-toolset-shortcode-gui-field-select2-inited' )
@@ -608,7 +735,7 @@ Toolset.shortcodeManager = function( $ ) {
 	 * @since 2.5.4
 	 */
 	self.initSelect2AjaxAction = function( selector ) {
-		var selectorParent = selector.closest( '.js-toolset-shortcode-gui-dialog-container' );
+		var selectorParent = selector.closest( '.js-toolset-dialog__body' );
 		selector
 				.addClass( 'js-toolset-shortcode-gui-field-select2-inited' )
 				.css( { width: '100%' } )
@@ -660,7 +787,7 @@ Toolset.shortcodeManager = function( $ ) {
 	 * @since 2.5.4
 	 */
 	self.initSelect2AjaxAttributes = function() {
-		$( '.js-toolset-shortcode-gui-dialog-container .js-toolset-shortcode-gui-field-ajax-select2:not(.js-toolset-shortcode-gui-field-select2-inited)' ).each( function() {
+		$( '.js-toolset-dialog__body .js-toolset-shortcode-gui-field-ajax-select2:not(.js-toolset-shortcode-gui-field-select2-inited)' ).each( function() {
 			var selector = $( this );
 
 			if (
@@ -719,11 +846,11 @@ Toolset.shortcodeManager = function( $ ) {
 	 * @since m2m
 	 */
 	self.initPostSelector = function() {
-		$( 'input[name="related_object"]:not(:disabled)', '.js-toolset-shortcode-gui-dialog-container' )
+		$( 'input[name="related_object"]:not(:disabled)', '.js-toolset-shortcode-gui-tabs' )
 			.first()
 				.prop( 'checked', true );
 
-		$( 'input[name="referenced_object"]:not(:disabled)', '.js-toolset-shortcode-gui-dialog-container' )
+		$( 'input[name="referenced_object"]:not(:disabled)', '.js-toolset-shortcode-gui-tabs' )
 			.first()
 				.prop( 'checked', true );
 	};
@@ -759,19 +886,54 @@ Toolset.shortcodeManager = function( $ ) {
 	});
 
 	/**
-	 * Clean validation errors on input change.
+	 * Set a selector as invalid.
 	 *
-	 * @since 2.5.4
+	 * @param object $selector
+	 * @return self
+	 * @since 3.4.2
 	 */
-	$( document ).on( 'change keyup input cut paste', '.js-toolset-shortcode-gui-dialog-container input, .js-toolset-shortcode-gui-dialog-container select', function() {
-		$( this ).removeClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-		if ( $( this ).hasClass( 'toolset_select2-hidden-accessible' ) ) {
-			$( this )
+	self.setSelectorInvalid = function( $selector, message ) {
+		$selector.addClass( 'toolset-shortcodes__attribute-invalid js-toolset-shortcodes__attribute-invalid' );
+		if ( $selector.hasClass( 'toolset_select2-hidden-accessible' ) ) {
+			$selector
 				.toolset_select2()
 					.data( 'toolset_select2' )
 						.$selection
-							.removeClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
+							.addClass( 'toolset-shortcodes__attribute-invalid js-toolset-shortcodes__attribute-invalid' );
 		}
+
+		$( '<span style="display:block"></span>' ).appendTo( $selector.parent() )
+			.wpvToolsetMessage({
+				text: message,
+				type: 'error-simple',
+				inline: true,
+				stay: true
+			});
+
+		return self;
+	};
+
+	/**
+	 * Clean validation errors on input or select change.
+	 *
+	 * @since 2.5.4
+	 */
+	$( document ).on( 'change keyup input cut paste', 'input.js-toolset-shortcodes__attribute-invalid, select.js-toolset-shortcodes__attribute-invalid', function() {
+		var $selector = $( this );
+		$selector.removeClass( 'toolset-shortcodes__attribute-invalid js-toolset-shortcodes__attribute-invalid' );
+		if ( $selector.hasClass( 'toolset_select2-hidden-accessible' ) ) {
+			$selector
+				.toolset_select2()
+					.data( 'toolset_select2' )
+						.$selection
+							.removeClass( 'toolset-shortcodes__attribute-invalid js-toolset-shortcodes__attribute-invalid' );
+		}
+		$selector
+			.closest( '.js-toolset-shortcode-gui-attribute-wrapper' )
+				.find( '.toolset-alert-error-simple' )
+					.each( function() {
+						$( this ).closest( 'span' ).remove();
+					});
 	});
 
 	/**
@@ -835,41 +997,15 @@ Toolset.shortcodeManager = function( $ ) {
 		var valid = true;
 
 		evaluatedContainer.find( '.js-shortcode-gui-field.js-toolset-shortcode-gui-required' ).each( function() {
-			var requiredAttribute = $( this ),
-				requiredAttributeIsValid = true;
+			var requiredAttribute = $( this );
 
 			// Here we are checking for empty text inputs and selects with the default empty option selected.
 			if (
 				null === requiredAttribute.val()
 				|| '' == requiredAttribute.val()
 			) {
-				requiredAttribute.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				requiredAttributeIsValid = false;
-
-				if ( requiredAttribute.hasClass( 'toolset_select2-hidden-accessible' ) ) {
-					requiredAttribute
-						.toolset_select2()
-							.data( 'toolset_select2' )
-								.$selection
-									.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				}
-
-			}
-			if ( ! requiredAttributeIsValid ) {
 				valid = false;
-				/*
-				error_container
-					.wpvToolsetMessage({
-						text: wpv_shortcodes_gui_texts.attr_empty,
-						type: 'error',
-						inline: false,
-						stay: true
-					});
-				// Hack to allow more than one error message per filter
-				error_container
-					.data( 'message-box', null )
-					.data( 'has_message', false );
-				*/
+				self.setSelectorInvalid( requiredAttribute, toolset_shortcode_i18n.validation.mandatory );
 			}
 		});
 
@@ -887,15 +1023,8 @@ Toolset.shortcodeManager = function( $ ) {
 					null == comboAttributeActualSelector.val()
 					|| '' == comboAttributeActualSelector.val()
 				) {
-					comboAttributeActualSelector.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-					if ( comboAttributeActualSelector.hasClass( 'toolset_select2-hidden-accessible' ) ) {
-						comboAttributeActualSelector
-							.toolset_select2()
-								.data( 'toolset_select2' )
-									.$selection
-										.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-					}
 					valid = false;
+					self.setSelectorInvalid( comboAttributeActualSelector, toolset_shortcode_i18n.validation.mandatory );
 				}
 			}
 		});
@@ -927,7 +1056,7 @@ Toolset.shortcodeManager = function( $ ) {
 				thiz_type = thiz.data( 'type' ),
 				thiz_message = '',
 				thiz_valid = true;
-			if ( ! thiz.hasClass( 'js-toolset-shortcode-gui-invalid-attr' ) ) {
+			if ( ! thiz.hasClass( 'js-toolset-shortcodes__attribute-invalid' ) ) {
 				switch ( thiz_type ) {
 					case 'number':
 						if (
@@ -935,7 +1064,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_number_invalid;
 						}
 						break;
@@ -945,7 +1073,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_number_invalid;
 						}
 						break;
@@ -955,7 +1082,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_numberlist_invalid;
 						}
 						break;
@@ -965,7 +1091,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_year_invalid;
 						}
 						break;
@@ -975,7 +1100,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_month_invalid;
 						}
 						break;
@@ -985,7 +1109,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_week_invalid;
 						}
 						break;
@@ -995,7 +1118,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_day_invalid;
 						}
 						break;
@@ -1005,7 +1127,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_hour_invalid;
 						}
 						break;
@@ -1015,7 +1136,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_minute_invalid;
 						}
 						break;
@@ -1025,7 +1145,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_second_invalid;
 						}
 						break;
@@ -1035,7 +1154,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_dayofyear_invalid;
 						}
 						break;
@@ -1045,7 +1163,6 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_dayofweek_invalid;
 						}
 						break;
@@ -1055,17 +1172,17 @@ Toolset.shortcodeManager = function( $ ) {
 							&& thiz_val != ''
 						) {
 							thiz_valid = false;
-							thiz.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
 							thiz_message = wpv_shortcodes_gui_texts.attr_url_invalid;
 						}
 						break;
 				}
 				if ( ! thiz_valid ) {
 					valid = false;
+					thiz.addClass( 'toolset-shortcodes__attribute-invalid js-toolset-shortcodes__attribute-invalid' );
 					error_container
 						.wpvToolsetMessage({
 							text: thiz_message,
-							type: 'error',
+							type: 'error-simple',
 							inline: false,
 							stay: true
 						});
@@ -1093,29 +1210,13 @@ Toolset.shortcodeManager = function( $ ) {
 
 			var	itemSelectionId = itemSelection.val(),
 				itemSelectionValid = true;
-				//$itemSelectionMessage = '';
+
 			if ( '' == itemSelectionId ) {
 				itemSelectionValid = false;
-				itemSelection.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				if ( itemSelection.hasClass( 'toolset_select2-hidden-accessible' ) ) {
-					itemSelection
-						.toolset_select2()
-							.data( 'toolset_select2' )
-								.$selection
-									.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				}
-				//$itemSelectionMessage = cred_shortcode_i18n.validation.mandatory;
+				self.setSelectorInvalid( itemSelection, toolset_shortcode_i18n.validation.mandatory );
 			} else if ( self.validationPatterns.number.test( itemSelectionId ) == false ) {
 				itemSelectionValid = false;
-				itemSelection.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				if ( itemSelection.hasClass( 'toolset_select2-hidden-accessible' ) ) {
-					itemSelection
-						.toolset_select2()
-							.data( 'toolset_select2' )
-								.$selection
-									.addClass( 'toolset-shortcode-gui-invalid-attr js-toolset-shortcode-gui-invalid-attr' );
-				}
-				//$itemSelectionMessage = cred_shortcode_i18n.validation.number;
+				self.setSelectorInvalid( itemSelection, toolset_shortcode_i18n.validation.number );
 			}
 			if ( ! itemSelectionValid ) {
 				valid = false;
@@ -1137,7 +1238,7 @@ Toolset.shortcodeManager = function( $ ) {
 	self.getCraftedShortcode = function( defaultValue, $dialog ) {
 		if ( $dialog == null ) {
 			// Backwards compatibility: before m2m we did not force a dialog to craft the shortcode from
-			$dialog = $( '.js-toolset-shortcode-gui-dialog-container' );
+			$dialog = $( '.js-toolset-shortcode-gui-tabs' );
 		}
 		return self.craftShortcode( $dialog );
 	}

@@ -23,6 +23,7 @@ return array(
 'OTGS\Toolset\Common\M2M\PotentialAssociation\PostResultOrder' => dirname( __FILE__ ) . '/potential_association/PostResultOrder.php',
 'OTGS\Toolset\Common\M2M\PotentialAssociation\WpQueryAdjustment' => dirname( __FILE__ ) . '/potential_association/WpQueryAdjustment.php',
 'OTGS\Toolset\Common\M2M\PublicApiService' => dirname( __FILE__ ) . '/public_api_service.php',
+'OTGS\Toolset\Common\Relationships\Relationship\Cleanup' => dirname( __FILE__ ) . '/relationship/Cleanup.php',
 'Toolset_Association' => dirname( __FILE__ ) . '/association/association.php',
 'Toolset_Association_Cleanup_Association' => dirname( __FILE__ ) . '/association/cleanup/association.php',
 'Toolset_Association_Cleanup_Cron_Event' => dirname( __FILE__ ) . '/association/cleanup/cron_event.php',

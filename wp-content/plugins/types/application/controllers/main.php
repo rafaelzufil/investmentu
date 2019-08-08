@@ -1,5 +1,7 @@
 <?php
 
+use OTGS\Toolset\Types\Controller\Compatibility\Gutenberg;
+
 /**
  * Main Types controller.
  *
@@ -71,6 +73,19 @@ final class Types_Main {
 		if ( $types_shortcode ) {
 			add_shortcode( 'types', array( $types_shortcode, 'render' ) );
 		};
+
+		if ( in_array( $this->mode, [ self::MODE_ADMIN, self::MODE_AJAX ], true ) ) {
+			$dic = toolset_dic();
+			/** @var \OTGS\Toolset\Types\TypeRegistration\Controller $type_registration_controller */
+			/** @noinspection PhpUnhandledExceptionInspection */
+			$type_registration_controller = $dic->make( '\OTGS\Toolset\Types\TypeRegistration\Controller' );
+			$type_registration_controller->initialize();
+
+			/** @var Gutenberg $gutenberg */
+			/** @noinspection PhpUnhandledExceptionInspection */
+			$gutenberg = $dic->make( '\OTGS\Toolset\Types\Controller\Compatibility\Gutenberg' );
+			$gutenberg->initialize();
+		}
 	}
 
 

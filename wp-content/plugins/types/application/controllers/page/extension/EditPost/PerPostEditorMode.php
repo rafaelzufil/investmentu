@@ -158,6 +158,10 @@ class PerPostEditorMode {
 			return;
 		}
 
+		if( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+
 		$screen = get_current_screen();
 		if( ! $screen instanceof \WP_Screen ) {
 			return;

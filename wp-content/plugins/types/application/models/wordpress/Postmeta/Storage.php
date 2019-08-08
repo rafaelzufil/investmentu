@@ -29,7 +29,7 @@ class Storage {
 	/**
 	 * Checking if a postmeta exists.
 	 *
-	 * @param $meta_key supports wildcards
+	 * @param string $meta_key supports wildcards
 	 * @param null $post_id search for a specific post
 	 *
 	 * @return bool
@@ -213,9 +213,10 @@ class Storage {
 		}
 
 		if( $delete_empty && empty( $meta_value ) ) {
-			return $this->deletePostMeta( $post_id, $meta_key );
+			$this->deletePostMeta( $post_id, $meta_key );
+			return;
 		}
 
-		return $this->updatePostMeta( $post_id, $meta_key, $meta_value );
+		$this->updatePostMeta( $post_id, $meta_key, $meta_value );
 	}
 }

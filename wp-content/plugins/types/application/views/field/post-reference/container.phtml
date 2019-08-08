@@ -36,9 +36,15 @@ $html_attr_validation_required .= $html_attr_validation_required != '' && isset(
             data-types-post-reference="<?php esc_attr_e( $field->get_post_type()->name ); ?>"
             data-types-relationship="<?php esc_attr_e( $field->get_slug() ); ?>"
             name="wpcf[<?php esc_attr_e( $field->get_slug() ); ?>]"
-            data-wpt-type="select" data-wpt-id="wpcf-<?php esc_attr_e( $field->get_slug() ); ?>"
+            data-wpt-type="select"
+			data-wpt-id="wpcf-<?php esc_attr_e( $field->get_slug() ); ?>"
             data-wpt-name="wpcf[<?php esc_attr_e( $field->get_slug() ) ; ?>]"
-            <?php echo $html_attr_validation_required; ?>
+			<?php
+			// This is necessary for the validation in the classic editor, but doesn't work in the block editor.
+			// For that purpose, we also include the standard data-wpt-validate attribute.
+			echo $html_attr_validation_required;
+			?>
+			data-wpt-validate="<?php echo esc_attr( $field->get_formatted_validation_data() ); ?>"
     >
         <option value=""></option>
 		<?php if( $post = $field->get_post() ): ?>

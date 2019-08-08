@@ -198,6 +198,17 @@ abstract class Toolset_Shortcode_Generator {
 		return false;
 	}
 
+	protected function get_shortcodes_search_bar( $id = '' ) {
+		$id = empty( $id )
+			? 'toolset-shortcodes__search-input-for-' . rand()
+			: $id;
+		$searchbar = '<div class="toolset-shortcodes__search">';
+		$searchbar .=   '<label class="screen-reader-text" for="' . esc_attr( $id ) . '">' . __( 'Search', 'wpv-views' ) . '</label>';
+		$searchbar .=   '<input id="' . esc_attr( $id ) . '" class="toolset-shortcodes__search-input js-toolset-shortcodes__search-input" type="search" placeholder="' . esc_attr( __( 'Search', 'wpv-views' ) ) . '" />';
+		$searchbar .= '</div>';
+		
+		return $searchbar;
+	}
 	/*
 	 * Dialog Template HTML code
 	 */
@@ -208,14 +219,16 @@ abstract class Toolset_Shortcode_Generator {
 		) {
 			?>
 			<div class="toolset-dialog-container" style="display:none">
-				<div id="js-toolset-shortcode-generator-target-dialog" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-generator-target-dialog">
-					<p>
-						<?php echo __( 'This is the generated shortcode, based on the settings that you have selected:', 'wpv-views' ); ?>
-					</p>
-					<textarea id="js-toolset-shortcode-generator-target" readonly="readonly" style="width:100%;resize:none;box-sizing:border-box;font-family:monospace;display:block;padding:5px;background-color:#ededed;border: 1px solid #ccc !important;box-shadow: none !important;"></textarea>
-					<p>
-						<?php echo __( 'You can now copy and paste this shortcode anywhere you want.', 'wpv-views' ); ?>
-					</p>
+				<div id="js-toolset-shortcode-generator-target-dialog" class="js-toolset-shortcode-generator-target-dialog">
+					<div class="toolset-shortcodes__generated">
+						<p>
+							<?php echo __( 'This is the generated shortcode, based on the settings that you have selected:', 'wpv-views' ); ?>
+						</p>
+						<textarea id="js-toolset-shortcode-generator-target" readonly="readonly" style="width:100%;resize:none;box-sizing:border-box;font-family:monospace;display:block;padding:5px;background-color:#ededed;border: 1px solid #ccc !important;box-shadow: none !important;"></textarea>
+						<p>
+							<?php echo __( 'You can now copy and paste this shortcode anywhere you want.', 'wpv-views' ); ?>
+						</p>
+					</div>
 				</div>
 			</div>
 			<?php
@@ -314,19 +327,28 @@ abstract class Toolset_Shortcode_Generator {
 
 			global $pagenow, $post;
 			$current_post_type = null;
+			$current_post_type_slug = false;
+
 			if (
 				in_array( $pagenow, array( 'post.php' ) )
 				&& isset( $_GET["post"] )
 			) {
 				$current_post_id = (int) $_GET["post"];
 				$current_post_type_slug = get_post_type( $current_post_id );
-				$current_post_type = get_post_type_object( $current_post_type_slug );
 			} elseif (
 				isset( $post )
 				&& ( $post instanceof WP_Post )
-				&& ( ! in_array( $post->post_type, array( 'view', 'view-template', 'cred-form', 'cred-user-form', 'dd_layouts' ) ) )
 			) {
-				$current_post_type = get_post_type_object( $post->post_type );
+				$current_post_type_slug = $post->post_type;
+			}
+
+			$toolset_post_type_exclude = new Toolset_Post_Type_Exclude_List();
+
+			if (
+				$current_post_type_slug
+				&& ! $toolset_post_type_exclude->is_excluded( $current_post_type_slug )
+			) {
+				$current_post_type = get_post_type_object( $current_post_type_slug );
 			}
 
 			// Current top page when displaying a View loop

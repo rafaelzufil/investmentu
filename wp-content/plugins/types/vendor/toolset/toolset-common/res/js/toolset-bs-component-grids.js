@@ -1,18 +1,18 @@
 var ToolsetCommon = ToolsetCommon || {};
 
 /**
- * Bootstrao Grid module.
+ * Bootstrap Grid module.
  *
  * Provides a Grid button on selected editors that allows inserting a Bootstrap grid HTML structure.
  *
  * @since 2.3.3
  */
-
-
 ToolsetCommon.BootstrapCssComponentsGrids = function( $ ) {
 
 	var self = this;
-	
+
+	self.l10n = Toolset_CssComponent_Grids || {};
+
 	/**
 	 * Init the Bootstrap grid dialog.
 	 *
@@ -20,7 +20,6 @@ ToolsetCommon.BootstrapCssComponentsGrids = function( $ ) {
 	 *
 	 * @since 2.3.3
 	 */
-	
 	self.initDialogs = function() {
 		
 		if ( ! $( '#js-toolset-bootstrap-grid-dialog-container' ).length ) {
@@ -28,11 +27,11 @@ ToolsetCommon.BootstrapCssComponentsGrids = function( $ ) {
 		}
 		
 		self.bootstrapGridDialog = $( "#js-toolset-bootstrap-grid-dialog-container" )
-			.html( Toolset_CssComponent_Grids.dialog.content )
+			.html( self.l10n.dialog.content )
 			.dialog({
 				autoOpen: false,
 				modal: true,
-				title: Toolset_CssComponent_Grids.dialog.title,
+				title: self.l10n.dialog.title,
 				minWidth: 550,
 				draggable: false,
 				resizable: false,
@@ -59,14 +58,14 @@ ToolsetCommon.BootstrapCssComponentsGrids = function( $ ) {
 				buttons: [
 					{
 						class: 'button-secondary toolset-shortcode-gui-dialog-button-close',
-						text: Toolset_CssComponent_Grids.dialog.cancel,
+						text: self.l10n.dialog.cancel,
 						click: function () {
 							$( this ).dialog( "close" );
 						}
 					},
 					{
 						class: 'toolset-shortcode-gui-dialog-button-align-right button-primary',
-						text: Toolset_CssComponent_Grids.dialog.insert,
+						text: self.l10n.dialog.insert,
 						click: function () {
 							self.insertBootstrapGrid();
 						}
@@ -134,45 +133,46 @@ ToolsetCommon.BootstrapCssComponentsGrids = function( $ ) {
 
 	self.getBootstrapGrid = function() {
 		var output = '';
+		var columnClassPrefix = ( '4' === self.l10n.bootstrapVersion ? 'col-md-' : 'col-sm-' );
 		
 		output += '<div class="row">\n';
 
 		switch( $( 'input[name="grid_type"]:checked' ).val() ) {
 			case 'two-even':
-				output += '\t<div class="col-sm-6">Cell 1</div>\n';
-				output += '\t<div class="col-sm-6">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '6">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '6">Cell 2</div>\n';
 				break;
 			case 'two-uneven':
-				output += '\t<div class="col-sm-8">Cell 1</div>\n';
-				output += '\t<div class="col-sm-4">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '8">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '4">Cell 2</div>\n';
 				break;
 			case 'three-even':
-				output += '\t<div class="col-sm-4">Cell 1</div>\n';
-				output += '\t<div class="col-sm-4">Cell 2</div>\n';
-				output += '\t<div class="col-sm-4">Cell 3</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '4">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '4">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '4">Cell 3</div>\n';
 				break;
 			case 'three-uneven':
-				output += '\t<div class="col-sm-3">Cell 1</div>\n';
-				output += '\t<div class="col-sm-6">Cell 2</div>\n';
-				output += '\t<div class="col-sm-3">Cell 3</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '6">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 3</div>\n';
 				break;
 			case 'four-even':
-				output += '\t<div class="col-sm-3">Cell 1</div>\n';
-				output += '\t<div class="col-sm-3">Cell 2</div>\n';
-				output += '\t<div class="col-sm-3">Cell 3</div>\n';
-				output += '\t<div class="col-sm-3">Cell 4</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 3</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '3">Cell 4</div>\n';
 				break;
 			case 'six-even':
-				output += '\t<div class="col-sm-2">Cell 1</div>\n';
-				output += '\t<div class="col-sm-2">Cell 2</div>\n';
-				output += '\t<div class="col-sm-2">Cell 3</div>\n';
-				output += '\t<div class="col-sm-2">Cell 4</div>\n';
-				output += '\t<div class="col-sm-2">Cell 5</div>\n';
-				output += '\t<div class="col-sm-2">Cell 6</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 3</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 4</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 5</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '2">Cell 6</div>\n';
 				break;
 			default:
-				output += '\t<div class="col-sm-6">Cell 1</div>\n';
-				output += '\t<div class="col-sm-6">Cell 2</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '6">Cell 1</div>\n';
+				output += '\t<div class="' + columnClassPrefix + '6">Cell 2</div>\n';
 		}
 
 		output += '</div>';

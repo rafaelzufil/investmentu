@@ -925,15 +925,17 @@ function wpcf_admin_fields_get_available_types() {
     return WPCF_Fields::getFieldsTypesData();
 }
 
+
 /**
- * Sanitizes field.
+ * Sanitizes field data from a form input.
  *
- * @param type $field
+ * @param array $field
+ * @return array
  */
 function wpcf_sanitize_field( $field ) {
     // Sanitize name
     if ( isset( $field['name'] ) ) {
-        $field['name'] = sanitize_text_field( $field['name'] );
+        $field['name'] = sanitize_text_field( stripslashes( $field['name'] ) );
     }
     /**
      * autocreate name based on field type
@@ -951,6 +953,34 @@ function wpcf_sanitize_field( $field ) {
     } else if ( isset( $field['name'] ) ) {
         $field['slug'] = sanitize_title( $field['name'] );
     }
+
+    foreach( array( 'name', 'description', 'placeholder', 'user_default_value' ) as $key ) {
+    	if( ! isset( $field[ $key ] ) || ! is_string( $field[ $key ] ) ) {
+    		continue;
+		}
+
+    	$field[ $key ] = stripslashes( $field[ $key ] );
+	}
+
+	if ( array_key_exists( 'options', $field ) && is_array( $field['options'] ) ) {
+		foreach ( $field['options'] as $option_key => $option_definition ) {
+			if ( ! is_array( $option_definition ) ) {
+				continue;
+			}
+			foreach (
+				[ 'title', 'display_value', 'display_value_selected', 'display_value_not_selected' ] as
+				$key_to_sanitize
+			) {
+				if ( ! array_key_exists( $key_to_sanitize, $option_definition ) ) {
+					continue;
+				}
+				$field['options'][ $option_key ][ $key_to_sanitize ] = sanitize_text_field(
+					stripslashes( $option_definition[ $key_to_sanitize ] )
+				);
+			}
+		}
+	}
+
     return $field;
 }
 
@@ -1095,7 +1125,7 @@ function wpcf_get_all_field_slugs_except_current_group( $current_group = false )
     $all_slugs = array_values( $all_slugs );
     if( isset( $_POST['return'] )
         && $_POST['return'] == 'ajax-json' ) {
-        echo json_encode( $all_slugs );
+        wp_send_json( $all_slugs );
         die();
     }
 

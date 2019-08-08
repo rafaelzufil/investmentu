@@ -44,9 +44,9 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	const MAIN_ASSET_HANDLE = 'types-page-extension-related-content-main';
 	/**
 	 * Meta boxes data.
-	 *	[id]    => Metabox ID.
-	 *	[title] => Metabox title.
-	 *	[args]  => Callback arguments.
+	 *  [id]    => Metabox ID.
+	 *  [title] => Metabox title.
+	 *  [args]  => Callback arguments.
 	 *
 	 * @var array
 	 * @since m2m
@@ -141,20 +141,25 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 */
 	private $has_default_language_translation;
 
+
+	/** @var string */
+	private $post_type;
+
+
 	/**
 	 * Used for better instance
 	 *
-	 * @param Twig_Environment                $twig For testing purposes.
+	 * @param \OTGS\Toolset\Twig\Environment $twig For testing purposes.
 	 * @param Toolset_Twig_Dialog_Box_Factory $twig_dialog_factory For testing purposes.
-	 * @param Toolset_Relationship_Query_V2      $relationship_query For testing purposes.
+	 * @param Toolset_Relationship_Query_V2 $relationship_query For testing purposes.
 	 * @param Types_Viewmodel_Related_Content $related_content For testing purposes.
-	 * @param boolean                         $can_connect_di Test injection purposes.
-	 * @param boolean                         $has_default_language_translation_di Text injection purposes.
+	 * @param boolean $can_connect_di Test injection purposes.
+	 * @param boolean $has_default_language_translation_di Text injection purposes.
 	 *
 	 * @return Types_Page_Extension_Meta_Box Self object.
 	 * @since m2m
 	 */
-	public static function get_instance( Twig_Environment $twig = null, Toolset_Twig_Dialog_Box_Factory $twig_dialog_factory = null, Toolset_Relationship_Query_V2 $relationship_query = null, Types_Viewmodel_Related_Content $related_content = null, $can_connect_di = null, $has_default_language_translation_di = null ) {
+	public static function get_instance( \OTGS\Toolset\Twig\Environment $twig = null, Toolset_Twig_Dialog_Box_Factory $twig_dialog_factory = null, Toolset_Relationship_Query_V2 $relationship_query = null, Types_Viewmodel_Related_Content $related_content = null, $can_connect_di = null, $has_default_language_translation_di = null ) {
 		if ( null === static::$instance ) {
 			static::$instance = new static( $twig_dialog_factory, $relationship_query, $related_content, $can_connect_di, $has_default_language_translation_di );
 		}
@@ -166,12 +171,14 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * Constructor
 	 *
 	 * @param Toolset_Twig_Dialog_Box_Factory $twig_dialog_factory For testing purposes.
-	 * @param Toolset_Relationship_Query_V2      $relationship_query For testing purposes.
+	 * @param Toolset_Relationship_Query_V2 $relationship_query For testing purposes.
 	 * @param Types_Viewmodel_Related_Content $related_content For testing purposes.
-	 * @param boolean                         $can_connect_di Test injection purposes.
-	 * @param boolean                         $has_default_language_translation Test injection puroposes.
+	 * @param boolean|null $can_connect_di Test injection purposes.
+	 * @param null|bool $has_default_language_translation_di
 	 */
 	public function __construct( Toolset_Twig_Dialog_Box_Factory $twig_dialog_factory = null, Toolset_Relationship_Query_V2 $relationship_query = null, Types_Viewmodel_Related_Content $related_content = null, $can_connect_di = null, $has_default_language_translation_di = null ) {
+		parent::__construct();
+
 		$this->dialog_factory = $twig_dialog_factory;
 		$this->relationship_query = $relationship_query;
 		$this->related_content_model = $related_content;
@@ -242,7 +249,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			$has_post_type_disabled = false;
 
 			foreach ( $types as $type ) {
-				if( ! $user_access->canEditOwn( $type ) ) {
+				if ( ! $user_access->canEditOwn( $type ) ) {
 					// user is not allowed to read the connected posts
 					$has_post_type_disabled = true;
 					continue;
@@ -279,7 +286,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 
 		// Fix for GUTENBERG, which has already triggered 'admin_enqueue_scripts' add this point
 		// It's a known issue see: https://github.com/WordPress/gutenberg/issues/4929
-		if( did_action( 'admin_enqueue_scripts' ) ) {
+		if ( did_action( 'admin_enqueue_scripts' ) ) {
 			$this->on_admin_enqueue_scripts();
 		}
 
@@ -336,7 +343,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 
 		$field_action_name = $ajax_controller->get_action_js_name( Types_Ajax::CALLBACK_RELATED_CONTENT_ACTION );
 
-		if( ! $current_post_id = $this->get_current_post_id() ) {
+		if ( ! $current_post_id = $this->get_current_post_id() ) {
 			// no id found, disable metabox
 			return array();
 		}
@@ -372,7 +379,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			'canConnectAnother' => $can_connect_another,
 			'onlyOneRelatedConection' => $only_one_related_conection,
 			'hasTranslatableContent' => $relationship->is_translatable(),
-			'isDefaultLanguage'=> $this->is_default_language(),
+			'isDefaultLanguage' => $this->is_default_language(),
 			'isWPMLActive' => $this->is_wpml_active(),
 			'isIPTTranslatable' => Toolset_Wpml_Utils::is_post_type_translatable( $relationship->get_intermediary_post_type() ),
 			'userId' => $user_access->getUser()->ID,
@@ -429,8 +436,8 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 				'connectExisting' => sprintf( __( 'Connect existing %s', 'wpcf' ), $post_type_object->labels->singular_name ),
 				'connect' => __( 'Connect', 'wpcf' ),
 				'connectExistingPlaceholder' => __( 'Type the name', 'wpcf' ),
-				'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.<br />It will also affect all translations of affected posts.', 'wpcf' ),
-				'doYouReallyWantTrash' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.<br />It will also affect all translations of affected posts.', 'wpcf' ),
+				'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, intermediary posts with relationships fields will be <strong>permanently deleted</strong>. Note that this involves all translations of affected posts.', 'wpcf' ),
+				'doYouReallyWantTrash' => __( 'Do you really want to <strong>move the related post to Trash?</strong> All translations of that post will be moved to trash as well.', 'wpcf' ),
 				'selectFieldsTitle' => __( 'Select columns to be displayed', 'wpcf' ),
 			),
 			'button' => array(
@@ -448,7 +455,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * Gets the other post type
 	 *
 	 * @param Toolset_Relationship_Definition $relationship The relatioship.
-	 * @return string
+	 * @return string[]
 	 * @since m2m
 	 */
 	private function get_other_post_type( $relationship ) {
@@ -476,16 +483,16 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 		$specific_context = (
 			! empty( $js_data )
 			? array(
-					'strings' => $js_data['strings'],
-					'columns' => $js_data['relatedContent']['columns'],
-				)
+				'strings' => $js_data['strings'],
+				'columns' => $js_data['relatedContent']['columns'],
+			)
 			: array()
 		);
 
 		$context = toolset_array_merge_recursive_distinct( $base_context, $specific_context );
 		$context['wrap_element_class'] = 'types-related-context-metabox-wrap';
 
-		return $context? $context : array();
+		return $context ? $context : array();
 	}
 
 
@@ -497,7 +504,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * @since m2m
 	 */
 	protected function get_main_twig_template( $data ) {
-		if( ! $current_post_id = $this->get_current_post_id() ) {
+		if ( ! $current_post_id = $this->get_current_post_id() ) {
 			// no post id found, leave hint that relationships can only be added to a saved post
 			return 'new_content.twig';
 		}
@@ -507,11 +514,13 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			: 'disabled.twig';
 	}
 
+
 	/**
 	 * Gets the role for a post type
 	 *
-	 * @param string                          $post_type The post type.
-	 * @param Toolset_Relationship_Definition $relationship The definition.
+	 * @param string $post_type The post type.
+	 * @param IToolset_Relationship_Definition $relationship The definition.
+	 *
 	 * @return string
 	 * @since m2m
 	 */
@@ -528,7 +537,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * @param String                          $role Role.
 	 * @param Toolset_Relationship_Definition $relationship The relationship.
 	 *
-	 * @return Types_Viewmodel_Related_Content
+	 * @return Types_Viewmodel_Related_Content_Post
 	 * @since m2m
 	 */
 	private function get_model_by_relationship( $role, $relationship ) {
@@ -599,6 +608,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 		foreach ( array( 'post', 'relationship' ) as $field_type ) {
 			$fields_input = new Types_Viewmodel_Field_Input( $fields[ $field_type ] );
 			$fields_data['preview'][ $field_type ] = $fields_input->get_fields_data();
+			/** @noinspection PhpUnhandledExceptionInspection */
 			$fields_container = new Types_Viewmodel_Fields_Edit_Container(
 				$fields[ $field_type ],
 				$this->get_twig(),
@@ -611,9 +621,8 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			$fields_data['input'][ $field_type ] = $fields_container->to_html();
 		}
 
-
 		// Intermediary Title
-		if( $intermediary_title_data = self::get_table_data_for_intermediary_title( $association_uid ) ) {
+		if ( $intermediary_title_data = self::get_table_data_for_intermediary_title( $association_uid ) ) {
 			$fields_data['preview']['relationship']['intermediary-title'] = $intermediary_title_data;
 		}
 
@@ -627,11 +636,8 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * @since m2m
 	 */
 	public function on_admin_enqueue_scripts() {
-		wp_register_script( 'wptoolset-form-jquery-validation', WPTOOLSET_FORMS_RELPATH . '/lib/js/jquery-form-validation/jquery.validate.js', array('jquery'), WPTOOLSET_FORMS_VERSION, true );
-		wp_register_script( 'wptoolset-form-jquery-validation-additional', WPTOOLSET_FORMS_RELPATH . '/lib/js/jquery-form-validation/additional-methods.min.js', array('wptoolset-form-jquery-validation'), WPTOOLSET_FORMS_VERSION, true );
-		wp_register_script( 'wptoolset-form-validation', WPTOOLSET_FORMS_RELPATH . '/js/validation.js', array( 'wptoolset-form-jquery-validation-additional', 'underscore', 'toolset-utils', 'toolset-event-manager', 'icl_editor-script' ), WPTOOLSET_FORMS_VERSION, true );
 
-		wp_enqueue_script( 'wptoolset-form-conditional', WPTOOLSET_FORMS_RELPATH . '/js/conditional.js', array( 'jquery', 'jquery-effects-scale' ), WPTOOLSET_FORMS_VERSION, true );
+		wp_enqueue_script( Toolset_Assets_Manager::SCRIPT_WPTOOLSET_FORM_CONDITIONAL );
 
 		$script_dependencies = array(
 			'jquery',
@@ -641,7 +647,8 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			Toolset_Assets_Manager::SCRIPT_KNOCKOUT,
 			Toolset_Gui_Base::SCRIPT_GUI_LISTING_PAGE_CONTROLLER,
 			'toolset_select2',
-			'wptoolset-form-validation',
+			Types_Asset_Manager::SCRIPT_TINYMCE_COMPATIBILITY,
+			Toolset_Assets_Manager::SCRIPT_WPTOOLSET_FORM_VALIDATION,
 		);
 
 		/* todo DELETE WITHOUT REPLACEMENT WHEN https://core.trac.wordpress.org/ticket/45289 is fixed */
@@ -671,17 +678,27 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			),
 			TYPES_VERSION
 		);
+
+		// Required by Types_Asset_Manager::SCRIPT_TINYMCE_COMPATIBILITY.
+		$tinymce_helper = new Types_Helper_TinyMCE();
+		$tinymce_helper->localize_dynamic_tinymce_init_script();
 	}
 
 
 	/**
 	 * Prepares assets for all dialogs that are going to be used on the page.
 	 *
-	 * @param Toolset_Relationship_Definition $relationship Dialog boxes ID.
+	 * @param IToolset_Relationship_Definition $relationship Dialog boxes ID.
+	 *
 	 * @since m2m
 	 */
 	private function prepare_dialogs( $relationship ) {
-		$twig = $this->get_twig();
+		try {
+			$twig = $this->get_twig();
+		} catch ( \OTGS\Toolset\Twig\Error\LoaderError $e ) {
+			// Nothing we can do at this point.
+			return;
+		}
 		if ( null === $this->twig_dialog_factory ) {
 			$this->twig_dialog_factory = new Toolset_Twig_Dialog_Box_Factory();
 		}
@@ -692,22 +709,10 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			array(
 				'strings' => array(
 					'cannotBeUndone' => __( 'This cannot be undone!', 'wpcf' ),
-					'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.', 'wpcf' ),
+					'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, the intermediary post with relationships fields will be deleted.', 'wpcf' ),
 				),
 			),
 			'@' . self::ID . '/disconnect_dialog.twig'
-		);
-
-		$this->twig_dialog_factory->get_twig_dialog_box(
-			'types-delete-association-related-content-dialog',
-			$twig,
-			array(
-				'strings' => array(
-					'cannotBeUndone' => __( 'This cannot be undone!', 'wpcf' ),
-					'doYouReallyWantDelete' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.', 'wpcf' ),
-				),
-			),
-			'@' . self::ID . '/delete_dialog.twig'
 		);
 
 		$this->twig_dialog_factory->get_twig_dialog_box(
@@ -794,7 +799,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			// Its neccesary to group the fields name by the type.
 			// Can't be done in twig or knockout because it is a rendered dialog box.
 			'rendered' => str_replace( '_wptoolset_checkbox[', '_wptoolset_checkbox[post][',
-				str_replace( 'wpcf[', 'wpcf[post][', $fields_container->to_html() ) ),
+			str_replace( 'wpcf[', 'wpcf[post][', $fields_container->to_html() ) ),
 		);
 
 		// Relationship fields.
@@ -815,8 +820,8 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 				'title' => __( 'Relationship fields', 'wpcf' ),
 				// Its neccesary to group the fields name by the type.
 				// Can't be done in twig or knockout because it is a rendered dialog box.
-				'rendered' =>  str_replace( '_wptoolset_checkbox[', '_wptoolset_checkbox[relationship][',
-					str_replace( 'wpcf[', 'wpcf[relationship][', $fields_container->to_html() ) ),
+				'rendered' => str_replace( '_wptoolset_checkbox[', '_wptoolset_checkbox[relationship][',
+				str_replace( 'wpcf[', 'wpcf[relationship][', $fields_container->to_html() ) ),
 			);
 		}
 
@@ -835,6 +840,11 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * Renders the Connect existing relationship dialog
 	 *
 	 * @param Toolset_Relationship_Definition $relationship Dialog boxes ID.
+	 *
+	 * @return string
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 * @since m2m
 	 */
 	public function render_connect_existing_dialog( $relationship ) {
@@ -859,7 +869,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 		);
 
 		// Relationship fields.
-		if( $relationship->has_association_field_definitions() ) {
+		if ( $relationship->has_association_field_definitions() ) {
 			// fields available
 			$fields_container = new Types_Viewmodel_Fields_Edit_Container(
 				$relationship->get_driver()->get_field_definitions(),
@@ -894,6 +904,11 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * Renders the Select fields relationship dialog
 	 *
 	 * @param Toolset_Relationship_Definition $relationship Relationship.
+	 *
+	 * @return string
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 * @since m2m
 	 */
 	public function render_select_fields_dialog( $relationship ) {
@@ -944,9 +959,9 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 		$fields_html['post_type'] = $other_post_type;
 
 		// intermediary
-		if( $intermediary_post_type_string = $relationship->get_intermediary_post_type() ) {
-			if( $intermediary_post_type = get_post_type_object( $intermediary_post_type_string ) ) {
-				if( $intermediary_post_type->show_ui ) {
+		if ( $intermediary_post_type_string = $relationship->get_intermediary_post_type() ) {
+			if ( $intermediary_post_type = get_post_type_object( $intermediary_post_type_string ) ) {
+				if ( $intermediary_post_type->show_ui ) {
 					$fields_html['intermediary'] = $intermediary_post_type->name;
 				}
 			}
@@ -966,10 +981,11 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 */
 	public static function get_table_data_for_intermediary_title( $association_uid ) {
 		/** Following exludes this static from unit tests
+		 *
 		 * @todo extract this to a proper model to resolve the static
 		 */
 		global $wpdb;
-		if( ! is_object( $wpdb ) ) {
+		if ( ! is_object( $wpdb ) ) {
 			return null;
 		}
 
@@ -986,7 +1002,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 			? $intermediary_elements[0]->get_underlying_object()
 			: null;
 
-		if( $intermediary_post ) {
+		if ( $intermediary_post ) {
 			return array(
 				'name'     => $intermediary_post->post_name,
 				'value'    => $intermediary_post->post_title,
@@ -1003,8 +1019,10 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	 * Checks if the relationships admits another association
 	 *
 	 * @param Toolset_Relationship_Definition $relationship The relationship definition.
-	 * @param int                             $current_post_id The Post ID.
+	 * @param int $current_post_id The Post ID.
+	 *
 	 * @return boolean
+	 * @throws Toolset_Element_Exception_Element_Doesnt_Exist
 	 * @since m2m
 	 */
 	private function can_connect_another( $relationship, $current_post_id ) {
@@ -1044,7 +1062,7 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	/**
 	 * Gets the title for the meta box
 	 *
-	 * @param Toolset_Relationship_Definition $relationship Relationship.
+	 * @param IToolset_Relationship_Definition $relationship Relationship.
 	 * @return string
 	 * @since m2m
 	 */
@@ -1141,8 +1159,9 @@ class Types_Page_Extension_Meta_Box_Related_Content extends Types_Page_Extension
 	/**
 	 * Returns the list of related posts $columns
 	 *
-	 * @param strings                         $post_type Post type slug.
+	 * @param string $post_type Post type slug.
 	 * @param Toolset_Relationship_Definition $excluded_relationship Relationship to be excluded.
+	 *
 	 * @return array
 	 * @since m2m
 	 */

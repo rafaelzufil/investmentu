@@ -204,24 +204,20 @@ class Types_Field_Group_Repeatable_Mapper_Legacy implements Types_Field_Group_Ma
 	 * @return bool
 	 */
 	public function update_item_title( WP_Post $item, $title = null ) {
+		$new_title = $item->post_title;
+
 		if( $title !== null ) {
-			$item->post_title = $title;
+			$new_title = $title;
 		}
 
-		if( is_array( $item->post_title ) ){
+		if( is_array( $new_title ) ){
 			throw new InvalidArgumentException( 'Title cannot be an array.' );
 		}
 
-		$item->post_title = sanitize_text_field( $item->post_title );
-
-		global $wpdb;
-
-		$result = $wpdb->query(
-			$wpdb->prepare(
-				"UPDATE $wpdb->posts SET $wpdb->posts.post_title = %s WHERE $wpdb->posts.ID = %d",
-				array( $item->post_title, $item->ID )
-			)
-		);
+		$result = wp_update_post( array(
+			'ID' => $item->ID,
+			'post_title' => sanitize_text_field( $new_title )
+		) );
 
 		if( ! $result ) {
 			return false;

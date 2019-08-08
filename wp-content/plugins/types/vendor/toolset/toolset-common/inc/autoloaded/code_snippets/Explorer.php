@@ -92,7 +92,12 @@ class Explorer {
 
 		$results = array();
 		foreach( $php_files_iterator as $file_info ) {
-			$results[] = array_pop( $file_info );
+			$file_path = array_pop( $file_info );
+			if( 'index.php' === strtolower( substr( $file_path, strlen( $file_path ) - 9 ) ) ) {
+				// Always ignore index.php files.
+				continue;
+			}
+			$results[] = $file_path;
 		}
 
 		return $results;

@@ -313,7 +313,10 @@ final class Types_Page_Extension_Edit_Post_Type {
 				}
 			}
 		} else {
-			$hidden_metaboxes = array();
+			// We must not manipulate the "metaboxhidden_" usermeta if it's not an array (but an empty string by default).
+			// Empty string is interpreted as "default behaviour" while an empty array means "show all metaboxes",
+			// including ones that we don't want to show by default (native slugdiv, custom fields, etc.)
+			return;
 		}
 		if( apply_filters( 'toolset_is_m2m_enabled', false ) ) {
 			$all_relationships = $this->get_relationships_by_post_type( $post_type );

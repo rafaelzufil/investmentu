@@ -25,6 +25,14 @@ class Types_Asset_Manager extends Toolset_Assets_Manager {
 	const SCRIPT_POST_ADD_OR_EDIT = 'types-post-add-or-edit';
 	const SCRIPT_POST_ADD_OR_EDIT_NO_COMPONENTS = 'types-post-add-or-edit-no-components';
 
+	/**
+	 * TinyMCE compatibility layer for WYSIWYG fields.
+	 *
+	 * Note: Also requires wp_enqueue_editor() to be called in order to work properly,
+	 * and Types_Helper_TinyMCE::localize_dynamic_tinymce_init_script().
+	 */
+	const SCRIPT_TINYMCE_COMPATIBILITY = 'types-tinymce-compatibility';
+
 	const STYLE_POST_ADD_OR_EDIT = 'types-post-add-or-edit';
 
 	// Registered in legacy Types
@@ -146,6 +154,13 @@ class Types_Asset_Manager extends Toolset_Assets_Manager {
 			self::SCRIPT_POST_ADD_OR_EDIT_NO_COMPONENTS,
 			TYPES_RELPATH . '/public/js/post/bundle.add_or_edit_no_components.js',
 			array( self::SCRIPT_SUBMIT_ANYWAY ),
+			TYPES_VERSION
+		);
+
+		$this->register_script(
+			self::SCRIPT_TINYMCE_COMPATIBILITY,
+			TYPES_RELPATH . '/public/js/compatibility/bundle.tinymce.js',
+			array( 'jquery' ),
 			TYPES_VERSION
 		);
 

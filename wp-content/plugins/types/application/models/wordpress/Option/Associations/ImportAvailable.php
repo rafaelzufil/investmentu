@@ -2,7 +2,7 @@
 
 namespace OTGS\Toolset\Types\Wordpress\Option\Associations;
 
-use OTGS\Toolset\Types\Wordpress\Option\AOption;
+use OTGS\Toolset\Common\Wordpress\Option\AOption;
 
 /**
  * Class ImportAvailable
@@ -26,6 +26,18 @@ class ImportAvailable extends AOption {
 	 * @param bool $autoload
 	 */
 	public function updateOption( $value = true, $autoload = true ) {
-		update_option( $this->getKey(), (bool) $value, $autoload );
+		update_option( $this->getKey(), (bool) $value, $this->isAlwaysAutoloaded() );
 	}
+
+
+	/**
+	 * @inheritdoc
+	 * @return bool
+	 * @since 3.2.5
+	 */
+	protected function isAlwaysAutoloaded() {
+		return true;
+	}
+
+
 }

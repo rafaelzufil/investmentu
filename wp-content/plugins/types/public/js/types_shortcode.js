@@ -18,22 +18,31 @@ if ( typeof Toolset.Types === "undefined" ) {
  */
 
 Toolset.Types.shortcodeManager = function( $ ) {
-	
+
 	var self = this;
-	
+
 	/**
 	 * Shortcodes GUI API version.
 	 *
 	 * Access to it using the API methods, from inside this object:
 	 * - self.getShortcodeGuiApiVersion
-	 * 
+	 *
 	 * Access to it using the API hooks, from the outside world:
 	 * - types-filter-get-shortcode-gui-api-version
 	 *
 	 * @since m2m
 	 */
 	self.apiVersion = 193000;
-	
+
+	/**
+	 * Whether the colorpicker functionality is available:
+	 * it is included as a dependency on the backend,
+	 * but the script is not available on frontend.
+	 *
+	 * @since 3.4
+	 */
+	self.hasColorpicker = ( typeof $.fn.wpColorPicker == 'function' );
+
 	/**
 	 * Get the current shortcodes GUI API version.
 	 *
@@ -44,82 +53,82 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.getShortcodeGuiApiVersion = function( version ) {
 		return self.apiVersion;
 	};
-	
+
 	/**
 	 * Register the canonical Toolset hooks, both API filters and actions.
 	 *
 	 * @since m2m
 	 */
 	self.initHooks = function() {
-		
+
 		/*
 		 * ###############################
 		 * API filters
 		 * ###############################
 		 */
-		
+
 		/**
 		 * Return the current shortcodes GUI API version.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addFilter( 'types-filter-get-shortcode-gui-api-version', self.getShortcodeGuiApiVersion );
-		
+
 		/**
 		 * Clean the list of attributes from metaXXX helpers.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addFilter( 'toolset-filter-shortcode-gui-types-computed-attribute-values', self.cleanTypesAttributes );
-		
+
 		/**
 		 * Clean the list of attributes depending on the field type and the attributes selected.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addFilter( 'toolset-filter-shortcode-gui-types-computed-attribute-values', self.adjustAttributes, 20, 2 );
-		
+
 		/**
 		 * Adjust the attributes based on the item selector values.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addFilter( 'toolset-filter-shortcode-gui-types-computed-attribute-values', self.adjustTypesMetaSelectorAttributes, 30, 2 );
-		
+
 		/**
 		 * Generate complex shortcodes for checkbox, checkboxes and radio field when producing custom output per option.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addFilter( 'toolset-filter-shortcode-gui-types-crafted-shortcode', self.adjustComposedShortcodes, 10, 2 );
-		
+
 		/*
 		 * ###############################
 		 * API actions
 		 * ###############################
 		 */
-		
+
 		/**
-		 * OPen the Types shortcode dialog on demand, given a set of data.
+		 * Open the Types shortcode dialog on demand, given a set of data.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addAction( 'types-action-shortcode-dialog-do-open', self.shortcodeDialogOpen );
-		
+
 		/**
 		 * Set the right dialog buttonpane buttons labels, after the dialog is opened, based on the current GUI action.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addAction( 'types-action-shortcode-dialog-preloaded', self.manageShortcodeDialogButtonpane );
-		
+
 		/**
 		 * Set override values on Types shortcode dialogs.
 		 *
 		 * @since m2m
 		 */
 		Toolset.hooks.addAction( 'types-action-shortcode-dialog-loaded', self.manageEditingOverrides );
-		
+
 		/**
 		 * Generate extra attributes for field types that support custom output per option.
 		 *
@@ -128,16 +137,25 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		Toolset.hooks.addAction( 'types-action-shortcode-dialog-loaded', self.manageMetaoptions );
 
 		/**
+		 * Manage some special selectors for options, like colorpickers,
+		 * until we create a proper colorpicker option type.
+		 *
+		 * @param object dialogData
+		 * @since 3.4
+		 */
+		Toolset.hooks.addAction( 'types-action-shortcode-dialog-loaded', self.manageSpecialSelectors );
+
+		/**
 		 * Display the Types shortcodes modal whenever the button that inserts shortcodes inside page builder inputs is clicked.
 		 *
 		 * @since 3.0.8
 		 */
 		Toolset.hooks.addAction( 'toolset-action-display-shortcodes-modal-for-page-builders', self.displayTypesShortcodesModalForPageBuilders );
-		
+
 		return self;
-		
+
 	};
-	
+
 	/**
 	 * Init GUI templates.
 	 *
@@ -146,18 +164,18 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	self.templates = {};
 	self.initTemplates = function() {
-		
+
 		// Registers the typesUserSelector, typesViewsUserSelector, typesViewsTermSelector templates in the shared pool
 		Toolset.hooks.doAction( 'toolset-filter-register-shortcode-gui-attribute-template', 'typesUserSelector', wp.template( 'toolset-shortcode-attribute-typesUserSelector' ) );
 		Toolset.hooks.doAction( 'toolset-filter-register-shortcode-gui-attribute-template', 'typesViewsUserSelector', wp.template( 'toolset-shortcode-attribute-typesViewsUserSelector' ) );
 		Toolset.hooks.doAction( 'toolset-filter-register-shortcode-gui-attribute-template', 'typesViewsTermSelector', wp.template( 'toolset-shortcode-attribute-typesViewsTermSelector' ) );
-		
+
 		// Gets the shared pool
 		self.templates = _.extend( Toolset.hooks.applyFilters( 'toolset-filter-get-shortcode-gui-templates', {} ), self.templates );
 
 		// Skype Template
         self.templates.attributes.skype = wp.template( 'toolset-shortcode-attribute-skype' );
-		
+
 		// Register custom templates for local usage
 		if ( ! _.has( self.templates, 'info' ) ) {
 			self.templates.info = {};
@@ -174,11 +192,11 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			wp.template( 'toolset-shortcode-attribute-info-RFGSecond' ),
 			wp.template( 'toolset-shortcode-attribute-info-RFGThird' )
 		];
-		
+
 		return self;
-		
+
 	}
-	
+
 	/**
 	 * Init GUI dialogs.
 	 *
@@ -189,7 +207,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.dialogs.main = null;
 	self.dialogs.shortcode = null;
 	self.dialogs.postFieldInfoWizard = null;
-	
+
 	self.shortcodeDialogSpinnerContent = $(
 		'<div style="min-height: 150px;">' +
 		'<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; ">' +
@@ -198,19 +216,19 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		'</div>' +
 		'</div>'
 	);
-	
+
 	self.initDialogs = function() {
-		
+
 		/**
 		 * Main dialog to list the available shortcodes.
 		 *
 		 * @since m2m
 		 */
 		if ( ! $( '#js-types-shortcode-gui-dialog-container-main' ).length ) {
-			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-main" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container-main"></div>' );
+			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-main" class="toolset-dialog__body toolset-shortcodes js-toolset-dialog__body"></div>' );
 		}
 		self.dialogs.main = $( '#js-types-shortcode-gui-dialog-container-main' ).dialog({
-			dialogClass: 'toolset-ui-dialog toolset-ui-dialog-responsive',
+			dialogClass: 'toolset-dialog',
 			autoOpen:	false,
 			modal:		true,
 			width:		'90%',
@@ -229,17 +247,17 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				$( 'body' ).removeClass( 'modal-open' );
 			}
 		});
-		
+
 		/**
 		 * Canonical dialog to insert shortcodes.
 		 *
 		 * @since m2m
 		 */
 		if ( ! $( '#js-types-shortcode-gui-dialog-container-shortcode' ).length ) {
-			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-shortcode" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container-shortcode"></div>' );
+			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-shortcode" class="toolset-dialog__body toolset-shortcodes js-toolset-dialog__body"></div>' );
 		}
 		self.dialogs.shortcode = $( "#js-types-shortcode-gui-dialog-container-shortcode" ).dialog({
-			dialogClass: 'toolset-ui-dialog toolset-ui-dialog-responsive',
+			dialogClass: 'toolset-dialog',
 			autoOpen:	false,
 			modal:		true,
 			width:		'90%',
@@ -287,17 +305,17 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 			]
 		});
-		
+
 		/**
 		 * Information wizard dialog about post reference fields.
 		 *
 		 * @since m2m
 		 */
 		if ( ! $( '#js-types-shortcode-gui-dialog-container-post-field-info-wizard' ).length ) {
-			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-post-field-info-wizard" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container-post-field-info-wizard"></div>' );
+			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-post-field-info-wizard" class="toolset-dialog__body toolset-shortcodes js-toolset-dialog__body js-types-shortcode-gui-dialog-container-post-field-info-wizard"></div>' );
 		}
 		self.dialogs.postFieldInfoWizard = $( "#js-types-shortcode-gui-dialog-container-post-field-info-wizard" ).dialog({
-			dialogClass: 'toolset-ui-dialog toolset-ui-dialog-responsive',
+			dialogClass: 'toolset-dialog',
 			autoOpen:	false,
 			modal:		true,
 			width:		'90%',
@@ -335,17 +353,17 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 			]
 		});
-		
+
 		/**
 		 * Information wizard dialog about post reference fields.
 		 *
 		 * @since m2m
 		 */
 		if ( ! $( '#js-types-shortcode-gui-dialog-container-rfg-info-wizard' ).length ) {
-			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-rfg-info-wizard" class="toolset-shortcode-gui-dialog-container js-toolset-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container js-types-shortcode-gui-dialog-container-rfg-info-wizard"></div>' );
+			$( 'body' ).append( '<div id="js-types-shortcode-gui-dialog-container-rfg-info-wizard" class="toolset-dialog__body toolset-shortcodes js-toolset-dialog__body js-types-shortcode-gui-dialog-container-rfg-info-wizard"></div>' );
 		}
 		self.dialogs.RFGInfoWizard = $( "#js-types-shortcode-gui-dialog-container-rfg-info-wizard" ).dialog({
-			dialogClass: 'toolset-ui-dialog toolset-ui-dialog-responsive',
+			dialogClass: 'toolset-dialog',
 			autoOpen:	false,
 			modal:		true,
 			width:		'90%',
@@ -382,13 +400,12 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 			]
 		});
-		
+
 		$( window ).resize( self.resizeWindowEvent );
-		
+
 		return self;
-		
 	}
-	
+
 	/**
 	 * Callback for the window.resize event.
 	 *
@@ -396,7 +413,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	self.resizeWindowEvent = _.debounce( function() {
 		self.repositionDialog();
-	}, 200);
+	}, 200 );
 
 	/**
 	 * Reposition the Types dialogs based on the current window size.
@@ -405,37 +422,18 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	self.repositionDialog = function() {
 		var winH = $( window ).height() - 100;
-		self.dialogs.main.dialog( "option", "maxHeight", winH );
-		self.dialogs.shortcode.dialog( "option", "maxHeight", winH );
-		self.dialogs.postFieldInfoWizard.dialog( "option", "maxHeight", winH );
-		self.dialogs.RFGInfoWizard.dialog( "option", "maxHeight", winH );
 
-		self.dialogs.main.dialog( "option", "position", {
-			my:        "center top+50",
-			at:        "center top",
-			of:        window,
-			collision: "none"
-		});
-		self.dialogs.shortcode.dialog( "option", "position", {
-			my:        "center top+50",
-			at:        "center top",
-			of:        window,
-			collision: "none"
-		});
-		self.dialogs.postFieldInfoWizard.dialog( "option", "position", {
-			my:        "center top+50",
-			at:        "center top",
-			of:        window,
-			collision: "none"
-		});
-		self.dialogs.RFGInfoWizard.dialog( "option", "position", {
-			my:        "center top+50",
-			at:        "center top",
-			of:        window,
-			collision: "none"
+		_.each( self.dialogs, function( dialog, key, list ) {
+			dialog.dialog( "option", "maxHeight", winH );
+			dialog.dialog( "option", "position", {
+				my:        "center top+50",
+				at:        "center top",
+				of:        window,
+				collision: "none"
+			});
 		});
 	};
-	
+
 	/**
 	 * Open the main dialog to offer shortcodes, which can be the Types one, or the Fields and Views if Views is active.
 	 *
@@ -448,7 +446,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			self.openTypesDialog();
 		}
 	};
-	
+
 	/**
 	 * Open the main Types dialog to offer shortcodes.
 	 *
@@ -457,7 +455,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.openTypesDialog = function() {
 		self.dialogs.main.dialog( 'open' );
 	}
-	
+
 	/**
 	 * Init the Admin Bar button, if any.
 	 *
@@ -468,7 +466,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			$( '.js-types-shortcode-generator-node a' ).addClass( 'js-types-in-adminbar' );
 		}
 	};
-	
+
 	/**
 	 * Set the right active editor and action when clicking any button, and open the main dialog.
 	 *
@@ -480,26 +478,26 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	$( document ).on( 'click','.js-types-in-adminbar', function( e ) {
 		e.preventDefault();
-		
+
 		Toolset.hooks.doAction( 'toolset-action-set-shortcode-gui-action', 'create' );
 		self.openTypesDialog();
-		
+
 		return false;
 	});
 	$( document ).on( 'click', '.js-types-in-toolbar', function( e ) {
 		e.preventDefault();
-		
+
 		var typesInToolbarButton = $( this );
 		if ( typesInToolbarButton.attr( 'data-editor' ) ) {
 			window.wpcfActiveEditor = typesInToolbarButton.data( 'editor' );
 		}
-		
+
 		Toolset.hooks.doAction( 'toolset-action-set-shortcode-gui-action', 'insert' );
 		self.openTypesDialog();
-		
+
 		return false;
 	});
-	
+
 	/**
 	 * Close the main dialog when clicking on any of its items.
 	 *
@@ -507,12 +505,12 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	$( document ).on( 'click', '.js-types-shortcode-gui-group-list .js-types-shortcode-gui', function( e ) {
 		e.preventDefault();
-		
+
 		if ( self.dialogs.main.dialog( "isOpen" ) ) {
 			self.dialogs.main.dialog('close');
 		}
 	});
-	
+
 	/**
 	 * Manage the steps and buttons in the post reference information wizard dialog.
 	 *
@@ -532,7 +530,6 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				});
 				$( '.js-types-shortcode-gui-button-pfiw-previous' ).hide();
 				$( '.js-types-shortcode-gui-button-pfiw-next .ui-button-text' ).html( types_shortcode_i18n.action.wizard );
-				//self.dialogs.postFieldInfoWizard.html( self.templates.info.postReferenceFieldWizard[0]( dialogData ) );
 				break;
 			case 1:
 				$( '.js-types-shortcode-gui-button-pfiw-previous' ).hide();
@@ -550,12 +547,12 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		self.dialogs.postFieldInfoWizard.html( self.templates.info.postReferenceFieldWizard[ step ]( dialogData ) );
 		self.dialogs.postFieldInfoWizard.dialog( "option", "wizardStep", step );
 	};
-	
+
 	/**
 	 * Manage the Next button click in the post reference information wizard dialog.
 	 *
 	 * After the last step, reopen the main dialog when inserting/creating/appending a shortcode.
-	 * Just close the wizard in any other scenario, like when editing or skipping a shortcode, 
+	 * Just close the wizard in any other scenario, like when editing or skipping a shortcode,
 	 * or when in the Views loop wizard.
 	 *
 	 * @since m2m
@@ -563,7 +560,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.postFieldInfoWizardNext = function() {
 		var currentWizardStep = self.dialogs.postFieldInfoWizard.dialog( "option", "wizardStep" ),
 			comingWizardStep = currentWizardStep + 1;
-		
+
 		if ( comingWizardStep > 3 ) {
 			self.dialogs.postFieldInfoWizard.dialog( "close" );
 			if ( _.contains( [ 'insert', 'create', 'append' ], Toolset.hooks.applyFilters( 'toolset-filter-get-shortcode-gui-action', '' ) ) ) {
@@ -573,7 +570,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		}
 		self.postFieldInfoWizardStep( comingWizardStep );
 	};
-	
+
 	/**
 	 * Manage the Previous button lick in the post reference information wizard dialog.
 	 *
@@ -585,9 +582,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		if ( comingWizardStep < 1 ) {
 			comingWizardStep = 1;
 		}
-		self.postFieldInfoWizardStep( comingWizardStep );	
+		self.postFieldInfoWizardStep( comingWizardStep );
 	};
-	
+
 	/**
 	 * Manage the steps and buttons in the repeating fields groups information wizard dialog.
 	 *
@@ -611,7 +608,6 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				} else {
 					$( '.js-types-shortcode-gui-button-rfgiw-next .ui-button-text' ).html( types_shortcode_i18n.action.close );
 				}
-				//self.dialogs.RFGInfoWizard.html( self.templates.info.RFGWizard[0]( dialogData ) );
 				break;
 			case 1:
 				$( '.js-types-shortcode-gui-button-rfgiw-previous' ).hide();
@@ -629,12 +625,12 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		self.dialogs.RFGInfoWizard.html( self.templates.info.RFGWizard[ step ]( dialogData ) );
 		self.dialogs.RFGInfoWizard.dialog( "option", "wizardStep", step );
 	};
-	
+
 	/**
 	 * Manage the Next button click in the repeating fields groups information wizard dialog.
 	 *
 	 * After the last step, reopen the main dialog when inserting/creating/appending a shortcode.
-	 * Just close the wizard in any other scenario, like when editing or skipping a shortcode, 
+	 * Just close the wizard in any other scenario, like when editing or skipping a shortcode,
 	 * or when in the Views loop wizard.
 	 *
 	 * @since m2m
@@ -642,7 +638,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.RFGInfoWizardStepNext = function() {
 		var currentWizardStep = self.dialogs.RFGInfoWizard.dialog( "option", "wizardStep" ),
 			comingWizardStep = currentWizardStep + 1;
-		
+
 		if (
 			currentWizardStep == 0
 			&& ! types_shortcode_i18n.conditions.plugins.toolsetViews
@@ -650,14 +646,14 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			self.dialogs.RFGInfoWizard.dialog( "close" );
 			return;
 		}
-		
+
 		if ( comingWizardStep > 3 ) {
 			self.dialogs.RFGInfoWizard.dialog( "close" );
 			return;
 		}
 		self.RFGInfoWizardStep( comingWizardStep );
 	};
-	
+
 	/**
 	 * Manage the Previous button lick in the repeating fields groups information wizard dialog.
 	 *
@@ -669,9 +665,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		if ( comingWizardStep < 1 ) {
 			comingWizardStep = 1;
 		}
-		self.RFGInfoWizardStep( comingWizardStep );	
+		self.RFGInfoWizardStep( comingWizardStep );
 	};
-	
+
 	/**
 	 * Display a dialog for inserting a generic shortcode.
 	 *
@@ -684,9 +680,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 * @since m2m
 	 */
 	self.shortcodeDialogOpen = function( dialogData ) {
-		
+
 		// Race condition:
-		// We close the main dialog before opening the shortcode dialog, 
+		// We close the main dialog before opening the shortcode dialog,
 		// so we can keep the .modal-open classname in the document body, to:
 		// - avoid scrolling
 		// - prevent positioning issues with toolset_select2
@@ -694,32 +690,32 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			self.dialogs.main.dialog('close');
 		}
 		Toolset.hooks.doAction( 'wpv-action-wpv-fields-and-views-dialog-do-maybe-close' );
-		
-		_.defaults( dialogData, { 
-			parameters: {}, 
-			overrides: {}, 
-			dialog: self.dialogs.shortcode, 
-			conditions: types_shortcode_i18n.conditions 
+
+		_.defaults( dialogData, {
+			parameters: {},
+			overrides: {},
+			dialog: self.dialogs.shortcode,
+			conditions: types_shortcode_i18n.conditions
 		});
-		
+
 		if ( ! _.has( dialogData.parameters, 'metaType' )  ) {
 			dialogData.parameters.metaType = 'typesGenericType';
 		}
-		
+
 		// Post reference fields should not be insertable: fire the info wizard
 		if ( 'post' === dialogData.parameters.metaType ) {
 			self.dialogs.postFieldInfoWizard.dialog( "option", "wizardData", dialogData );
 			self.postFieldInfoWizardStep( 0 );
 			return;
 		}
-		
+
 		// Repeating Field Groups fields should not be insertable: fire the info wizard
 		if ( 'repeatable_field_group' === dialogData.parameters.metaType ) {
 			self.dialogs.RFGInfoWizard.dialog( "option", "wizardData", dialogData );
 			self.RFGInfoWizardStep( 0 );
 			return;
 		}
-		
+
 		/**
 		 * Toolset hooks action: shortcode dialog requested. Types and shared versions.
 		 *
@@ -729,7 +725,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		 */
 		Toolset.hooks.doAction( 'types-action-shortcode-dialog-requested', dialogData );
 		Toolset.hooks.doAction( 'toolset-action-shortcode-dialog-requested', dialogData );
-		
+
 		// Show the "empty" dialog with a spinner while loading dialog content
 		self.dialogs.shortcode.dialog( 'open' ).dialog({
 			title: dialogData.title
@@ -745,20 +741,20 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		 */
 		Toolset.hooks.doAction( 'types-action-shortcode-dialog-preloaded', dialogData );
 		Toolset.hooks.doAction( 'toolset-action-shortcode-dialog-preloaded', dialogData );
-		
-		// Warning!! The shortcodes data is stored in types_shortcode_i18n, 
-		// but assigning any of the objects it contains is done by reference 
+
+		// Warning!! The shortcodes data is stored in types_shortcode_i18n,
+		// but assigning any of the objects it contains is done by reference
 		// so it would modify permanently the original set.
 		// Using $.extend with deep cloning.
 		var typesShortcodeData = $.extend( true, {}, types_shortcode_i18n );
-		
+
 		// Load the specific field type attributes definitions, or a generic set
 		if ( _.has( typesShortcodeData.attributes, dialogData.parameters.metaType ) ) {
 			var shortcodeAttributes = typesShortcodeData.attributes[ dialogData.parameters.metaType ];
 		} else {
 			var shortcodeAttributes = typesShortcodeData.attributes[ 'typesGenericType' ];
 		}
-		
+
 		// Inject the attributes for repeating fields
 		if ( 'multiple' == dialogData.parameters.metaNature ) {
 			if ( _.isEmpty( shortcodeAttributes.displayOptions.fields ) ) {
@@ -770,7 +766,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				);
 			}
 		}
-		
+
 		// All Types shortcodes require an item selector and a closing tag
 		if ( 'posts' == dialogData.parameters.metaDomain ) {
 			shortcodeAttributes = _.extend(
@@ -799,10 +795,10 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				shortcodeAttributes.typesUserSelector.fields.content = { type: 'content', hidden: true };
 			}
 		}
-		
+
 		// Add the templates and attributes to the main set of data, and render the dialog
-		var templateData = _.extend( 
-			dialogData, 
+		var templateData = _.extend(
+			dialogData,
 			{
 				templates:  self.templates,
 				attributes: shortcodeAttributes
@@ -810,13 +806,13 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		);
 
 		self.dialogs.shortcode.html( self.templates.dialog( templateData ) );
-		
+
 		// Initialize the dialog tabs, if needed
 		if ( self.dialogs.shortcode.find( '.js-toolset-shortcode-gui-tabs-list > li' ).length > 1 ) {
 			self.dialogs.shortcode.find( '.js-toolset-shortcode-gui-tabs' )
 				.tabs({
 					beforeActivate: function( event, ui ) {
-						
+
 						var valid = Toolset.hooks.applyFilters( 'toolset-filter-is-shortcode-attributes-container-valid', true, ui.oldPanel );
 						if ( ! valid ) {
 							event.preventDefault();
@@ -833,8 +829,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				.removeClass( 'ui-corner-top ui-corner-right ui-corner-bottom ui-corner-left ui-corner-all');
 		} else {
 			self.dialogs.shortcode.find( '.js-toolset-shortcode-gui-tabs-list' ).remove();
+			self.dialogs.shortcode.find( '.js-toolset-shortcode-gui-tabs' ).addClass( 'toolset-shortcodes__tabs_single' );
 		}
-		
+
 		/**
 		 * Toolset hooks action: shortcode dialog loaded. Types, Types specific per field type, and shared versions.
 		 *
@@ -847,9 +844,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			Toolset.hooks.doAction( 'types-action-shortcode-' + dialogData.parameters.metaType + '-dialog-loaded', dialogData );
 		}
 		Toolset.hooks.doAction( 'toolset-action-shortcode-dialog-loaded', dialogData );
-		
+
 	};
-	
+
 	/**
 	 * Manage existing attribute values when opening the shortcode dialog for editing it.
 	 *
@@ -894,14 +891,14 @@ Toolset.Types.shortcodeManager = function( $ ) {
 							// @todo check this
 							attribute_wrapper.find( '.js-shortcode-gui-field' ).val( value ).trigger( 'change' );
 							break;
-							
+
 					}
 				} else {
 					//data.dialog.find( '.wpv-dialog' ).prepend( '<span class="wpv-shortcode-gui-attribute-wrapper js-wpv-shortcode-gui-attribute-wrapper js-wpv-shortcode-gui-attribute-wrapper-for-' + key + '" data-attribute="' + key + '" data-type="param"><input type="hidden" name="' + key + '" value="' + value + '" disabled="disabled" /></span>' );
-				}				
+				}
 			});
 		}
-		if ( 
+		if (
 			_.has( dialogData.overrides, 'content' )
 			&& dialogData.overrides.content !== undefined
 		) {
@@ -909,7 +906,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			dialogData.dialog.find( '.js-toolset-shortcode-gui-content' ).val( dialogData.overrides.content );
 		}
 	};
-	
+
 	/**
 	 * Generate extra attributes for field types that support custom output per option.
 	 *
@@ -926,21 +923,52 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 */
 	self.manageMetaoptions = function( dialogData ) {
 		if ( _.has( dialogData.parameters, 'metaOptions' ) ) {
-			
+
 			dialogData.dialog
 				.find( '.js-toolset-shortcode-gui-attribute-wrapper-for-metaOptions input' )
 					.data( 'metaOptions', dialogData.parameters.metaOptions );
-			
+
 			if ( 'radio' == dialogData.parameters.metaType ) {
 				self.manageMetaoptionsForRadio( dialogData );
 			}
 			if ( 'checkboxes' == dialogData.parameters.metaType ) {
 				self.manageMetaoptionsForCheckboxes( dialogData );
 			}
-			
+
 		}
 	};
-	
+
+	/**
+	 * Manage some special selectors for options, like colorpickers,
+	 * until we create a proper colorpicker option type.
+	 *
+	 * @param object dialogData
+	 * @since 3.4
+	 */
+	self.manageSpecialSelectors = function( dialogData ) {
+		if ( 'image' === dialogData.parameters.metaType ) {
+			var $paddingColor = $( '.js-toolset-shortcode-gui-attribute-wrapper-for-toolsetCombo\\:padding_color input.js-shortcode-gui-field' );
+			self.initColorpicker( $paddingColor );
+		}
+	};
+
+	/**
+	 * Initialize a colorpicker, if available, over some option fields.
+	 *
+	 * @param object $selector
+	 * @since 3.4
+	 */
+	self.initColorpicker = function( $selector ) {
+		if ( ! self.hasColorpicker ) {
+			return;
+		}
+		$selector.wpColorPicker({
+			change: function( event, ui ) {},
+			clear: function() {},
+			palettes: true
+		});
+	};
+
 	/**
 	 * Generate extra attributes for radio fields.
 	 *
@@ -958,10 +986,10 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	self.manageMetaoptionsForRadio = function( dialogData ) {
 		var combo = dialogData.dialog.find( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo .js-toolset-shortcode-gui-dialog-item-group' ).detach(),//$( '.js-toolset-shortcode-gui-dialog-item-group', '.js-toolset-shortcode-gui-attribute-wrapper-for-outputCustomCombo' ).detach(),
 			container = $( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo' );
-		
+
 		_.each( dialogData.parameters.metaOptions, function( value, key, list ) {
 			var comboClone = combo.clone();
-			
+
 			comboClone
 				.find( '.js-toolset-shortcode-gui-attribute-wrapper-for-selectedValue' )
 					.attr( 'data-attribute', 'selectedValue_' + key );
@@ -976,7 +1004,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			comboClone.appendTo( container );
 		});
 	};
-	
+
 	/**
 	 * Generate extra attributes for checkboxes fields.
 	 *
@@ -995,10 +1023,10 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var combo = dialogData.dialog.find( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo .js-toolset-shortcode-gui-dialog-item-group' ).detach(),//$( '.js-toolset-shortcode-gui-dialog-item-group', '.js-toolset-shortcode-gui-attribute-wrapper-for-outputCustomCombo' ).detach(),
 			container = $( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo' ),
 			eachIndex = 0;
-		
+
 		_.each( dialogData.parameters.metaOptions, function( value, key, list ) {
 			var comboClone = combo.clone();
-			
+
 			comboClone
 				.find( '.js-toolset-shortcode-gui-attribute-wrapper-for-selectedValue' )
 					.attr( 'data-attribute', 'selectedValue_' + eachIndex );
@@ -1025,7 +1053,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			eachIndex++;
 		});
 	};
-	
+
 	/**
 	 * Manage the attributes GUI based on the "output" attribte value.
 	 *
@@ -1036,7 +1064,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var metaType = $( '#js-types-shortcode-gui-dialog-container-shortcode input[name=metaType]' ).val(),
 			checkedValue = $( '#js-types-shortcode-gui-dialog-container-shortcode .js-shortcode-gui-field[name=types-output]:checked' ).val(),
 			dialogContainer = $( '#js-types-shortcode-gui-dialog-container-shortcode' );
-		
+
 		switch ( metaType ) {
 			case 'audio':
 				if ( 'raw' == checkedValue ) {
@@ -1049,7 +1077,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-autoplay', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'checkbox':
 				if ( 'custom' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo', dialogContainer ).slideDown( 'fast' );
@@ -1057,7 +1085,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo', dialogContainer ).slideUp( 'fast' );
 				}
 				break;
-			
+
 			case 'checkboxes':
 				if ( 'custom' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo', dialogContainer ).slideDown( 'fast' );
@@ -1067,7 +1095,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-separator', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'date':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-style', dialogContainer ).slideUp( 'fast' );
@@ -1078,7 +1106,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-style input.js-shortcode-gui-field:radio:checked', dialogContainer ).trigger( 'change' );
 				}
 				break;
-			
+
 			case 'email':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-title', dialogContainer ).slideUp( 'fast' );
@@ -1088,7 +1116,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'embed':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', dialogContainer ).slideUp( 'fast' );
@@ -1096,7 +1124,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'file':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-title', dialogContainer ).slideUp( 'fast' );
@@ -1106,33 +1134,12 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'image':
-				if ( 'raw' == checkedValue ) {
-					$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-padding_color', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-toolsetCombo\\:padding_color', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideUp( 'fast' );
-				} else if ( 'url' == checkedValue ) {
-					$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', dialogContainer ).slideUp( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size input.js-shortcode-gui-field:radio:checked', dialogContainer ).trigger( 'change' );
-					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideUp( 'fast' );
-				} else {
-					$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size input.js-shortcode-gui-field:radio:checked', dialogContainer ).trigger( 'change' );
-					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideDown( 'fast' );
-				}
+				var selectedSize = $( '.js-shortcode-gui-field[name=types-size]:checked', dialogContainer ).val();
+				self.manageImageFieldByOutputAndSize( checkedValue, selectedSize, dialogContainer );
 				break;
-			
+
 			case 'numeric':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-format', dialogContainer ).slideUp( 'fast' );
@@ -1140,7 +1147,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-format', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'radio':
 				if ( 'raw' == checkedValue || 'normal' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo', dialogContainer ).slideUp( 'fast' );
@@ -1148,7 +1155,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-outputCustomCombo', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'skype':
 				if ( 'raw' == checkedValue ) {
 					// legacy
@@ -1172,7 +1179,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
                     $( '.js-toolset-shortcode-gui-attribute-wrapper-for-receiver', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'url':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-title', dialogContainer ).slideUp( 'fast' );
@@ -1186,7 +1193,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', dialogContainer ).slideDown( 'fast' );
 				}
 				break;
-			
+
 			case 'video':
 				if ( 'raw' == checkedValue ) {
 					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-poster', dialogContainer ).slideUp( 'fast' );
@@ -1204,7 +1211,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				break;
 		}
 	});
-	
+
 	/**
 	 * Manage the attributes GUI based on the "style" attribte value. Used for date fields.
 	 *
@@ -1214,7 +1221,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var metaType = $( '#js-types-shortcode-gui-dialog-container-shortcode input[name=metaType]' ).val(),
 			checkedValue = $( '#js-types-shortcode-gui-dialog-container-shortcode .js-shortcode-gui-field[name=types-style]:checked' ).val(),
 			dialogContainer = $( '#js-types-shortcode-gui-dialog-container-shortcode' );
-		
+
 		switch ( metaType ) {
 			case 'date':
 				if ( 'calendar' == checkedValue ) {
@@ -1226,9 +1233,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 		}
-		
+
 	});
-	
+
 	/**
 	 * Manage the attributes GUI based on the "size" attribte value. Used for image fields.
 	 *
@@ -1238,30 +1245,16 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var metaType = $( '#js-types-shortcode-gui-dialog-container-shortcode input[name=metaType]' ).val(),
 			checkedValue = $( '#js-types-shortcode-gui-dialog-container-shortcode .js-shortcode-gui-field[name=types-size]:checked' ).val(),
 			dialogContainer = $( '#js-types-shortcode-gui-dialog-container-shortcode' );
-		
+
 		switch ( metaType ) {
 			case 'image':
-				if ( 'custom' == checkedValue ) {
-					$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', dialogContainer ).slideDown( 'fast' );
-					$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional input.js-shortcode-gui-field:radio:checked', dialogContainer ).trigger( 'change' );
-				} else {
-					$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', dialogContainer ).slideUp( 'fast' );
-					if ( 'full' == checkedValue ) {
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', dialogContainer ).slideUp( 'fast' );
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', dialogContainer ).slideUp( 'fast' );
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-padding_color', dialogContainer ).slideUp( 'fast' );
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-toolsetCombo\\:padding_color', dialogContainer ).slideUp( 'fast' );
-					} else {
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', dialogContainer ).slideDown( 'fast' );
-						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional input.js-shortcode-gui-field:radio:checked', dialogContainer ).trigger( 'change' );
-					}
-				}
+				var selectedOutput = $( '.js-shortcode-gui-field[name=types-output]:checked', dialogContainer ).val();
+				self.manageImageFieldByOutputAndSize( selectedOutput, checkedValue, dialogContainer );
 				break;
 		}
-		
+
 	});
-	
+
 	/**
 	 * Manage the attributes GUI based on the "proportional" attribte value. Used for image fields.
 	 *
@@ -1271,7 +1264,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var metaType = $( '#js-types-shortcode-gui-dialog-container-shortcode input[name=metaType]' ).val(),
 			checkedValue = $( '#js-types-shortcode-gui-dialog-container-shortcode .js-shortcode-gui-field[name=types-proportional]:checked' ).val(),
 			dialogContainer = $( '#js-types-shortcode-gui-dialog-container-shortcode' );
-		
+
 		switch ( metaType ) {
 			case 'image':
 				if ( 'true' == checkedValue ) {
@@ -1284,9 +1277,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 		}
-		
+
 	});
-	
+
 	/**
 	 * Manage the attributes GUI based on the "resize" attribte value. Used for image fields.
 	 *
@@ -1296,7 +1289,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var metaType = $( '#js-types-shortcode-gui-dialog-container-shortcode input[name=metaType]' ).val(),
 			checkedValue = $( '#js-types-shortcode-gui-dialog-container-shortcode .js-shortcode-gui-field[name=types-resize]:checked' ).val(),
 			dialogContainer = $( '#js-types-shortcode-gui-dialog-container-shortcode' );
-		
+
 		switch ( metaType ) {
 			case 'image':
 				if ( 'pad' == checkedValue ) {
@@ -1309,6 +1302,85 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				break;
 		}
 	});
+
+	/**
+	 * Manage the options on image fields.
+	 *
+	 * @param string output
+	 * @param string size
+	 * @param object $dialogContainer
+	 * @since 3.4
+	 */
+	self.manageImageFieldByOutputAndSize = function ( output, size, $dialogContainer ) {
+		switch ( output ) {
+			case 'raw':
+				$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-padding_color', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-toolsetCombo\\:padding_color', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-class', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-style', $dialogContainer ).slideUp( 'fast' );
+				//$( '.js-toolset-shortcode-gui-attribute-group-for-attributesCombo', $dialogContainer ).slideUp( 'fast' );
+				break;
+			case 'url':
+				$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-padding_color', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-toolsetCombo\\:padding_color', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-class', $dialogContainer ).slideUp( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-style', $dialogContainer ).slideUp( 'fast' );
+
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', $dialogContainer ).slideDown( 'fast' );
+				switch ( size ) {
+					case 'custom':
+						$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideDown( 'fast' );
+						break;
+					default:
+						$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideUp( 'fast' );
+						break;
+				}
+				break;
+			default:
+				$( '.js-toolset-shortcode-gui-attribute-group-for-titleAltCombo', $dialogContainer ).slideDown( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-align', $dialogContainer ).slideDown( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-size', $dialogContainer ).slideDown( 'fast' );
+
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-class', $dialogContainer ).slideDown( 'fast' );
+				$( '.js-toolset-shortcode-gui-attribute-wrapper-for-style', $dialogContainer ).slideDown( 'fast' );
+				switch ( size ) {
+					case 'custom':
+						$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideDown( 'fast' );
+
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', $dialogContainer ).slideDown( 'fast' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional .js-shortcode-gui-field:checked', $dialogContainer ).trigger( 'change' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', $dialogContainer ).slideDown( 'fast' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize .js-shortcode-gui-field:checked', $dialogContainer ).trigger( 'change' );
+						break;
+					case 'full':
+						$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideUp( 'fast' );
+
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', $dialogContainer ).slideUp( 'fast' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', $dialogContainer ).slideUp( 'fast' );
+						break;
+					default:
+						$( '.js-toolset-shortcode-gui-attribute-group-for-sizeCombo', $dialogContainer ).slideUp( 'fast' );
+
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional', $dialogContainer ).slideDown( 'fast' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-proportional .js-shortcode-gui-field:checked', $dialogContainer ).trigger( 'change' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize', $dialogContainer ).slideDown( 'fast' );
+						$( '.js-toolset-shortcode-gui-attribute-wrapper-for-resize .js-shortcode-gui-field:checked', $dialogContainer ).trigger( 'change' );
+						break;
+				}
+				break;
+		}
+		return self;
+	};
 
     /**
 	 * Skype Preview
@@ -1518,7 +1590,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		shortcodeAttributeValues['metaOptions'] = false;
 		return shortcodeAttributeValues;
 	};
-	
+
 	/**
 	 * Clean the attributes list based on selected attribute values, before composing the shortcode.
 	 *
@@ -1533,9 +1605,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		var rawAttributes = shortcodeData.rawAttributes;
 		switch( rawAttributes.metaType ) {
 			case 'audio':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['preload'] = false;
 					shortcodeAttributeValues['loop'] = false;
@@ -1543,18 +1615,18 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'checkbox':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['selectedValue'] = false;
 					shortcodeAttributeValues['unselectedValue'] = false;
 				}
 				break;
 			case 'checkboxes':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues = _.pick( shortcodeAttributeValues, function( value, key, object ) {
 						return ( ! /selectedValue/.test( key ) );
@@ -1562,25 +1634,25 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'date':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['style'] = false;
 					shortcodeAttributeValues['format'] = false;
 				} else {
-					if ( 
-						_.has( shortcodeAttributeValues, 'style' ) 
-						&& 'calendar' == shortcodeAttributeValues.style 
+					if (
+						_.has( shortcodeAttributeValues, 'style' )
+						&& 'calendar' == shortcodeAttributeValues.style
 					) {
 						shortcodeAttributeValues['format'] = false;
 					}
 				}
 				break;
 			case 'email':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['title'] = false;
 					shortcodeAttributeValues['class'] = false;
@@ -1588,9 +1660,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'file':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['title'] = false;
 					shortcodeAttributeValues['class'] = false;
@@ -1598,17 +1670,18 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'image':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
 					&& (
-						'raw' == shortcodeAttributeValues.output 
-						|| 'url' == shortcodeAttributeValues.output 
+						'raw' == shortcodeAttributeValues.output
+						|| 'url' == shortcodeAttributeValues.output
 					)
 				) {
 					shortcodeAttributeValues['title'] = false;
 					shortcodeAttributeValues['alt'] = false;
 					shortcodeAttributeValues['align'] = false;
 					shortcodeAttributeValues['proportional'] = false;
+					shortcodeAttributeValues['resize'] = false;
 					shortcodeAttributeValues['padding_color'] = false;
 					shortcodeAttributeValues['class'] = false;
 					shortcodeAttributeValues['style'] = false;
@@ -1617,6 +1690,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 						shortcodeAttributeValues['output'] = false;
 						if ( 'custom' == shortcodeAttributeValues['size'] ) {
 							shortcodeAttributeValues['size'] = false;
+						} else {
+							shortcodeAttributeValues['width'] = false;
+							shortcodeAttributeValues['height'] = false;
 						}
 					} else {
 						shortcodeAttributeValues['size'] = false;
@@ -1627,12 +1703,15 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					if ( 'custom' != shortcodeAttributeValues['size'] ) {
 						shortcodeAttributeValues['width'] = false;
 						shortcodeAttributeValues['height'] = false;
-					} 
+					}
 					if ( 'full' == shortcodeAttributeValues['size'] ) {
 						shortcodeAttributeValues['resize'] = false;
 						shortcodeAttributeValues['proportional'] = false;
 						shortcodeAttributeValues['padding_color'] = false;
 					} else {
+						if ( 'false' === shortcodeAttributeValues['proportional'] ) {
+							shortcodeAttributeValues['resize'] = false;
+						}
 						if ( 'pad' != shortcodeAttributeValues['resize'] ) {
 							shortcodeAttributeValues['padding_color'] = false;
 						}
@@ -1640,17 +1719,17 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'numeric':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['format'] = false;
 				}
 				break;
 			case 'radio':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues = _.pick( shortcodeAttributeValues, function( value, key, object ) {
 						return ( ! /selectedValue/.test( key ) );
@@ -1658,9 +1737,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'skype':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					// legacy
 					shortcodeAttributeValues['button_style'] = false;
@@ -1677,9 +1756,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'url':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['title'] = false;
 					shortcodeAttributeValues['class'] = false;
@@ -1688,9 +1767,9 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				}
 				break;
 			case 'video':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'raw' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'raw' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['width'] = false;
 					shortcodeAttributeValues['height'] = false;
@@ -1703,7 +1782,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		}
 		return shortcodeAttributeValues;
 	};
-	
+
 	/**
 	 * Adjust the attributes list for the item selector values.
 	 *
@@ -1736,8 +1815,8 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			}
 		}
 		if ( 'terms' == rawAttributes['metaDomain'] ) {
-			if ( 
-				_.has( rawAttributes, 'id' ) 
+			if (
+				_.has( rawAttributes, 'id' )
 				&& 'viewloop' == rawAttributes['id']
 			) {
 				shortcodeAttributeValues['id'] = false;
@@ -1745,7 +1824,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		}
 		return shortcodeAttributeValues;
 	}
-	
+
 	/**
 	 * Adjust the composed shortcode for field types that can produce extra shortcodes per option.
 	 *
@@ -1764,64 +1843,64 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			composedShortcode = craftedShortcode;
 		switch( rawAttributes.metaType ) {
 			case 'checkbox':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'custom' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'custom' == shortcodeAttributeValues.output
 				) {
 					var composedShortcode = '',
 					    composedAttributeString = '';
-					
+
 					shortcodeAttributeValues['output'] = false;
-					
+
 					if ( ! _.has( shortcodeAttributeValues, 'selectedValue' ) ) {
 						shortcodeAttributeValues['selectedValue'] = '';
 					}
 					if ( ! _.has( shortcodeAttributeValues, 'unselectedValue' ) ) {
 						shortcodeAttributeValues['unselectedValue'] = '';
 					}
-					
+
 					_.each( shortcodeAttributeValues, function( value, key ) {
-						if ( 
-							value 
+						if (
+							value
 							&& -1 == _.indexOf( [ 'selectedValue', 'unselectedValue' ], key )
 						) {
 							composedAttributeString += " " + key + "='" + value + "'";
 						}
 					});
-					
+
 					composedShortcode = "[" + shortcodeData.shortcode
 					    + composedAttributeString
 						+ ' state="checked"]'
-						+ shortcodeAttributeValues['selectedValue'] 
+						+ shortcodeAttributeValues['selectedValue']
 						+ "[/" + shortcodeData.shortcode + "]"
 						+ "[" + shortcodeData.shortcode
 					    + composedAttributeString
 						+ ' state="unchecked"]'
-						+ shortcodeAttributeValues['unselectedValue'] 
+						+ shortcodeAttributeValues['unselectedValue']
 						+ "[/" + shortcodeData.shortcode + "]";
-					
+
 					craftedShortcode = composedShortcode;
 				}
 				break;
-				
+
 			case 'checkboxes':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'custom' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'custom' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['output'] = false;
 					shortcodeAttributeValues['separator'] = false;
-					
+
 					var composedShortcode = '',
 					    composedAttributeString = '',
 						shortcodeAttributeValuesClone = _.clone( shortcodeAttributeValues ),
 						metaOptions = $( '.js-toolset-shortcode-gui-attribute-wrapper-for-metaOptions input' ).data( 'metaOptions' ),
 						loopIndex = 0;
-					
+
 					shortcodeAttributeValuesClone = _.pick( shortcodeAttributeValuesClone, function( value, key, object ) {
 						return ( ! /selectedValue/.test( key ) );
 					});
-					
+
 					_.each( metaOptions, function( value, key  ) {
 						if ( _.has( shortcodeAttributeValues, 'selectedValue_' + loopIndex ) ) {
 							composedAttributeString = '';
@@ -1833,10 +1912,10 @@ Toolset.Types.shortcodeManager = function( $ ) {
 							composedShortcode += "[" + shortcodeData.shortcode
 								+ composedAttributeString
 								+ ' state="checked" option="' + loopIndex + '"]'
-								+ shortcodeAttributeValues['selectedValue_' + loopIndex] 
+								+ shortcodeAttributeValues['selectedValue_' + loopIndex]
 								+ "[/" + shortcodeData.shortcode + "]";
 						}
-						
+
 						if ( _.has( shortcodeAttributeValues, 'unselectedValue_' + loopIndex ) ) {
 							composedAttributeString = '';
 							_.each( shortcodeAttributeValuesClone, function( value, key ) {
@@ -1847,7 +1926,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 							composedShortcode += "[" + shortcodeData.shortcode
 								+ composedAttributeString
 								+ ' state="unchecked" option="' + loopIndex + '"]'
-								+ shortcodeAttributeValues['unselectedValue_' + loopIndex] 
+								+ shortcodeAttributeValues['unselectedValue_' + loopIndex]
 								+ "[/" + shortcodeData.shortcode + "]";
 						}
 						loopIndex++;
@@ -1855,23 +1934,23 @@ Toolset.Types.shortcodeManager = function( $ ) {
 					craftedShortcode = composedShortcode;
 				}
 				break;
-			
+
 			case 'radio':
-				if ( 
-					_.has( shortcodeAttributeValues, 'output' ) 
-					&& 'custom' == shortcodeAttributeValues.output 
+				if (
+					_.has( shortcodeAttributeValues, 'output' )
+					&& 'custom' == shortcodeAttributeValues.output
 				) {
 					shortcodeAttributeValues['output'] = false;
-					
+
 					var composedShortcode = '',
 					    composedAttributeString = '',
 						shortcodeAttributeValuesClone = _.clone( shortcodeAttributeValues ),
 						metaOptions = $( '.js-toolset-shortcode-gui-attribute-wrapper-for-metaOptions input' ).data( 'metaOptions' );
-					
+
 					shortcodeAttributeValuesClone = _.pick( shortcodeAttributeValuesClone, function( value, key, object ) {
 						return ( ! /selectedValue/.test( key ) );
 					});
-					
+
 					_.each( metaOptions, function( value, key  ) {
 						if ( _.has( shortcodeAttributeValues, 'selectedValue_' + key ) ) {
 							composedAttributeString = '';
@@ -1883,7 +1962,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 							composedShortcode += "[" + shortcodeData.shortcode
 								+ composedAttributeString
 								+ ' option="' + key + '"]'
-								+ shortcodeAttributeValues['selectedValue_' + key] 
+								+ shortcodeAttributeValues['selectedValue_' + key]
 								+ "[/" + shortcodeData.shortcode + "]";
 						}
 					});
@@ -1893,7 +1972,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 		}
 		return craftedShortcode;
 	};
-	
+
 	/**
 	 * Adjust the dialog buttons labels depending on the current GUI action.
 	 *
@@ -1928,7 +2007,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 				break;
 		}
 	};
-	
+
 	//--------------------------------
 	// Compatibility
 	//--------------------------------
@@ -2021,7 +2100,7 @@ Toolset.Types.shortcodeManager = function( $ ) {
 			self.openTypesDialog();
 		}
 	};
-	
+
 	/**
 	 * Init main method:
 	 * - Init API hooks.
@@ -2032,16 +2111,16 @@ Toolset.Types.shortcodeManager = function( $ ) {
 	 * @since m2m
 	 */
 	self.init = function() {
-		
+
 		self.initHooks()
 			.initTemplates()
 			.initDialogs()
 			.initAdminBarButton();
-		
+
 	};
 
 	self.init();
-	
+
 }
 
 jQuery( document ).ready( function( $ ) {

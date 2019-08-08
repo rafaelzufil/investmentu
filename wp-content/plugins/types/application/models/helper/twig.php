@@ -8,11 +8,11 @@
 class Types_Helper_Twig implements Types_Interface_Template {
 
 	/**
-	 * @var Twig_Environment
+	 * @var \OTGS\Toolset\Twig\Environment
 	 */
 	private $twig;
 
-
+	/** @noinspection PhpDocMissingThrowsInspection */
 	/**
 	 * Types_Helper_Twig constructor.
 	 *
@@ -37,11 +37,13 @@ class Types_Helper_Twig implements Types_Interface_Template {
 
 		$namespaces = array_merge( array( 'types' => TYPES_ABSPATH . '/application/views' ), $additional_namespaces );
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->twig = $gui_base->create_twig_environment( $namespaces );
 	}
 
 
 	public function render( $file, $data ) {
+		/** @noinspection PhpUnhandledExceptionInspection */
 		return $this->twig->render( "@types$file", $data );
 	}
 
@@ -61,8 +63,6 @@ class Types_Helper_Twig implements Types_Interface_Template {
 	 * @param $id
 	 * @param $template_path
 	 * @param array $template_values
-	 *
-	 * @return Toolset_Twig_Dialog_Box
 	 */
 	public function prepare_dialog( $id, $template_path, $template_values = array() ) {
 		$twig_factory = new Toolset_Twig_Dialog_Box_Factory();

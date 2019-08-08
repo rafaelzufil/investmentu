@@ -63,8 +63,9 @@ class Types_Viewmodel_Related_Content_Post extends Types_Viewmodel_Related_Conte
 			) )
 			->limit( $items_per_page );
 
-		// in this context, editing a post, the status of the post shouldn't matter to show the related items
-		$query->element_status( 'any' );
+		// In this context, editing a post, the status of the post shouldn't matter to show the related items.
+		// The only exception is trashed content.
+		$query->add( $query->not( $query->element_status( 'trash', $role->other() ) ) );
 
 		if ( $sort ) {
 			$query->order( $sort );

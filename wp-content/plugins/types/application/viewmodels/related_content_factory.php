@@ -14,7 +14,7 @@ class Types_Viewmodel_Related_Content_Factory {
 	 * @param string                          $role Relationship element role.
 	 * @param Toolset_Relationship_Definition $relationship The relationship.
 	 *
-	 * @return Types_Viewmodel_Related_Content
+	 * @return Types_Viewmodel_Related_Content_Post
 	 * @throws RuntimeException When the domains is incorrect.
 	 * @since m2m
 	 */

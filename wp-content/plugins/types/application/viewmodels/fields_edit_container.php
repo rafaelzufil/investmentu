@@ -11,7 +11,7 @@ class Types_Viewmodel_Fields_Edit_Container {
 	/**
 	 * Twig environment
 	 *
-	 * @var Twig_Environment
+	 * @var \OTGS\Toolset\Twig\Environment
 	 * @since m2m
 	 */
 	private $twig;
@@ -56,10 +56,10 @@ class Types_Viewmodel_Fields_Edit_Container {
 	/**
 	 * Constructor
 	 *
-	 * @param Toolset_Field_Definition[]  $fields Array of fields.
-	 * @param Twig_Environment            $twig Twig environment.
-	 * @param array                      $context Initial Twig context.
-	 * @param string                      $template_name Template path.
+	 * @param Toolset_Field_Definition[] $fields Array of fields.
+	 * @param \OTGS\Toolset\Twig\Environment $twig Twig environment.
+	 * @param array $context Initial Twig context.
+	 * @param string $template_name Template path.
 	 * @param Types_Viewmodel_Field_Input $viewmodel Viewmodel for getting formatted data.
 	 */
 	public function __construct( $fields, $twig, $context, $template_name, $viewmodel = null ) {
@@ -88,6 +88,7 @@ class Types_Viewmodel_Fields_Edit_Container {
 	}
 
 
+	/** @noinspection PhpDocMissingThrowsInspection */
 	/**
 	 * Returns the HTML cointainer for the fields inputs
 	 * Renders the output using Twig
@@ -102,6 +103,8 @@ class Types_Viewmodel_Fields_Edit_Container {
 			'wpnonce' => $this->context['nonce'],
 			'nonce' => $this->context['nonce'],
 		) );
+
+		/** @noinspection PhpUnhandledExceptionInspection */
 		return $this->twig->render( $this->template_name, $context );
 	}
 }

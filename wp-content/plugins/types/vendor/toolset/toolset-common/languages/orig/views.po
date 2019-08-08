@@ -21953,10 +21953,10 @@ msgid "Select audio"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit audio', 'wpv-views' );
+# return __( 'Replace audio', 'wpv-views' );
 # }
 
-msgid "Edit audio"
+msgid "Replace audio"
 msgstr ""
 
 # ),
@@ -22093,10 +22093,10 @@ msgid "Select video"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit video', 'wpv-views' );
+# return __( 'Replace video', 'wpv-views' );
 # }
 
-msgid "Edit video"
+msgid "Replace video"
 msgstr ""
 
 # if (filesize($uploaded_file["tmp_name"]) > wp_max_upload_size()) {

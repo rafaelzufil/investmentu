@@ -19,7 +19,7 @@ class PostEdit {
 		wp_enqueue_script(
 			'toolset-types-gutenberg',
 			TYPES_RELPATH . '/public/js/compatibility/bundle.gutenberg.js',
-			array( 'jquery' ),
+			array( 'jquery', \Toolset_Assets_Manager::SCRIPT_TOOLSET_EVENT_MANAGER ),
 			TYPES_VERSION,
 			true
 		);

@@ -50,6 +50,6 @@ class WPToolset_Field_Audio extends WPToolset_Field_File
 	 * @since 3.3
 	 */
 	protected function get_edit_label() {
-		return __( 'Edit audio', 'wpv-views' );
+		return __( 'Replace audio', 'wpv-views' );
 	}
 }

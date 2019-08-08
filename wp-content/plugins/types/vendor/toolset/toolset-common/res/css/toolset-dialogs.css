@@ -286,25 +286,11 @@
 .toolset-shortcode-gui-dialog-container h2 {
     margin-top: 5px;
 }
-.toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-dialog-item-group {
-	overflow: hidden;
-	clear: left;
-	margin: 0;
-	padding: 0;
-}
-	.toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-dialog-item-group > li {
-		display: block;
-		float: left;
-		margin: 0;
-		padding: 0;
-	}
 	.toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-attribute-group .toolset-shortcode-gui-attribute-wrapper {
 		margin: 0;
 		padding: 0 10px 0 0;
 	}
-		.toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-dialog-item-group > li:last-child .toolset-shortcode-gui-attribute-wrapper {
-			padding-right: 0;
-		}
+
 .toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-attribute-wrapper h3,
 .toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-attribute-group h3,
 .toolset-shortcode-gui-dialog-container .toolset-shortcode-gui-content-wrapper h3 {

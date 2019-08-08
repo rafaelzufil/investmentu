@@ -10,6 +10,21 @@
 class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 	extends Toolset_User_Editors_Editor_Screen_Abstract {
 
+	/**
+	 * @var WPV_Content_Template
+	 */
+	private $template_object = null;
+
+	/**
+	 * @var WPV_View_Base
+	 */
+	private $parent_view = null;
+
+	/**
+	 * @var WPV_WordPress_Archive_Frontend
+	 */
+	private $archive_frontend = null;
+
 	public function initialize() {
 		parent::initialize();
 
@@ -29,16 +44,25 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		add_filter( 'use_block_editor_for_post', array( $this, 'enable_gutenberg_for_this_content_template' ), 100, 2 );
 
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_assets_for_gutenberg_compatibility' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'register_metaboxes_for_gutenberg_compatibility' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'remove_divi_gutenberg_dependencies' ) );
+
+		add_filter( 'toolset_filter_toolset_gutenberg_user_editor_active', array( $this, 'user_editor_active' ) );
+
+		// Gutenberg editor: save metaboxes for the CT.
+		add_action( 'save_post', array( $this, 'save_metaboxes' ), 10, 2 );
+
+		// Compatibility: the Theme Settings need to manage this as a CT editor page
+		add_filter( 'toolset_theme_settings_force_backend_editor', array( $this, 'set_toolset_themes_backend_editor' ) );
 	}
 
 	/**
-     * Check if current editor is active.
-     *
+	 * Check if current editor is active.
+	 *
 	 * @return bool
-     *
-     * @refactoring Change the name of the following function as it is confusing.
-     *              Warning!!! This has to be changed for all editors, otherwise it will break the editors integration.
+	 *
+	 * @refactoring Change the name of the following function as it is confusing.
+	 *              Warning!!! This has to be changed for all editors, otherwise it will break the editors integration.
 	 */
 	public function is_active() {
 		if ( ! $this->set_medium_as_post() ) {
@@ -68,7 +92,7 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		$this->assets_manager->register_style(
 			'toolset-user-editors-gutenberg-editor-style',
 			$this->constants->constant( 'TOOLSET_COMMON_URL' ) . '/user-editors/editor/screen/gutenberg/backend_editor.css',
-			array(),
+			array( Toolset_Assets_Manager::STYLE_CODEMIRROR ),
 			$this->constants->constant( 'TOOLSET_COMMON_VERSION' )
 		);
 
@@ -77,16 +101,24 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		$this->assets_manager->register_script(
 			'toolset-user-editors-gutenberg-script',
 			$this->constants->constant( 'TOOLSET_COMMON_URL' ) . '/user-editors/editor/screen/gutenberg/backend_editor.js',
-			array( 'jquery' ),
+			array(
+				'jquery',
+				'underscore',
+				Toolset_Assets_Manager::SCRIPT_CODEMIRROR,
+				Toolset_Assets_Manager::SCRIPT_CODEMIRROR_CSS,
+			),
 			$this->constants->constant( 'TOOLSET_COMMON_VERSION' ),
 			true
 		);
 
-		$ct_id = (int) toolset_getget( 'post', 0 );
 		$gutenberg_script_i18n = array(
-			'doneEditingNoticeText' => __( 'Done editing here? Return to the', 'wpv-views' ),
-			'doneEditingNoticeActionUrl' => admin_url( 'admin.php?page=ct-editor&ct_id=' . $ct_id ),
-			'doneEditingNoticeActionText' => __( 'Toolset Content Template editor.', 'wpv-views' ),
+			'id' => toolset_getget( 'post' ),
+			'killDissidentPosts' => array(
+				'action' => 'wpv_ct_kill_dissident_posts',
+				'nonce' => wp_create_nonce( 'ct_kill_dissident_posts' ),
+				'buttonLabel' => __( 'Apply to all', 'wpv-views' ),
+			),
+			'suggestReload' => __( 'Please save your work and reload this editor to update the list of posts for previewing your design.', 'wpv-views' ),
 		);
 
 		$this->assets_manager->localize_script(
@@ -219,6 +251,19 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		if ( $this->maybe_ct_is_built_with_gutenberg() ) {
 			do_action( 'toolset_enqueue_scripts', array( 'toolset-user-editors-gutenberg-script' ) );
 			do_action( 'toolset_enqueue_styles', array( 'toolset-user-editors-gutenberg-editor-style' ) );
+
+			/**
+			 * Allow third parties to register and enqueue their own assets when a CT is edited with Gutenberg.
+			 *
+			 * @since Views 2.8
+			 */
+			do_action( 'wpv-action-content-template-enqueue-gutenberg-editor-assets' );
+		}
+	}
+
+	public function register_metaboxes_for_gutenberg_compatibility() {
+		if ( $this->maybe_ct_is_built_with_gutenberg() ) {
+			$this->add_metaboxes();
 		}
 	}
 
@@ -243,6 +288,16 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		}
 
 		return false;
+	}
+
+	/**
+	 * Callback for the filter to check whether the current CT is using Gutenberg as user editor.
+	 *
+	 * @param bool $status
+	 * @return bool
+	 */
+	public function user_editor_active( $status ) {
+		return $this->maybe_ct_is_built_with_gutenberg();
 	}
 
 	/**
@@ -274,5 +329,293 @@ class Toolset_User_Editors_Editor_Screen_Gutenberg_Backend
 		) {
 			wp_dequeue_script( 'et-builder-gutenberg' );
 		}
+	}
+
+	/**
+	 * Register the right metaboxes in the CT Gutenberg editor:
+	 * - If the CT comes from a View/WPA loop, a metabox linkint to it.
+	 * - Otherwise, a metabox for each usage that the CT can have.
+	 * - In any case the custom CSS metabox.
+	 * - In any case, a metabox offering to return to the basic editor.
+	 *
+	 * @since Views 2.8
+	 */
+	public function add_metaboxes() {
+		global $post;
+		if (
+			! $post
+			|| ! $post instanceof \WP_Post
+		) {
+			return;
+		}
+		$this->template_object = WPV_Content_Template::get_instance( $post->ID );
+
+		if ( null === $this->template_object ) {
+			return;
+		}
+
+		if ( $this->template_object->is_owned_by_view ) {
+			$this->parent_view = WPV_View_Base::get_instance( $this->template_object->loop_output_id );
+		}
+
+		if ( null !== $this->parent_view ) {
+			add_meta_box( 'wpv-content-template-usage-metabox', __( 'Usage', 'wpv-views' ), array( $this, 'usage_owned_by_view_metabox' ), 'view-template', 'side', 'high' );
+		} else {
+			$this->archive_frontend = WPV_WordPress_Archive_Frontend::get_instance();
+			add_meta_box( 'wpv-content-template-usage-single-metabox', __( 'Usage: single pages', 'wpv-views' ), array( $this, 'usage_single_metabox' ), 'view-template', 'side', 'high' );
+			add_meta_box( 'wpv-content-template-usage-cpt-archive-metabox', __( 'Usage: post archives', 'wpv-views' ), array( $this, 'usage_cpt_archive_metabox' ), 'view-template', 'side', 'high' );
+			add_meta_box( 'wpv-content-template-usage-taxonomy-archive-metabox', __( 'Usage: taxonomy archives', 'wpv-views' ), array( $this, 'usage_taxonomy_archive_metabox' ), 'view-template', 'side', 'high' );
+		}
+
+		add_meta_box( 'wpv-content-template-css-metabox', __( 'CSS editor', 'wpv-views' ), array( $this, 'custom_css_metabox' ), 'view-template', 'side', 'high' );
+		add_meta_box( 'wpv-content-template-user-editor-metabox', __( 'Editor for this Template', 'wpv-views' ), array( $this, 'user_editor_metabox' ), 'view-template', 'side', 'high' );
+
+		/**
+		 * Allow third parties to register their own metaboxes on a CT edited with Gutenberg.
+		 *
+		 * @since Views 2.8
+		 */
+		do_action( 'wpv-action-content-template-add-gutenberg-editor-metabox', $this->template_object );
+	}
+
+	/**
+	 * Render the custom CSS metabox.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function custom_css_metabox( $post_object ) {
+		$extra_css = $this->template_object->get_template_extra_css();
+		echo '<textarea id="wpv_template_extra_css" name="wpv_template_extra_css">';
+		echo $extra_css;
+		echo '</textarea>';
+	}
+
+	/**
+	 * Render the metabox offering to return to the basic editor.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function user_editor_metabox( $post_object ) {
+		$admin_url = admin_url( 'admin.php?page=ct-editor&ct_id=' . esc_attr( $this->template_object->id ) . '&ct_editor_choice=basic' );
+		echo '<a href="' . esc_url( $admin_url ) . '" title="' . esc_attr( __( 'Stop using the Block Editor on this Content Template', 'wpv-views' ) ) . '">'
+			. __( 'Use the Clasic Editor for this Template', 'wpv-views' )
+			. '</a>';
+	}
+
+	/**
+	 * Render the metabox when the Templae is owned by a View/WPA.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function usage_owned_by_view_metabox( $post_object ) {
+		if ( null === $this->parent_view ) {
+			return;
+		}
+
+		if ( $this->parent_view->is_published ) {
+			$edit_page = 'views-editor';
+			if ( WPV_View_Base::is_archive_view( $this->parent_view->id ) ) {
+				$edit_page = 'view-archives-editor';
+			}
+			$loop_template_notice = sprintf(
+				__( 'This Content Template is used as the loop block for the %s <a href="%s" target="_blank">%s</a>.', 'wpv-views' ),
+				$this->parent_view->query_mode_display_name,
+				esc_attr( add_query_arg(
+					array(
+						'page' => $edit_page,
+						'view_id' => $this->parent_view->id
+					),
+					admin_url( 'admin.php' )
+				) ),
+				$this->parent_view->title
+			);
+
+		} else {
+
+			$loop_template_notice = sprintf(
+				__( 'This Content Template is used as the loop block for the trashed %s %s.', 'wpv-views' ),
+				$this->parent_view->query_mode_display_name,
+				"<strong>{$this->parent_view->title}</strong>"
+			);
+		}
+
+		printf( '<div class="wpv-advanced-setting"><p>%s</p></div>', $loop_template_notice );
+	}
+
+	/**
+	 * Render the metabox for single pages usage.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function usage_single_metabox( $post_object ) {
+		if ( null === $this->archive_frontend ) {
+			return;
+		}
+		$single_post_types = $this->archive_frontend->get_archive_loops( 'post_type', false, true, true );
+		$dissident_posts = $this->template_object->dissident_posts;
+
+		if ( count( $single_post_types ) > 0 ) {
+			?><ul class="wpv-mightlong-list" style="padding:0 2px"><?php
+			foreach ( $single_post_types as $post_type ) {
+				$this->usage_item( $post_type, $post_type['single_ct'], $post_type['post_type_name'], 'single' );
+			}
+			?></ul>
+			<?php
+		} else {
+
+		}
+	}
+
+	/**
+	 * Render the metabox for post type archives usage.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function usage_cpt_archive_metabox( $post_object ) {
+		if ( null === $this->archive_frontend ) {
+			return;
+		}
+		$custom_post_types_loops = $this->archive_frontend->get_archive_loops( 'post_type', false, true, false );
+
+		if ( count( $custom_post_types_loops ) > 0 ) {
+			?><ul class="wpv-mightlong-list" style="padding:0 2px"><?php
+			foreach ( $custom_post_types_loops as $post_type ) {
+				$this->usage_item( $post_type, $post_type['ct'], $post_type['post_type_name'], 'cpt-archive' );
+			}
+			?></ul><?php
+		} else {
+
+		}
+	}
+
+	/**
+	 * Render the metabox for yaxonomy archives usage.
+	 *
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function usage_taxonomy_archive_metabox( $post_object ) {
+		if ( null === $this->archive_frontend ) {
+			return;
+		}
+		$taxonomy_loops = $this->archive_frontend->get_archive_loops( 'taxonomy', false, true );
+
+		if ( count( $taxonomy_loops ) > 0 ) {
+			?><ul class="wpv-mightlong-list" style="padding:0 2px"><?php
+			foreach ( $taxonomy_loops as $taxonomy ) {
+				$this->usage_item( $taxonomy, $taxonomy['ct'], $taxonomy['slug'], 'taxonomy-archive' );
+			}
+			?></ul><?php
+		} else {
+
+		}
+	}
+
+	/**
+	 * Render each single usage option.
+	 *
+	 * @param array $item
+	 * @param int $item_id The ID of the CT assigned to this usage
+	 * @param string $item_value
+	 * @param string $group
+	 * @since Views 2.8
+	 */
+	private function usage_item( $item, $item_id, $item_value, $group ) {
+		?>
+		<li>
+			<label>
+				<?php
+					$checkbox_classname = 'js-wpv-content-template-usage-selector';
+					if ( 'single' === $group ) {
+						if ( (int) $this->template_object->id === (int) $item_id ) {
+							$dissident_posts = $this->template_object->dissident_posts;
+							if ( toolset_getarr( $dissident_posts, $item_value, false ) ) {
+								$checkbox_classname .= ' js-wpv-content-template-usage-selector-has-dissident';
+							}
+						} else {
+							$checkbox_classname .= ' js-wpv-content-template-usage-selector-has-dissident';
+						}
+					}
+					printf(
+						'<input type="checkbox" autocomplete="off" class="%s" value="%s" name="wpv-content-template-usage[%s][]" %s/> ',
+						esc_attr( $checkbox_classname ),
+						esc_attr( $item_value ),
+						esc_attr( $group ),
+						checked( $item_id, $this->template_object->id, false )
+					);
+
+					echo $item['display_name'];
+				?>
+			</label>
+		</li>
+		<?php
+	}
+
+	/**
+	 * Save the metaboxes from the CT Gutenberg editor.
+	 *
+	 * @param int $post_id
+	 * @param WP_Post $post_object
+	 * @since Views 2.8
+	 */
+	public function save_metaboxes( $post_id, $post_object ) {
+		if (
+			'view-template' !== $post_object->post_type
+			|| 'editpost' !== toolset_getpost( 'action' )
+		) {
+			return;
+		}
+
+		$template_object = WPV_Content_Template::get_instance( $post_id );
+
+		if ( null === $template_object ) {
+			return;
+		}
+
+		if ( ! $this->maybe_ct_is_built_with_gutenberg( $post_id ) ) {
+			// Note that this integration is loaded on the native post edit page,
+			// which is used by other user editors to load their backend page builders:
+			// when saving a post with those editors, the assignment data will never be posted.
+			return;
+		}
+
+		$template_usage = toolset_getpost( 'wpv-content-template-usage', array() );
+		$template_usage['single'] = toolset_getarr( $template_usage, 'single', array() );
+		$template_usage['cpt-archive'] = toolset_getarr( $template_usage, 'cpt-archive', array() );
+		$template_usage['taxonomy-archive'] = toolset_getarr( $template_usage, 'taxonomy-archive', array() );
+
+		$transaction_data = array(
+			'template_extra_css' => toolset_getpost( 'wpv_template_extra_css' ),
+			'assigned_single_post_types' => toolset_getarr( $template_usage, 'single', array() ),
+			'assigned_post_archives' => toolset_getarr( $template_usage, 'cpt-archive', array() ),
+			'assigned_taxonomy_archives' => toolset_getarr( $template_usage, 'taxonomy-archive', array() ),
+		);
+
+		$template_object->update_transaction( $transaction_data, false );
+	}
+
+	/**
+	 * Force the Toolset Themes to manage this CT gutenberg editor as a proper editor.
+	 *
+	 * @param bool $is_editor_page
+	 * @since Views 2.8
+	 */
+	public function set_toolset_themes_backend_editor( $is_editor_page ) {
+		global $pagenow;
+		if (
+			is_admin()
+			&& 'post.php' === $pagenow
+			&& 'view-template' === get_post_type( toolset_getget( 'post', 0 ) )
+			&& 'edit' === toolset_getget( 'action' )
+			&& $this->maybe_ct_is_built_with_gutenberg( toolset_getget( 'post', 0 ) )
+		) {
+			return true;
+		}
+		return $is_editor_page;
 	}
 }

@@ -45,8 +45,10 @@ class Toolset_Page_Troubleshooting {
 
 		$context = $this->build_page_context();
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$twig = $this->get_twig();
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		echo $twig->render( '@troubleshooting/main.twig', $context );
 		
 	}
@@ -75,7 +77,8 @@ class Toolset_Page_Troubleshooting {
 	/**
 	 * Retrieve a Twig environment initialized by the Toolset GUI base.
 	 *
-	 * @return Twig_Environment
+	 * @return \OTGS\Toolset\Twig\Environment
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since m2m
 	 */
 	private function get_twig() {

@@ -20,6 +20,11 @@ class Types_Page_Extension_Settings {
 			add_filter( 'toolset_filter_toolset_register_settings_custom-content_section',	array( $this, 'custom_content_tab_m2m_activation' ), 1, 2 );
 		}
 
+		add_filter(
+			'toolset_filter_toolset_register_settings_custom-content_section',
+			array( $this, 'add_rest_api_settings_section' ), 10, 2
+		);
+
 		// script
 		add_action( 'admin_enqueue_scripts', array( $this, 'on_admin_enqueue_scripts' ) );
 		add_action( 'admin_print_scripts', array( $this, 'print_admin_scripts' ) );
@@ -89,6 +94,37 @@ class Types_Page_Extension_Settings {
 				)
 			),
 		);
+	}
+
+
+	/**
+	 * Add a section with options related to REST API integration.
+	 *
+	 * @param array $sections Setting section definitions.
+	 * @param Toolset_Settings $toolset_options
+	 *
+	 * @return array
+	 */
+	public function add_rest_api_settings_section( $sections, $toolset_options ) {
+		$sections['toolset_rest_settings'] = array(
+			'slug' => 'toolset_rest_settings',
+			// translators: Title of a setting section.
+			'title' => __( 'REST API', 'wpcf' ),
+			'content' => sprintf(
+				'<input type="checkbox" name="%1$s" data-types-setting-save="%1$s" value="1" %4$s><label>%2$s</label></input>'
+					. '<p class="description wpcf-form-description">%3$s</p>',
+				esc_attr( Toolset_Settings::EXPOSE_CUSTOM_FIELDS_IN_REST ),
+				__( 'Expose custom fields managed by Types for posts, users, and terms through the REST API', 'wpcf' ),
+				sprintf(
+					// translators: Description of a setting. The placeholder will be replaced with a link that says "our documentation" (or a translation thereof)
+					__( 'This will add a "toolset-meta" property with custom fields to posts, users and terms that show in REST responses. Please refer to %s for further details.', 'wpcf' ),
+					// translators: Part of a description of the REST API setting with a link to documentation.
+					'<a href="' . Types_Helper_Url::get_url( 'rest-api-integration', true ) . '">' . __( 'our documentation', 'wpcf' ) . '</a>'
+				),
+				checked( $toolset_options->get( Toolset_Settings::EXPOSE_CUSTOM_FIELDS_IN_REST ), true, false )
+			),
+		);
+		return $sections;
 	}
 
 	/**

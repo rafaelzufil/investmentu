@@ -24,7 +24,7 @@ class Types_Ajax_Handler_Associations_Import extends \Toolset_Ajax_Handler_Abstr
 		$action = sanitize_text_field( toolset_getpost( 'associations_import_action' ) );
 
 		// route action
-		return $this->route( $action );
+		$this->route( $action );
 	}
 
 	/**

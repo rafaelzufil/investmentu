@@ -37,13 +37,6 @@ final class Types_Admin {
 			Types_Admin_Menu::initialize();
 		}
 
-		$dic = toolset_dic();
-
-		/** @var \OTGS\Toolset\Types\TypeRegistration\Controller $type_registration_controller */
-		/** @noinspection PhpUnhandledExceptionInspection */
-		$type_registration_controller = $dic->make( '\OTGS\Toolset\Types\TypeRegistration\Controller' );
-		$type_registration_controller->initialize();
-
 		$this->init_page_extensions();
 
 		$this->register_types_style();

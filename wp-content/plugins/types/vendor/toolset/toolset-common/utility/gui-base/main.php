@@ -162,6 +162,7 @@ class Toolset_Gui_Base {
 
 		if( $was_init_fired ) {
 			// Hurry.
+			/** @noinspection PhpUnhandledExceptionInspection */
 			Toolset_Twig_Autoloader::register();
 		} else {
 			// Wait until init because of the reasons described in the autoloader.
@@ -190,7 +191,6 @@ class Toolset_Gui_Base {
 	}
 
 
-
 	/**
 	 * Create a new Twig environment.
 	 *
@@ -201,23 +201,25 @@ class Toolset_Gui_Base {
 	 *     automatically added.
 	 * @param bool $add_toolset_extensions Define whether the Twig environment should get standard Toolset extensions.
 	 *
-	 * @return Twig_Environment
-	 * @throws Twig_Error_Loader
+	 * @return \OTGS\Toolset\Twig\Environment
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since 2.2
 	 */
 	public function create_twig_environment( $paths, $add_toolset_namespace = true, $add_toolset_extensions = true ) {
 
-		$loader = new Twig_Loader_Filesystem();
+		$loader = new OTGS\Toolset\Twig\Loader\FilesystemLoader();
 
 		foreach( $paths as $namespace => $path ) {
+			/** @noinspection PhpUnhandledExceptionInspection */
 			$loader->addPath( $path, $namespace );
 		}
 
 		if( $add_toolset_namespace ) {
+			/** @noinspection PhpUnhandledExceptionInspection */
 			$loader->addPath( $this->get_gui_base_path( '/twig-templates' ), 'toolset' );
 		}
 
-		$twig = new Twig_Environment( $loader );
+		$twig = new OTGS\Toolset\Twig\Environment( $loader );
 
 		if( $add_toolset_extensions ) {
 			$twig = $this->add_toolset_extensions_to_twig( $twig );
@@ -304,8 +306,8 @@ class Toolset_Gui_Base {
 	/**
 	 * Add standard Toolset extensions to a Twig environment.
 	 *
-	 * @param Twig_Environment $twig
-	 * @return Twig_Environment
+	 * @param OTGS\Toolset\Twig\Environment $twig
+	 * @return OTGS\Toolset\Twig\Environment
 	 * @since 2.2
 	 */
 	private function add_toolset_extensions_to_twig( $twig ) {

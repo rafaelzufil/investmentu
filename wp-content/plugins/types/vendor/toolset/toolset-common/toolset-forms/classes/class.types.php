@@ -143,6 +143,25 @@ class WPToolset_Types
                 }
             }
             break;
+
+            // Add a flag that indicates a file-type field.
+			//
+			// This is to address the terrible mess where we change the DOM for repeatable fields with javascript (sic!)
+			// by moving the field label out of the individual field values and placing it before them.
+			//
+			// Now, we need to do the same for the file-type fields even if they're single, which means we need to
+			// indicate that the field belongs to this category of types.
+			//
+			// Related pieces of code:
+			// - FormFactory::metaform(): Initialize the repeatable field controller if we have single file-type fields.
+			// - toolset-forms/templates/metaform.php: Add the 'js-wpt-field-with-files' HTML class when appropriate.
+			// - toolset-forms/js/repetitive.js: Rearrange the DOM for fields with the '.js-wpt-field-with-files' class as well.
+			case Toolset_Field_Type_Definition_Factory::IMAGE:
+			case Toolset_Field_Type_Definition_Factory::AUDIO:
+			case Toolset_Field_Type_Definition_Factory::FILE:
+			case Toolset_Field_Type_Definition_Factory::VIDEO:
+				$_field['is_field_with_files'] = true;
+				break;
         }
         // Radio adjust type name because form_factory class name contains 'Radios'
         if ( $field['type'] == 'radio' ) {

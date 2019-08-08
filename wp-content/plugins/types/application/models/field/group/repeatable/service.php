@@ -186,6 +186,8 @@ class Types_Field_Group_Repeatable_Service extends Types_Field_Group_Service {
 
 			// make cpt visible in the admin menues
 			$custom_types[ $repeatable_group->get_slug() ]['public'] = 'public';
+			$custom_types[ $repeatable_group->get_slug() ]['show_ui'] = '1';
+			$custom_types[ $repeatable_group->get_slug() ]['show_in_menu'] = '1';
 
 			// enable cpt title and editor
 			$custom_types[ $repeatable_group->get_slug() ]['supports']['title'] = 1;
@@ -597,6 +599,9 @@ class Types_Field_Group_Repeatable_Service extends Types_Field_Group_Service {
 	 */
 	public function group_contains_rfg_or_prf( $group_id ) {
 		$group_post = get_post( $group_id );
+		if( ! $group_post instanceof WP_Post ) {
+			return false;
+		}
 		$group_object = new Toolset_Field_Group_Post( $group_post );
 
 		// get all fields

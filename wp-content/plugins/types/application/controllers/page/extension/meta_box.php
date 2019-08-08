@@ -28,7 +28,7 @@ abstract class Types_Page_Extension_Meta_Box {
 	/**
 	 * Twig class
 	 *
-	 * @var Twig_Environment Twig Enviroment.
+	 * @var \OTGS\Toolset\Twig\Environment Twig Enviroment.
 	 * @since m2m
 	 */
 	private $twig;
@@ -48,11 +48,11 @@ abstract class Types_Page_Extension_Meta_Box {
 	/**
 	 * Used for better instance
 	 *
-	 * @param Twig_Environment $twig Twig Enviorement.
+	 * @param \OTGS\Toolset\Twig\Environment $twig Twig Enviorement.
 	 * @return Types_Page_Extension_Meta_Box Self object.
 	 * @since m2m
 	 */
-	public static function get_instance( Twig_Environment $twig = null ) {
+	public static function get_instance( \OTGS\Toolset\Twig\Environment $twig = null ) {
 		if ( null === static::$instance ) {
 			static::$instance = new static( $twig );
 		}
@@ -74,9 +74,9 @@ abstract class Types_Page_Extension_Meta_Box {
 	/**
 	 * Constructor
 	 *
-	 * @param Twig_Environment $twig
+	 * @param \OTGS\Toolset\Twig\Environment $twig
 	 */
-	protected function __construct( Twig_Environment $twig = null ) {
+	protected function __construct( \OTGS\Toolset\Twig\Environment $twig = null ) {
 		$this->twig = $twig;
 		$this->prepare();
 	}
@@ -114,7 +114,7 @@ abstract class Types_Page_Extension_Meta_Box {
 	 * @since 3.2
 	 */
 	protected function get_current_post_id() {
-		if( $this->current_post_id !== null ) {
+		if ( $this->current_post_id !== null ) {
 			return $this->current_post_id;
 		}
 
@@ -125,7 +125,7 @@ abstract class Types_Page_Extension_Meta_Box {
 			global $post_ID;
 			$current_post_id = $post_ID;
 
-			if( ! $current_post_id ) {
+			if ( ! $current_post_id ) {
 				// no reservered post id found, leave hint that relationships can only be added to a saved post
 				return $this->current_post_id = false;
 			}
@@ -138,9 +138,9 @@ abstract class Types_Page_Extension_Meta_Box {
 	 * Adds several meta boxex to a page
 	 *
 	 * @param array $metabox_data Array of ArrayAccess
-	 *	[id]         => Metabox ID.
-	 *	[title]      => Metabox title.
-	 *	[arguments]  => Callback arguments.
+	 *  [id]         => Metabox ID.
+	 *  [title]      => Metabox title.
+	 *  [arguments]  => Callback arguments.
 	 * @throws InvalidArgumentException If it is not an array of arrays.
 	 * @since m2m
 	 */
@@ -175,7 +175,8 @@ abstract class Types_Page_Extension_Meta_Box {
 	/**
 	 * Retrieve a Twig environment initialized by the Toolset GUI base.
 	 *
-	 * @return Twig_Environment
+	 * @return \OTGS\Toolset\Twig\Environment
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since m2m
 	 */
 	protected function get_twig() {
@@ -204,7 +205,11 @@ abstract class Types_Page_Extension_Meta_Box {
 			? array()
 			: $this->build_metabox_context( $data );
 
-		$twig = $this->get_twig();
-		echo $twig->render( '@' . static::ID . '/' . $this->get_main_twig_template( $data ), $context );
+		try {
+			$twig = $this->get_twig();
+			echo $twig->render( '@' . static::ID . '/' . $this->get_main_twig_template( $data ), $context );
+		} catch ( \OTGS\Toolset\Twig\Error\Error $e ) {
+			echo 'Error during rendering the page. Please contact the Toolset user support.';
+		}
 	}
 }

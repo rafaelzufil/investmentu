@@ -12,11 +12,12 @@ use OTGS\Toolset\Types\PostType\Part\Repository;
  * @since 3.2
  */
 class Deletion {
-	/** @var \Types_Field_Group_Repeatable_Service  */
+
+	/** @var \Types_Field_Group_Repeatable_Service */
 	private $rfg_service;
 
-	/** @var \Toolset_Relationship_Definition_Repository  */
-	private $relationship_repository;
+	/** @var \Toolset_Relationship_Definition_Repository|null */
+	private $_relationship_repository;
 
 	/** @var Repository */
 	private $cpt_parts_repository;
@@ -35,23 +36,33 @@ class Deletion {
 	 * Deletion constructor.
 	 *
 	 * @param \Types_Field_Group_Repeatable_Service $rfg_service
-	 * @param \Toolset_Relationship_Definition_Repository $relationship_repository
 	 * @param Repository $cpt_parts_repository
 	 * @param \Toolset_Field_Definition_Factory_Post $field_factory
 	 * @param \OTGS\Toolset\Types\Wordpress\Post\Storage $wp_post_storage
+	 * @param \Toolset_Relationship_Definition_Repository $relationship_repository
 	 */
 	public function __construct(
 		\Types_Field_Group_Repeatable_Service $rfg_service,
-		\Toolset_Relationship_Definition_Repository $relationship_repository,
 		Repository $cpt_parts_repository,
 		\Toolset_Field_Definition_Factory_Post $field_factory,
-		\OTGS\Toolset\Types\Wordpress\Post\Storage $wp_post_storage
+		\OTGS\Toolset\Types\Wordpress\Post\Storage $wp_post_storage,
+		$relationship_repository = null
 	) {
-		$this->rfg_service             = $rfg_service;
-		$this->relationship_repository = $relationship_repository;
-		$this->cpt_parts_repository    = $cpt_parts_repository;
-		$this->field_factory           = $field_factory;
-		$this->wp_post_storage         = $wp_post_storage;
+		$this->rfg_service = $rfg_service;
+		$this->cpt_parts_repository = $cpt_parts_repository;
+		$this->_relationship_repository = $relationship_repository;
+		$this->field_factory = $field_factory;
+		$this->wp_post_storage = $wp_post_storage;
+	}
+
+
+	private function get_relationship_definition_repository() {
+		// Can't use dependency injection for this class because m2m may not be enabled.
+		if ( null === $this->_relationship_repository ) {
+			$this->_relationship_repository = \Toolset_Relationship_Definition_Repository::get_instance();
+		}
+
+		return $this->_relationship_repository;
 	}
 
 	/**
@@ -84,20 +95,24 @@ class Deletion {
 	 *
 	 * @param \Toolset_Field_Group $group
 	 */
-	private function delete_groups_rfgs_prfs( \Toolset_Field_Group $group ){
+	private function delete_groups_rfgs_prfs( \Toolset_Field_Group $group ) {
+		if( ! apply_filters( 'toolset_is_m2m_enabled', false ) ) {
+			return;
+		}
+
 		// Loop over field slugs and check for rfg and prf
-		foreach( $group->get_field_slugs() as $field_slug ) {
-			if( $rfg = $this->rfg_service->get_object_from_prefixed_string( $field_slug ) ) {
+		foreach ( $group->get_field_slugs() as $field_slug ) {
+			if ( $rfg = $this->rfg_service->get_object_from_prefixed_string( $field_slug ) ) {
 				// delete rfg by respecting the option to convert the rfg to o2m relationship
 				$this->rfg_service->delete( $rfg, $this->allow_convert_rfg_to_o2m );
 				continue;
 			}
 
-			if( $prf_relationship = $this->relationship_repository->get_definition( $field_slug ) ) {
+			if ( $prf_relationship = $this->get_relationship_definition_repository()->get_definition( $field_slug ) ) {
 				// delete relationship of prf
-				$this->relationship_repository->remove_definition( $prf_relationship );
+				$this->get_relationship_definition_repository()->remove_definition( $prf_relationship );
 
-				if( $prf_field_definition = $this->field_factory->load_field_definition( $field_slug ) ) {
+				if ( $prf_field_definition = $this->field_factory->load_field_definition( $field_slug ) ) {
 					// delete field definition
 					$this->field_factory->delete_definition( $prf_field_definition );
 				}
@@ -119,26 +134,26 @@ class Deletion {
 		$cpts_slug = $this->cpt_parts_repository->get_all_cpt_slugs();
 		$group_field_slugs = $group->get_field_slugs();
 
-		foreach( $cpts_slug as $cpt_slug ) {
+		foreach ( $cpts_slug as $cpt_slug ) {
 			$cpt_listing_fields = $this->cpt_parts_repository->get_cpt_listing_fields_by_slug( $cpt_slug );
 			$cpt_field_groups = null; // we load this later, if needed
 			$update_required = false;
 
-			foreach( $group_field_slugs as $field_slug ) {
-				if( ! $cpt_listing_fields->has_field_by_slug( $field_slug ) ) {
+			foreach ( $group_field_slugs as $field_slug ) {
+				if ( ! $cpt_listing_fields->has_field_by_slug( $field_slug ) ) {
 					// the cpt does not use this $field_slug on the listing table
 					continue;
 				}
 
 				// the cpt uses the $field_slug on the listing table,
 				// load cpt_field_groups, if not loaded, and check if it's on another field group of the cpt
-				if( $cpt_field_groups === null ) {
+				if ( $cpt_field_groups === null ) {
 					$cpt_field_groups = $this->cpt_parts_repository->get_cpt_field_groups_by_slug( $cpt_slug );
 					// the "to-delete" field group needs to be removed
 					$cpt_field_groups->remove_field_group_by_slug( $group->get_slug() );
 				}
 
-				if( $cpt_field_groups->contains_field_by_slug( $field_slug ) ) {
+				if ( $cpt_field_groups->contains_field_by_slug( $field_slug ) ) {
 					// the field is assigned by another field group,
 					// means we do not need to drop it from the listing table
 					continue;
@@ -151,7 +166,7 @@ class Deletion {
 			}
 
 			// persist possible changes to the cpt listing fields
-			if( $update_required ) {
+			if ( $update_required ) {
 				$this->cpt_parts_repository->store_cpt_parts( array( $cpt_listing_fields ) );
 			}
 		}

@@ -18,14 +18,19 @@ Toolset.Common.MediaField = function( $ ) {
     this.CONST = {
         SINGLE_CONTAINER_SELECTOR: '.js-wpt-field-items',
         REPEATING_CONTAINER_SELECTOR: '.js-wpt-field-item',
-        INPUT_SELECTOR: '.js-toolset-media-field-trigger'
+        INPUT_SELECTOR: '.js-toolset-media-field-trigger',
+        MULTIPLE_GALLERY_ID: 'toolset-gallery',
+        MULTIPLE_GALLERY_TOOLBAR_ID: 'toolset-toolbar-gallery'
     };
+
+    this.dialogClassName = 'media-frame toolset-forms-media-frame js-toolset-forms-media-frame';
+
+    this.stylesAdded = false;
 
 };
 
 /**
  * Init constants for selectors.
- *
  * Can be overriden by prototype implementations, for specific selectors.
  *
  * @since 3.3
@@ -35,13 +40,34 @@ Toolset.Common.MediaField.prototype.initConstants = function() {
 };
 
 /**
- * Init validation methods.
+ * Init the dialog classname.
+ * Can be overriden by prototype implementations, for specific classnames.
+ * Each instance can decine their own classnames, which can help when applying specific styles
+ * on the initStyles method.
  *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.initDialogClassname = function() {
+    return this;
+};
+
+/**
+ * Init validation methods.
  * Can be overriden by prototype implementations, for specific methods.
  *
  * @since 3.3
  */
 Toolset.Common.MediaField.prototype.initValidationMethods = function() {
+    return this;
+};
+
+/**
+ * Init hooks.
+ * Can be overriden by prototype implementations, for specific methods.
+ *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.initHooks = function() {
     return this;
 };
 
@@ -62,6 +88,119 @@ Toolset.Common.MediaField.prototype.initEvents = function() {
 };
 
 /**
+ * Init styles.
+ * Can be overriden by prototype implementations, for specific styles.
+ * To be used in combination with initDialogClassname to target items on dialogs for
+ * each specific implementation.
+ *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.initStyles = function() {
+    return this;
+};
+
+/**
+ * Init the default toolbar.
+ *
+ * @pram wp.media
+ *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.initDefaultToolbar = function( metaData ) {
+    var currentInstance = this,
+        mediaInstance = currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ];
+
+    mediaInstance.on( 'toolbar:create:select', function( toolbar, options ) {
+        options = {
+            text: currentInstance.i18n.dialog.single.button[ metaData.type ]
+        };
+        options.controller = this;
+
+        toolbar.view = new wp.media.view.Toolbar.Select( options );
+    }, mediaInstance );
+};
+
+/**
+ * Maybe init the image editor if available.
+ *
+ * @pram wp.media
+ *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.maybeInitImageEdit = function( metaData ) {
+    if ( ! window.imageEdit ) {
+        return;
+    }
+
+    if ( ! _.contains( [ 'image', 'file' ], metaData.type ) ) {
+        return;
+    }
+
+    var currentInstance = this,
+        mediaInstance = currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ];
+
+    mediaInstance.states.add([
+        new wp.media.controller.EditImage( { model: mediaInstance.options.editImage } )
+    ]);
+
+    mediaInstance.on( 'content:render:edit-image', function() {
+        var image = mediaInstance.state().get('image'),
+            view = new wp.media.view.EditImage( { model: image, controller: mediaInstance } ).render();
+
+        mediaInstance.content.set( view );
+
+        // after creating the wrapper view, load the actual editor via an ajax call
+        view.loadEditor();
+    }, mediaInstance );
+};
+
+/**
+ * Maybe init the repeating fields views.
+ *
+ * @pram wp.media
+ *
+ * @since 3.3.6
+ */
+Toolset.Common.MediaField.prototype.maybeInitRepeating = function( metaData ) {
+    if ( ! metaData.multiple ) {
+        return;
+    }
+
+    var currentInstance = this,
+        mediaInstance = currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ];
+
+    // Add a state for custom gallery creation
+    mediaInstance.states.add([
+        new wp.media.controller.Library({
+            id: currentInstance.CONST.MULTIPLE_GALLERY_ID,
+            title: currentInstance.i18n.dialog.multiple.title[ metaData.type ],
+            button: {
+                text: currentInstance.i18n.dialog.multiple.button[ metaData.type ]
+            },
+            priority: 20,
+            toolbar: currentInstance.CONST.MULTIPLE_GALLERY_TOOLBAR_ID,
+            filterable: 'uploaded',
+            library: wp.media.query( mediaInstance.options.library ),
+            multiple: 'add'
+        })
+    ]);
+
+    // Custom gallery toolbar
+    mediaInstance.on( 'toolbar:create:' + currentInstance.CONST.MULTIPLE_GALLERY_TOOLBAR_ID, function( toolbar, options ) {
+        options = {
+            text: currentInstance.i18n.dialog.multiple.button[ metaData.type ]
+        };
+        options.controller = this;
+
+        toolbar.view = new wp.media.view.Toolbar.Select( options );
+    }, mediaInstance );
+
+    // Make sure the query panel is updated when uploading a file.
+    // See: https://core.trac.wordpress.org/ticket/34465
+    mediaInstance.states.get( currentInstance.CONST.MULTIPLE_GALLERY_ID ).get( 'library' ).observe( wp.Uploader.queue );
+};
+
+/**
  * Input selector click: open the right media dialog.
  *
  * @since 3.3
@@ -73,6 +212,7 @@ Toolset.Common.MediaField.prototype.manageInputSelectorClick = function( $mediaS
 
     metaData = _.defaults( metaData, {
         metakey: '',
+        title: '',
         parent: 0,
         type: '',
         multiple: false
@@ -114,33 +254,54 @@ Toolset.Common.MediaField.prototype.manageInputSelectorClick = function( $mediaS
         $innerContainer = $outerContainer;
     }
 
-    var mediaSettings = {
-        // TODO Title should be the field title
-        title: currentInstance.i18n.dialog.title,
-        button: {
-            // TODO Buton label might change per field type and multiple status
-            text: currentInstance.i18n.dialog.button
+    var libraryQueryParameters = Toolset.hooks.applyFilters( 'toolset_media_field_library_query_arguments', {
+        'toolset_media_management_nonce': currentInstance.i18n.dialog.nonce,
+        'toolset_media_management_filter': {
+            // TODO support filtering by current author only
+            //author: true
         },
-        className: 'media-frame js-toolset-forms-media-frame',
+        // Include an unique query arg so each instance does trigger an individual library query
+        'toolset_media_management_unique_query_arg': metaData.metakey
+    }, {
+		selector: $mediaSelector,
+		metaData: metaData
+	});
+
+    // Generic settings for the media modal
+    var mediaSettings = {
+        title: currentInstance.i18n.dialog.single.title[ metaData.type ],
+        button: {
+            text: currentInstance.i18n.dialog.single.button[ metaData.type ]
+        },
+        className: currentInstance.dialogClassName,
         frame: 'select',
-        multiple: metaData.multiple,
-        library: {
-            'toolset_media_management_nonce': currentInstance.i18n.dialog.nonce,
-            'toolset_media_management_filter': {
-                // TODO support filtering by current author only
-                //author: true
-            }
-        }
+        multiple: false,
+        library: libraryQueryParameters
     };
 
+    if ( metaData.multiple ) {
+        // Open the iframe in the gallery view
+        mediaSettings.state = currentInstance.CONST.MULTIPLE_GALLERY_ID;
+    }
+
+    // Enforce a file type if needed
     if ( _.contains( [ 'audio', 'image', 'video' ], metaData.type ) ) {
         mediaSettings.library.type = metaData.type;
     }
 
+    // Initialize the media modal
     currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ] = wp.media( mediaSettings );
 
-    // As we include a custom query parameter, make sure the query panel
-    // is updated when uploading a file.
+    // Native select toolbar
+    currentInstance.initDefaultToolbar( metaData );
+
+    // Support image editing if available
+    currentInstance.maybeInitImageEdit( metaData );
+
+    // Support repeating fields
+    currentInstance.maybeInitRepeating( metaData );
+
+    // Make sure the query panel is updated when uploading a file.
     // See: https://core.trac.wordpress.org/ticket/34465
     currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ].states.get( 'library' ).get( 'library' ).observe( wp.Uploader.queue );
 
@@ -149,6 +310,12 @@ Toolset.Common.MediaField.prototype.manageInputSelectorClick = function( $mediaS
     // Note that there is no way of limiting upload per file type.
     currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ].on( 'open', function() {
         currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ].uploader.uploader.param( 'toolset_media_management_nonce', currentInstance.i18n.dialog.nonce );
+        Toolset.hooks.doAction( 'toolset_media_field_wp_media_onOpen', {
+            wpMedia: currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ],
+			selector: $mediaSelector,
+			metaData: metaData
+        });
+        currentInstance.initStyles();
     });
 
     currentInstance.mediaInstances[ metaData.parent ][ metaData.metakey ].on( 'select', function() {
@@ -229,6 +396,8 @@ Toolset.Common.MediaField.prototype.manageFieldPreview = function( $instance, me
  */
 Toolset.Common.MediaField.prototype.init = function() {
     this.initConstants()
+        .initDialogClassname()
         .initValidationMethods()
+        .initHooks()
         .initEvents();
 };

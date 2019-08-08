@@ -22,17 +22,21 @@ function wpcf_fields_file() {
     );
 }
 
+
 /**
  * Form data for post edit page.
  *
  * @global object $wpdb
  *
- * @param type $field
+ * @param $field
+ *
+ * @return array
  */
 function wpcf_fields_file_meta_box_form( $field ) {
     add_thickbox();
     $button_text = sprintf( __( 'Select %s', 'wpcf' ), $field['type'] );
     // Set ID
+	// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
     $element_id = 'wpcf-fields-' . wpcf_unique_id( serialize( func_get_args() ) );
     $attachment_id = false;
 

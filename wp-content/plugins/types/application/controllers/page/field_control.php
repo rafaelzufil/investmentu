@@ -6,9 +6,9 @@
  * @since 2.0
  */
 final class Types_Page_Field_Control extends Types_Page_Abstract {
-	
-	
-	/**	Name of the URL parameter for the field domain. */
+
+
+	/** Name of the URL parameter for the field domain. */
 	const PARAM_DOMAIN = 'domain';
 
 
@@ -29,9 +29,9 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	private static $instance;
 
-	
+
 	public static function get_instance() {
-		if( null == self::$instance ) {
+		if ( null == self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -53,13 +53,16 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	 */
 	public static function get_page_url( $domain ) {
 
-		if( !in_array( $domain, Toolset_Field_Utils::get_domains() ) ) {
+		if ( ! in_array( $domain, Toolset_Field_Utils::get_domains() ) ) {
 			return null;
 		}
 
 		return esc_url_raw(
 			add_query_arg(
-				array( 'page' => Types_Admin_Menu::PAGE_NAME_FIELD_CONTROL, 'domain' => $domain ),
+				array(
+					'page' => Types_Admin_Menu::PAGE_NAME_FIELD_CONTROL,
+					'domain' => $domain,
+				),
 				admin_url( 'admin.php' )
 			)
 		);
@@ -77,23 +80,23 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	public function prepare() {
 
 		parent::prepare();
-		
+
 		$current_domain = $this->get_current_domain();
 
 		// Fail on invalid domain.
-		if( null == $current_domain ) {
-			throw new InvalidArgumentException( 
-				sprintf( 
+		if ( null == $current_domain ) {
+			throw new InvalidArgumentException(
+				sprintf(
 					__( 'Invalid field domain provided. Expected one of those values: %s', 'wpcf' ),
 					implode( ', ', Toolset_Field_Utils::get_domains() )
 				)
 			);
 		}
-		
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'on_admin_enqueue_scripts' ) );
 
 		add_action( 'current_screen', array( $this, 'prepare_dialogs' ) );
-		
+
 	}
 
 
@@ -103,7 +106,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	 */
 	public function get_title() {
 
-		switch( $this->get_current_domain() ) {
+		switch ( $this->get_current_domain() ) {
 			case Toolset_Field_Utils::DOMAIN_POSTS:
 				return __( 'Post Field Control', 'wpcf' );
 			case Toolset_Field_Utils::DOMAIN_USERS:
@@ -151,16 +154,16 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	public function get_load_callback() {
 		return array( $this, 'add_screen_options' );
 	}
-	
+
 
 	/**
 	 * Current field domain.
-	 * 
-	 * @return string|null 
+	 *
+	 * @return string|null
 	 * @since 2.0
 	 */
 	private function get_current_domain() {
-		if( null == $this->current_domain ) {
+		if ( null == $this->current_domain ) {
 			$this->current_domain = toolset_getget( self::PARAM_DOMAIN, null, Toolset_Field_Utils::get_domains() );
 		}
 		return $this->current_domain;
@@ -197,16 +200,18 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 			array( Toolset_Gui_Base::STYLE_GUI_BASE )
 		);
 
-		wp_enqueue_script( 
+		wp_enqueue_script(
 			$main_handle,
 			TYPES_RELPATH . '/public/page/field_control/main.js',
-			array( 
-				'jquery', 'backbone', 'underscore',
+			array(
+				'jquery',
+				'backbone',
+				'underscore',
 				Toolset_Gui_Base::SCRIPT_GUI_LISTING_PAGE_CONTROLLER,
 				Types_Asset_Manager::SCRIPT_HEADJS,
 				Types_Asset_Manager::SCRIPT_ADJUST_MENU_LINK,
 				Types_Asset_Manager::SCRIPT_KNOCKOUT,
-				Types_Asset_Manager::SCRIPT_UTILS
+				Types_Asset_Manager::SCRIPT_UTILS,
 			),
 			TYPES_VERSION
 		);
@@ -216,18 +221,19 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	private $twig = null;
 
-
+	/** @noinspection PhpDocMissingThrowsInspection */
 	/**
 	 * Retrieve a Twig environment initialized by the Toolset GUI base.
 	 *
-	 * @return Twig_Environment
+	 * @return \OTGS\Toolset\Twig\Environment
 	 * @since 2.2
 	 */
 	private function get_twig() {
-		if( null == $this->twig ) {
+		if ( null == $this->twig ) {
 
 			$gui_base = Toolset_Gui_Base::get_instance();
 
+			/** @noinspection PhpUnhandledExceptionInspection */
 			$this->twig = $gui_base->create_twig_environment(
 				array( 'field_control' => TYPES_ABSPATH . '/application/views/page/field_control' )
 			);
@@ -238,7 +244,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * @inheritdoc
-	 * 
+	 *
 	 * @since 2.0
 	 */
 	public function render_page() {
@@ -247,6 +253,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 		$twig = $this->get_twig();
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		echo $twig->render( '@field_control/main.twig', $context );
 	}
 
@@ -255,7 +262,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	 * Build the context for main poge template.
 	 *
 	 * That includes variables for the template as well as data to be passed to JavaScript.
-	 * 
+	 *
 	 * @return array Page context. See the main page template for details.
 	 * @since 2.0
 	 */
@@ -268,7 +275,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 		$specific_context = array(
 			'strings' => $this->build_strings_for_twig(),
-			'fieldsWithoutSanitizedSlug' => $this->get_fields_without_sanitized_slug()
+			'fieldsWithoutSanitizedSlug' => $this->get_fields_without_sanitized_slug(),
 		);
 
 		$context = toolset_array_merge_recursive_distinct( $base_context, $specific_context );
@@ -282,7 +289,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	 * @since 3.1
 	 */
 	private function get_fields_without_sanitized_slug() {
-		if( $this->_fields_without_sanitized_slug === null ) {
+		if ( $this->_fields_without_sanitized_slug === null ) {
 			$this->build_field_definitions();
 		}
 
@@ -292,18 +299,18 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Build data to be passed to JavaScript.
-	 * 
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
 	private function build_js_data() {
-		
+
 		$ajax_controller = Types_Ajax::get_instance();
 		$field_type_definition_factory = Toolset_Field_Type_Definition_Factory::get_instance();
 		$field_type_converter = Types_Field_Type_Converter::get_instance();
 
 		$field_action_name = $ajax_controller->get_action_js_name( Types_Ajax::CALLBACK_FIELD_CONTROL_ACTION );
-		
+
 		return array(
 			'jsIncludePath' => TYPES_RELPATH . '/public/page/field_control',
 			'typesVersion' => TYPES_VERSION,
@@ -314,39 +321,39 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 			'ajaxInfo' => array(
 				'fieldAction' => array(
 					'name' => $field_action_name,
-					'nonce' => wp_create_nonce( $field_action_name )
-				) 
+					'nonce' => wp_create_nonce( $field_action_name ),
+				),
 			),
 			'currentDomain' => $this->get_current_domain(),
 			'groups' => $this->build_group_data(),
 			'typeConversionMatrix' => $field_type_converter->get_conversion_matrix(),
-			'itemsPerPage' => $this->get_items_per_page_setting()
+			'itemsPerPage' => $this->get_items_per_page_setting(),
 		);
-		
+
 	}
 
 
 	/**
 	 * Prepare field definition data, depending on current field domain, for passing to JavaScript.
-	 * 
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
 	private function build_field_definitions() {
-		if( $this->field_definitions !== null || $this->_fields_without_sanitized_slug !== null ) {
+		if ( $this->field_definitions !== null || $this->_fields_without_sanitized_slug !== null ) {
 			// already build
 			return $this->field_definitions;
 		}
-		
+
 		$query_args = array(
 			'filter' => 'all',
 			'orderby' => 'name',
-			'order' => 'asc'
+			'order' => 'asc',
 		);
 
 		$definition_factory = Toolset_Field_Definition_Factory_Post::get_factory_by_domain( $this->get_current_domain() );
 
-		if( null != $definition_factory ) {
+		if ( null != $definition_factory ) {
 			$definitions = $definition_factory->query_definitions( $query_args );
 		} else {
 			$definitions = array();
@@ -356,14 +363,14 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 		$fields_without_sanitized_slug = array();
 
 		$blacklisted_fields = $this->get_blacklisted_fields();
-		
-		foreach( $definitions as $definition ) {
-			if( in_array( $definition->get_slug(), $blacklisted_fields ) ) {
+
+		foreach ( $definitions as $definition ) {
+			if ( in_array( $definition->get_slug(), $blacklisted_fields ) ) {
 				// do not included blacklisted fields
 				continue;
 			}
 
-			if( sanitize_key( $definition->get_slug() ) != $definition->get_slug() ) {
+			if ( sanitize_key( $definition->get_slug() ) != $definition->get_slug() ) {
 				// do not include fields which does not match sanitize_key rules
 				$fields_without_sanitized_slug[] = $definition->get_slug();
 				continue;
@@ -377,13 +384,13 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 		return $this->field_definitions;
 	}
-	
+
 
 	/**
 	 * Build array of templates that will be passed to JavaScript.
-	 * 
-	 * If the template file does not exist or is not readable, it will be silently omitted. 
-	 * 
+	 *
+	 * If the template file does not exist or is not readable, it will be silently omitted.
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
@@ -395,11 +402,11 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 		);
 
 		$templates = array();
-		foreach( $template_sources as $template_name => $template_relpath ) {
+		foreach ( $template_sources as $template_name => $template_relpath ) {
 
 			$template_path = TYPES_ABSPATH . '/application/views/' . $template_relpath;
 
-			if( file_exists( $template_path ) ) {
+			if ( file_exists( $template_path ) ) {
 				$templates[ $template_name ] = file_get_contents( $template_path );
 			}
 		}
@@ -416,24 +423,24 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 				'slug' => __( 'Slug', 'wpcf' ),
 				'metaKey' => __( 'Meta key', 'wpcf' ),
 				'groups' => __( 'Field groups', 'wpcf' ),
-				'type' => __( 'Type' )
+				'type' => __( 'Type' ),
 			),
 			'rowAction' => array(
 				'changeAssignment' => __( 'Change assignment', 'wpcf' ),
 				'changeType' => __( 'Change type', 'wpcf' ),
-				'delete' => __( 'Delete', 'wpcf' )
+				'delete' => __( 'Delete', 'wpcf' ),
 			),
 			'misc' => array(
 				'noItemsFound' => __( 'No field definitions found.', 'wpcf' ),
 				'pageTitle' => $this->get_title(),
 				'thisFieldIsRepeating' => __( 'This is a repeating field.', 'wpcf' ),
-				'fieldsNotSupportedBecauseOfNotSanitizedSlug' => __( 'Toolset Types only allow fields with names containing lowercase alphanumeric characters, dashes and underscores. The following third party fields are not supported:', 'wpcf' )
+				'fieldsNotSupportedBecauseOfNotSanitizedSlug' => __( 'Toolset Types only allow fields with names containing lowercase alphanumeric characters, dashes and underscores. The following third party fields are not supported:', 'wpcf' ),
 			),
 			'bulkAction' => array(
 				'delete' => __( 'Delete', 'wpcf' ),
 				'manageWithTypes' => __( 'Manage with Types', 'wpcf' ),
-				'stopManagingWithTypes' => __( 'Stop managing with Types', 'wpcf' )
-			)
+				'stopManagingWithTypes' => __( 'Stop managing with Types', 'wpcf' ),
+			),
 		);
 	}
 
@@ -441,14 +448,14 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Prepare an array of strings used in JavaScript.
-	 * 
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
-	private function build_strings_for_js() {   
+	private function build_strings_for_js() {
 		return array(
 			'misc' => array(
-				'notManagedByTypes' => __( 'Not managed by Types', 'wpcf'),
+				'notManagedByTypes' => __( 'Not managed by Types', 'wpcf' ),
 				'undefinedAjaxError' => __( 'The action was not successful, an unknown error has happened.', 'wpcf' ),
 				'genericSuccess' => __( 'The action was completed successfully.', 'wpcf' ),
 				'fieldsAlreadyManaged' => __( 'Some of the fields you selected are already managed by Types.', 'wpcf' ),
@@ -460,36 +467,36 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 				'cannotDeleteUnmanagedFields' => __( 'Some fields cannot be deleted because they are not managed by Types.', 'wpcf' ),
 				'changeFieldType' => __( 'Change field type for the field', 'wpcf' ),
 				'startManagingFieldsWithTypes' => __( 'Start managing fields with Types', 'wpcf' ),
-				'stopManagingFieldsWithTypes' => __( 'Stop managing fields with Types', 'wpcf' )
+				'stopManagingFieldsWithTypes' => __( 'Stop managing fields with Types', 'wpcf' ),
 			),
 			'rowAction' => array(
 				'manageByTypes' => array(
 					'yes' => __( 'Manage with Types', 'wpcf' ),
-					'no' => __( 'Stop managing with Types', 'wpcf' )
+					'no' => __( 'Stop managing with Types', 'wpcf' ),
 				),
 				'changeCardinality' => array(
 					'makeRepetitive' => __( 'Turn into repetitive', 'wpcf' ),
-					'makeSingle' => __( 'Turn into single-value', 'wpcf' )
-				)
+					'makeSingle' => __( 'Turn into single-value', 'wpcf' ),
+				),
 			),
 			'bulkAction' => array(
 				'select' => __( 'Bulk action', 'wpcf' ),
 				'delete' => __( 'Delete', 'wpcf' ),
 				'manageWithTypes' => __( 'Manage with Types', 'wpcf' ),
-				'stopManagingWithTypes' => __( 'Stop managing with Types', 'wpcf' )
+				'stopManagingWithTypes' => __( 'Stop managing with Types', 'wpcf' ),
 			),
 			'button' => array(
 				'apply' => __( 'Apply', 'wpcf' ),
 				'cancel' => __( 'Cancel', 'wpcf' ),
-				'delete' => __( 'Delete', 'wpcf' )
-			)
+				'delete' => __( 'Delete', 'wpcf' ),
+			),
 		);
 	}
 
 
 	/**
 	 * Build an array describing existing field groups within the domain.
-	 * 
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
@@ -498,16 +505,19 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 		// for post field groups we also need to fetch RFGs
 		$group_qry_args = $this->get_current_domain() == Toolset_Element_Domain::POSTS
-			? array( 'purpose' => '*', 'post_status' => 'any' )
+			? array(
+				'purpose' => '*',
+				'post_status' => 'any',
+			)
 			: array();
 
 		$groups = $factory->query_groups( $group_qry_args );
 
 		$group_data = array();
-		foreach( $groups as $group ) {
+		foreach ( $groups as $group ) {
 			$group_data[ $group->get_slug() ] = array(
 				'slug' => $group->get_slug(),
-				'displayName' => stripslashes( $group->get_display_name() )
+				'displayName' => stripslashes( $group->get_display_name() ),
 			);
 		}
 
@@ -517,7 +527,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Display screen options on the page.
-	 * 
+	 *
 	 * @since 2.0
 	 */
 	public function add_screen_options() {
@@ -533,7 +543,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Update the "per page" screen option.
-	 * 
+	 *
 	 * @param $original_value
 	 * @param string $option
 	 * @param $option_value
@@ -553,7 +563,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Value of the "items per page" setting for current page and current user.
-	 * 
+	 *
 	 * @return int
 	 * @since 2.0
 	 */
@@ -562,7 +572,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 		$screen = get_current_screen();
 		$option = $screen->get_option( 'per_page', 'option' );
 		$per_page = get_user_meta( $user, $option, true );
-		if ( empty ( $per_page ) || $per_page < 1 ) {
+		if ( empty( $per_page ) || $per_page < 1 ) {
 			$per_page = $screen->get_option( 'per_page', 'default' );
 		}
 
@@ -572,7 +582,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Prepare assets for all dialogs that are going to be used on the page.
-	 * 
+	 *
 	 * @since 2.0
 	 */
 	public function prepare_dialogs() {
@@ -583,8 +593,8 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 			array(
 				'groups' => $this->build_group_data(),
 				'strings' => array(
-					'noFieldGroups' => __( 'No field groups exist yet. You have to create one first.', 'wpcf' )
-				)
+					'noFieldGroups' => __( 'No field groups exist yet. You have to create one first.', 'wpcf' ),
+				),
 			),
 			'@field_control/change_assignment_dialog.twig'
 		);
@@ -596,12 +606,11 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 				'strings' => array(
 					'deletingWillRemoveDefinitionAndData' => __( 'Deleting fields will remove them from all groups and delete the field data from the database as well.', 'wpcf' ),
 					'cannotBeUndone' => __( 'This cannot be undone!', 'wpcf' ),
-					'doYouReallyWantDelete' => __( 'Do you really want to delete?', 'wpcf' )
-				)
+					'doYouReallyWantDelete' => __( 'Do you really want to delete?', 'wpcf' ),
+				),
 			),
 			'@field_control/delete_dialog.twig'
 		);
-		
 
 		$type_definition_factory = Toolset_Field_Type_Definition_Factory::get_instance();
 
@@ -618,13 +627,12 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 					'repetitiveField' => __( 'Allow multiple instances of this field', 'wpcf' ),
 					'singleField' => __( 'This field can have only one value', 'wpcf' ),
 					'targetSupportsSingleOnly' => __( 'Selected field type supports only single fields.', 'wpcf' ),
-					'repetitiveToSingleWarning' => __( 'Changing from repeating to single field <strong>will cause partial data loss</strong> if there already are fields with multiple values stored in the database. In such case, only one of those value will be saved on update and some inconsistencies appear when displaying values of this field.', 'wpcf' )
-				)
+					'repetitiveToSingleWarning' => __( 'Changing from repeating to single field <strong>will cause partial data loss</strong> if there already are fields with multiple values stored in the database. In such case, only one of those value will be saved on update and some inconsistencies appear when displaying values of this field.', 'wpcf' ),
+				),
 			),
 			'@field_control/change_type_dialog.twig'
 		);
-		
-		
+
 		new Toolset_Twig_Dialog_Box(
 			'types-bulk-change-management-status-dialog',
 			$this->get_twig(),
@@ -632,8 +640,8 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 				'strings' => array(
 					'youAreAboutToManageFields' => __( 'You are about to start managing these fields with Types:', 'wpcf' ),
 					'youAreAboutToStopManagingFields' => __( 'You are about to stop managing these fields with Types:', 'wpcf' ),
-					'confirmContinue' => __( 'Do you want to continue?', 'wpcf' )
-				)
+					'confirmContinue' => __( 'Do you want to continue?', 'wpcf' ),
+				),
 			),
 			'@field_control/bulk_change_management_status_dialog.twig'
 		);
@@ -642,7 +650,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 
 	/**
 	 * Get help configuration for Types_Asset_Help_Tab_Loader.
-	 * 
+	 *
 	 * @return array
 	 * @since 2.0
 	 */
@@ -654,33 +662,33 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 				'introductory_paragraphs' => array(
 					__( 'Types plugin provides you with a powerful way to control the Post/User/Term fields.', 'wpcf' ),
 					__( 'On this page you can see the list of all the custom fields present in your site. Some of them were created by Types and some were not.', 'wpcf' ),
-					__( 'When changing changing properties of existing fields, caution is strongly advised because wrong usage can cause issues with themes, plugins and functionality connected to the applied changes.', 'wpcf' )
+					__( 'When changing changing properties of existing fields, caution is strongly advised because wrong usage can cause issues with themes, plugins and functionality connected to the applied changes.', 'wpcf' ),
 				),
 				'your_options' => __( 'You have the following options:', 'wpcf' ),
 				'options' => array(
 					array(
 						'name' => __( 'Change assignment', 'wpcf' ),
-						'explanation' => __( 'Change a group that the field belongs to.', 'wpcf' )
+						'explanation' => __( 'Change a group that the field belongs to.', 'wpcf' ),
 					),
 					array(
 						'name' => __( 'Change type', 'wpcf' ),
-						'explanation' => __( 'Change the type of the field and change whether field can have a single value or multiple values (repetitive field).', 'wpcf' )
+						'explanation' => __( 'Change the type of the field and change whether field can have a single value or multiple values (repetitive field).', 'wpcf' ),
 					),
 					array(
 						'name' => __( 'Manage with Types', 'wpcf' ),
-						'explanation' => __( 'Select whether the field is under the control of Types plugin.', 'wpcf' )
+						'explanation' => __( 'Select whether the field is under the control of Types plugin.', 'wpcf' ),
 					),
 					array(
 						'name' => __( 'Delete', 'wpcf' ),
-						'explanation' => 
+						'explanation' =>
 							__( 'Click to delete a field and all of its values from the database.', 'wpcf' )
-							. ' <strong>' . __( 'Warning: This cannot be undone.', 'wpcf' ) . '</strong>'
-					)
+							. ' <strong>' . __( 'Warning: This cannot be undone.', 'wpcf' ) . '</strong>',
+					),
 				),
 				'ending_paragraphs' => array(
-					__( 'Note: An asterisk (*) beside a field type marks a repeating field.', 'wpcf' )
-				)
-			)
+					__( 'Note: An asterisk (*) beside a field type marks a repeating field.', 'wpcf' ),
+				),
+			),
 		);
 	}
 
@@ -693,7 +701,7 @@ final class Types_Page_Field_Control extends Types_Page_Abstract {
 	private function get_blacklisted_fields() {
 		return array(
 			'toolset-post-sortorder',
-			'types_field_group_purpose'
+			'types_field_group_purpose',
 		);
 	}
 }

@@ -92,6 +92,7 @@ class Types_View_Decorator_Calendar implements Types_Interface_Value {
 
 		/* translators: Calendar caption: 1: month name, 2: 4-digit year */
 		$calendar_caption = _x( '%1$s %2$s', 'calendar caption' );
+		// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 		$calendar_output = '<table id="wp-calendar-' . md5( serialize( func_get_args() ) )
 		                   . '" summary="' . esc_attr__( 'Calendar' ) . '"' . $class . '>
 	<caption>' . sprintf( $calendar_caption,

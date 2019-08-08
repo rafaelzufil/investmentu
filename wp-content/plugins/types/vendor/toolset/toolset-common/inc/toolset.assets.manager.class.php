@@ -153,7 +153,11 @@ class Toolset_Assets_Manager {
 	// Scripts
 	//
 	//
+
+	/** @deprecated Use SCRIPT_BOOTSTRAP_3 instead. */
 	const SCRIPT_BOOTSTRAP = 'toolset_bootstrap';
+	const /** @noinspection PhpDeprecationInspection */ SCRIPT_BOOTSTRAP_3 = self::SCRIPT_BOOTSTRAP;
+	const SCRIPT_BOOTSTRAP_4 = 'toolset_bootstrap_4';
 
 	const SCRIPT_CODEMIRROR = 'toolset-codemirror-script';
 	const SCRIPT_CODEMIRROR_CSS = 'toolset-meta-html-codemirror-css-script';
@@ -211,11 +215,17 @@ class Toolset_Assets_Manager {
 	// Lodash
 	const SCRIPT_LODASH = 'lodash';
 
+	// Legacy validation and conditional display scripts - careful, these are also registered all over Toolset
+	const SCRIPT_WPTOOLSET_FORM_VALIDATION = 'wptoolset-form-validation';
+	const SCRIPT_WPTOOLSET_FORM_CONDITIONAL = 'wptoolset-form-conditional';
+
 	/**
 	 * For compatibility with ACF Plugin that's not using the right handle for this module (wp-event-manager)
 	 * we are using ACF handle to prevent unwanted overrides of window.wp.hooks namespace (******!)
 	 */
 	const SCRIPT_WP_EVENT_MANAGER = 'acf-input';
+
+	const SCRIPT_MARK = 'mark';
 
 	const SCRIPT_TOOLSET_SHORTCODE = 'toolset-shortcode';
 
@@ -246,13 +256,17 @@ class Toolset_Assets_Manager {
 	const STYLE_SELECT2_CSS_LAYOUTS_OVERRIDES = 'layouts-select2-overrides-css';
 	const STYLE_SELECT2_CSS_OVERRIDES = 'toolset-select2-overrides-css';
 
+	/** @deprecated Use STYLE_BOOTSTRAP_3 instead. */
 	const STYLE_TOOLSET_BOOTSTRAP = 'toolset_bootstrap_styles';
+	const /** @noinspection PhpDeprecationInspection */ STYLE_BOOTSTRAP_3 = self::STYLE_TOOLSET_BOOTSTRAP;
+	const STYLE_BOOTSTRAP_4 = 'toolset_bootstrap_4';
+
 	const STYLE_TOOLSET_COMMON = 'toolset-common';
 	const STYLE_TOOLSET_DIALOGS_OVERRIDES = 'toolset-dialogs-overrides-css';
 	const STYLE_TOOLSET_FORMS_BACKEND = 'wpt-toolset-backend';
 	const STYLE_TOOLSET_PROMOTION = 'toolset-promotion';
 
-
+	const STYLE_TOOLSET_SHORTCODE = 'toolset-shortcode';
 
 	// chosen lib
 	const STYLE_TOOLSET_CHOSEN = 'toolset-chosen-styles';
@@ -264,9 +278,9 @@ class Toolset_Assets_Manager {
 
 	const STYLE_ONTHEGOSYSTEMS_ICONS = 'onthegosystems-icons';
 
+	// Deprecated constants, keep for backwards compatibility until at least 4.1
 	const SCRIPT_TIPPY = 'tippy';
 	const STYLE_TIPPY_CSS = 'tippy-css';
-
 
 	/**
 	 * Base URL for the Toolset Common instance.
@@ -317,14 +331,8 @@ class Toolset_Assets_Manager {
 		if ( isset( self::$instances[ $called_class ] ) ) {
 			return self::$instances[ $called_class ];
 		} else {
-			if ( class_exists( $called_class ) ) {
-				self::$instances[ $called_class ] = new $called_class();
-
-				return self::$instances[ $called_class ];
-			} else {
-				// This can unfortunately happen when the get_called_class() workaround for PHP 5.2 misbehaves.
-				return false;
-			}
+			self::$instances[ $called_class ] = new $called_class();
+			return self::$instances[ $called_class ];
 		}
 	}
 
@@ -531,6 +539,13 @@ class Toolset_Assets_Manager {
 		);
 
 		$this->register_style(
+			self::STYLE_TOOLSET_SHORTCODE,
+			$this->assets_url . '/res/css/toolset-shortcode.css',
+			array(),
+			TOOLSET_COMMON_VERSION
+		);
+
+		$this->register_style(
 			self::STYLE_EDITOR_ADDON_MENU,
 			$this->assets_url . '/visual-editor/res/css/pro_dropdown_2.css',
 			array(),
@@ -545,10 +560,17 @@ class Toolset_Assets_Manager {
 		);
 
 		$this->register_style(
-			self::STYLE_TOOLSET_BOOTSTRAP,
-			$this->assets_url . '/res/lib/bootstrap/css/bootstrap.css',
+			self::STYLE_BOOTSTRAP_3,
+			$this->assets_url . '/res/lib/bootstrap3/css/bootstrap.css',
 			array(),
 			TOOLSET_COMMON_VERSION
+		);
+
+		$this->register_style(
+			self::STYLE_BOOTSTRAP_4,
+			$this->assets_url . '/res/lib/bootstrap4/css/' . $this->choose_script_version( 'bootstrap.min.css', 'bootstrap.css' ),
+			[],
+			'4.3.1'
 		);
 
 		$this->register_style(
@@ -583,13 +605,6 @@ class Toolset_Assets_Manager {
 			ON_THE_GO_SYSTEMS_BRANDING_REL_PATH . 'onthegosystems-icons/css/onthegosystems-icons.css',
 			array( self::STYLE_TOOLSET_COMMON ),
 			TOOLSET_COMMON_VERSION
-		);
-
-		$this->register_style(
-			self::STYLE_TIPPY_CSS,
-			$this->assets_url . '/res/lib/tippy/tippy.css',
-			array(),
-			'3.0.6'
 		);
 
 		return apply_filters( 'toolset_add_registered_styles', $this->styles );
@@ -699,7 +714,6 @@ class Toolset_Assets_Manager {
 			self::SCRIPT_CHOSEN,
 			$this->assets_url . "/res/lib/chosen/chosen.jquery.js",
 			array( 'jquery' ),
-			TOOLSET_COMMON_VERSION,
 			'1.6.2',
 			true
 		);
@@ -713,10 +727,18 @@ class Toolset_Assets_Manager {
 		);
 
 		$this->register_script(
-			self::SCRIPT_BOOTSTRAP,
-			$this->assets_url . '/res/lib/bootstrap/js/' . $this->choose_script_version( 'bootstrap.min.js', 'bootstrap.js' ),
+			self::SCRIPT_BOOTSTRAP_3,
+			$this->assets_url . '/res/lib/bootstrap3/js/' . $this->choose_script_version( 'bootstrap.min.js', 'bootstrap.js' ),
 			array( 'jquery' ),
 			'3.3.7',
+			true
+		);
+
+		$this->register_script(
+			self::SCRIPT_BOOTSTRAP_4,
+			$this->assets_url . '/res/lib/bootstrap4/js/' . $this->choose_script_version( 'bootstrap.bundle.min.js', 'bootstrap.bundle.js' ),
+			[ 'jquery' ],
+			'4.3.1',
 			true
 		);
 
@@ -889,6 +911,7 @@ class Toolset_Assets_Manager {
 			array(
 				'jquery',
 				'underscore',
+				self::SCRIPT_TOOLSET_EVENT_MANAGER,
 			),
 			TOOLSET_COMMON_VERSION
 		);
@@ -898,8 +921,34 @@ class Toolset_Assets_Manager {
 			self::SCRIPT_TOOLSET_MEDIA_FIELD_PROTOTYPE_I18N,
 			array(
 				'dialog' => array(
-					'title' => __( 'Select a file for this field', 'wpv-views' ),
-					'button' => __( 'Use this as field value', 'wpv-views' ),
+					'single' => array(
+						'title' => array(
+							'audio' => __( 'Audio file for this field', 'wpv-views' ),
+							'file' => __( 'File for this field', 'wpv-views' ),
+							'image' => __( 'Image for this field', 'wpv-views' ),
+							'video' => __( 'Video for this field', 'wpv-views' ),
+						),
+						'button' => array(
+							'audio' => __( 'Add audio', 'wpv-views' ),
+							'file' => __( 'Add file', 'wpv-views' ),
+							'image' => __( 'Add image', 'wpv-views' ),
+							'video' => __( 'Add video', 'wpv-views' ),
+						),
+					),
+					'multiple' => array(
+						'title' => array(
+							'audio' => __( 'Multiple audio files for this field', 'wpv-views' ),
+							'file' => __( 'Multiple files for this field', 'wpv-views' ),
+							'image' => __( 'Multiple images for this field', 'wpv-views' ),
+							'video' => __( 'Multiple videos for this field', 'wpv-views' ),
+						),
+						'button' => array(
+							'audio' => __( 'Add multiple audios', 'wpv-views' ),
+							'file' => __( 'Add multiple files', 'wpv-views' ),
+							'image' => __( 'Add multiple images', 'wpv-views' ),
+							'video' => __( 'Add multiple videos', 'wpv-views' ),
+						),
+					),
 					'nonce' => wp_create_nonce( 'toolset_media_field_' . get_current_user_id() ),
 				),
 			)
@@ -951,13 +1000,6 @@ class Toolset_Assets_Manager {
 			array( 'jquery', 'underscore' ),
 			TOOLSET_COMMON_VERSION,
 			true
-		);
-
-		$this->register_script(
-			self::SCRIPT_TIPPY,
-			$this->assets_url . '/res/lib/tippy/tippy.min.js',
-			array(),
-			'3.0.6'
 		);
 
 		if ( ! wp_script_is( self::SCRIPT_REACT, 'registered' ) ) {
@@ -1031,11 +1073,21 @@ class Toolset_Assets_Manager {
 		);
 
 		$this->register_script(
+			self::SCRIPT_MARK,
+			$this->assets_url . '/res/lib/mark/jquery.mark.min.js',
+			array( 'jquery' ),
+			TOOLSET_COMMON_VERSION,
+			true
+		);
+
+		$this->register_script(
 			self::SCRIPT_TOOLSET_SHORTCODE,
 			$this->assets_url . "/res/js/toolset-shortcode.js",
 			array(
 				'jquery', 'jquery-ui-dialog', 'jquery-ui-tabs', 'suggest', 'shortcode', 'underscore', 'wp-util', 'wp-pointer',
-				self::SCRIPT_SELECT2, self::SCRIPT_ICL_EDITOR, self::SCRIPT_UTILS, self::SCRIPT_TOOLSET_EVENT_MANAGER
+				self::SCRIPT_SELECT2, self::SCRIPT_ICL_EDITOR,
+				self::SCRIPT_UTILS, self::SCRIPT_TOOLSET_EVENT_MANAGER,
+				self::SCRIPT_MARK
 			),
 			TOOLSET_COMMON_VERSION,
 			true
@@ -1054,10 +1106,10 @@ class Toolset_Assets_Manager {
 				'loading' => __( 'Loading...', 'wpv-views' ),
 			),
 			'title' => array(
-				'generated' => __( 'Generated shortcode', 'wpv-views' ),
+				'generated' => __( 'Toolset - generated shortcode', 'wpv-views' ),
 			),
 			'validation' => array(
-				'mandatory'  => __( 'This option is mandatory ', 'wpv-views' ),
+				'mandatory'  => __( 'This field is required', 'wpv-views' ),
 				'number'     => __( 'Please enter a valid number', 'wpv-views' ),
 				'numberlist' => __( 'Please enter a valid comma separated number list', 'wpv-views' ),
 				'url'        => __( 'Please enter a valid URL', 'wpv-views' ),
@@ -1075,6 +1127,40 @@ class Toolset_Assets_Manager {
 			'toolset_shortcode_i18n',
 			$toolset_shortcode_i18n
 		);
+
+		// These two scripts should be used only in conjunction with SCRIPT_WPTOOLSET_FORM_VALIDATION, that's why there are no
+		// constants for their handles.
+		$this->register_script(
+			'wptoolset-form-jquery-validation',
+			$this->assets_url . '/toolset-forms/lib/js/jquery-form-validation/jquery.validate.js',
+			array('jquery'),
+			TOOLSET_COMMON_VERSION,
+			true
+		);
+		$this->register_script(
+			'wptoolset-form-jquery-validation-additional',
+			$this->assets_url . '/toolset-forms/lib/js/jquery-form-validation/additional-methods.min.js',
+			array('wptoolset-form-jquery-validation'),
+			TOOLSET_COMMON_VERSION,
+			true
+		);
+
+		$this->register_script(
+			self::SCRIPT_WPTOOLSET_FORM_VALIDATION,
+			$this->assets_url . '/toolset-forms/js/validation.js',
+			array( 'wptoolset-form-jquery-validation-additional', 'underscore', 'toolset-utils', 'toolset-event-manager', self::SCRIPT_ICL_EDITOR ),
+			TOOLSET_COMMON_VERSION,
+			true
+		);
+
+		$this->register_script(
+			self::SCRIPT_WPTOOLSET_FORM_CONDITIONAL,
+			$this->assets_url . '/toolset-forms/js/conditional.js',
+			array( 'jquery', 'jquery-effects-scale' ),
+			TOOLSET_COMMON_VERSION,
+			true
+		);
+
 
 		return apply_filters( 'toolset_add_registered_script', $this->scripts );
 	}

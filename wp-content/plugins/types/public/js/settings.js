@@ -19,7 +19,7 @@ Types.settings = Types.settings || {};
             action: 'types_settings_action',
             setting: setting_id,
             setting_value: $("input[name^='" + setting_id + "']").serialize(),
-            wpnonce: Types.settings.ajaxInfo.fieldAction.nonce
+            wpnonce: Types.settings.ajaxInfo.fieldAction.nonce,
         };
 
         $(document).trigger('js-toolset-event-update-setting-section-triggered');
@@ -46,7 +46,7 @@ Types.settings = Types.settings || {};
     };
 
     $('body').on('change', '[data-types-setting-save]', function () {
-        Types.settings.save($(this).attr('data-types-setting-save'));
+        Types.settings.save($(this).attr('name'));
     });
 
 
@@ -101,15 +101,10 @@ Types.Gui.SettingsScreen = function ($) {
         });
 
 
-        // Create viewmodels for m2m activation section
         // Model fields are descibed in the toolset_get_troubleshooting_sections filter inline doc.
         self.sections = {
 
-            /**
-             * @param {{confirmationDialog: {title: string, activateButton: string, cancelButton: string,
-             * finishButton: string, inProgressImageUrl: string, resultMessage: {warning: string},
-             * previewRelationships: {actionName: string, nonce: string}, actionName: string, nonce: string} sectionModel
-             */
+			// Create viewmodels for m2m activation section
             m2mActivation: function() {
 
                 var vm = {};
@@ -123,8 +118,8 @@ Types.Gui.SettingsScreen = function ($) {
 
                 return vm;
 
-            }()
-        };
+            }(),
+		};
 
         // Initialize the main viewmodel.
         ko.applyBindings(self, $('.js-toolset-toolset_is_m2m_enabled').get(0) );

@@ -76,7 +76,11 @@ class WPToolset_Field_Video extends WPToolset_Field_File
 	 * @since 3.3
 	 */
 	protected function get_select_label() {
-		return __( 'Select video', 'wpv-views' );
+		if ( $this->isRepetitive() ) {
+			return __( 'Select video(s)', 'wpv-views' );
+		} else {
+			return __( 'Select video', 'wpv-views' );
+		}
 	}
 
 	/**
@@ -87,6 +91,6 @@ class WPToolset_Field_Video extends WPToolset_Field_File
 	 * @since 3.3
 	 */
 	protected function get_edit_label() {
-		return __( 'Edit video', 'wpv-views' );
+		return __( 'Replace video', 'wpv-views' );
 	}
 }

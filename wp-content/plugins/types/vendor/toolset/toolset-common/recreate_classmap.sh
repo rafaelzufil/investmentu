@@ -69,6 +69,12 @@ php "$GENERATOR" --library ./toolset-forms/ --overwrite
 sort_classmap ./toolset-forms/autoload_classmap.php
 echo
 
+# Twig classmap
+echo "Generating classmap for Twig..."
+php "$GENERATOR" --library ./lib/Twig --output ./utility/gui-base/twig_autoload_classmap.php --overwrite
+sort_classmap ./utility/gui-base/twig_autoload_classmap.php
+echo
+
 # Ensure PHP 5.2 compatibility
 echo "Replacing __DIR__ with dirname( __FILE__ ) because of PHP 5.2..."
 sed -i -e 's/__DIR__/dirname( __FILE__ )/g' ./autoload_classmap.php

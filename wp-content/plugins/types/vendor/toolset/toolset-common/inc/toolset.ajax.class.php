@@ -353,7 +353,21 @@ class Toolset_Ajax {
 	 *
 	 * @since 2.0
 	 */
-	public function ajax_finish( $response, $is_success = true ) {
+	public function ajax_finish( $response = array(), $is_success = true ) {
+
+		/**
+		 * toolset_before_ajax_finish
+		 *
+		 * Announce that an AJAX call in Toolset is about to be completed.
+		 *
+		 * @param string $action Name of the AJAX action.
+		 * @param array $response Custom response data.
+		 * @param bool $is_success Indication of success or failure.
+		 *
+		 * @since Types 3.3
+		 */
+		do_action( 'toolset_before_ajax_finish', toolset_getarr( $_REQUEST, 'action' ), $response, $is_success );
+
 		if ( $is_success ) {
 			wp_send_json_success( $response );
 		} else {

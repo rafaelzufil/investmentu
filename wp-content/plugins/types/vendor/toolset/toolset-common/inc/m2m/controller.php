@@ -163,13 +163,6 @@ class Toolset_Relationship_Controller {
         $this->initialize_autoloader();
 		$this->initialize_core();
 
-		// fixme: This is for the purpose of alpha and beta versions: If there's a database problem,
-		// at least make it fail on every request. Otherwise, we'll just waste a little performance
-		// on checking that the tables already exist.
-		// @refactoring
-		$migration = new Toolset_Relationship_Migration_Controller();
-		$migration->do_native_dbdelta();
-
         $this->is_everything_initialized = true;
 	}
 

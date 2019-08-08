@@ -237,8 +237,8 @@ if ( ! class_exists('Toolset_Enlimbo_Forms', false ) ) {
         /**
          * Renders elements.
          * 
-         * @param type $elements
-         * @return type 
+         * @param mixed $elements
+         * @return string
          */
         public function renderElements($elements)
         {
@@ -267,7 +267,7 @@ if ( ! class_exists('Toolset_Enlimbo_Forms', false ) ) {
          * Depending on element type, it calls class methods.
          *
          * @param array $element
-         * @return HTML formatted output
+         * @return string formatted output
          */
         public function renderElement($element)
         {

@@ -77,7 +77,7 @@ msgid "Invalid action name."
 msgstr ""
 
 # if ( ! WPCF_Roles::user_can_create( 'custom-field' ) ) {
-# return  new WP_Error( 42, __( 'You do not have permissions for that.', 'wpcf' ) );
+# return new WP_Error( 42, __( 'You do not have permissions for that.', 'wpcf' ) );
 # }
 
 msgid "You do not have permissions for that."
@@ -525,10 +525,10 @@ msgid "Association disconnected successfully."
 msgstr ""
 
 # array(
-# 'message' => __( 'Related post moved to Trash and association disconnected successfully.', 'wpcf' ),
-# 'canConnectAnother' => $can_connect_another,
+# 'message' => __( 'Related post moved to Trash successfully.', 'wpcf' ),
+# 'canConnectAnother' => $this->can_connect_another(),
 
-msgid "Related post moved to Trash and association disconnected successfully."
+msgid "Related post moved to Trash successfully."
 msgstr ""
 
 # if ( ! $relationship_definition instanceof IToolset_Relationship_Definition ) {
@@ -665,6 +665,13 @@ msgstr ""
 msgid "Technical issue. Please reload the page and try again."
 msgstr ""
 
+# $this->get_ajax_manager()->ajax_finish( array(
+# 'message' => __( 'Could not create item for this unsaved post. This can happen due to other plugins interacting with the Repeatable Field Group. Please save the post and try again.', 'wpcf' )
+# ),
+
+msgid "Could not create item for this unsaved post. This can happen due to other plugins interacting with the Repeatable Field Group. Please save the post and try again."
+msgstr ""
+
 # // shouldn't happen as long as the user doesn't manipulate the DOM
 # $this->get_ajax_manager()->ajax_finish( __( 'System Error. Item could not be deleted. Reload the page and try again. If the issue remains, contact our support please.', 'wpcf' ), false );
 # }
@@ -772,7 +779,7 @@ msgstr ""
 
 # if ( $add_button ) {
 # $add_new_title = __( 'Add New', 'wpcf' );
-# }
+# } else {
 
 msgid "Add New"
 msgstr ""
@@ -884,12 +891,12 @@ msgstr ""
 
 # '<p>%s</p><a class="button-primary" href="%s">%s</a>',
 # __( 'To use post fields, please create a group to hold them.', 'wpcf' ),
-# admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_Post::EDIT_PAGE_SLUG,
+# admin_url() . 'admin.php?page=' . PostGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "To use post fields, please create a group to hold them."
 msgstr ""
 
-# admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_Post::EDIT_PAGE_SLUG,
+# admin_url() . 'admin.php?page=' . PostGroupViewmodel::EDIT_PAGE_SLUG,
 # __( 'Add New Group', 'wpcf' )
 # ),
 
@@ -898,14 +905,14 @@ msgstr ""
 
 # '<p>%s</p><a class="button-primary" href="%s">%s</a>',
 # __( 'To use user fields, please create a group to hold them.', 'wpcf' ),
-# admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_User::EDIT_PAGE_SLUG,
+# admin_url() . 'admin.php?page=' . UserGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "To use user fields, please create a group to hold them."
 msgstr ""
 
 # '<p>%s</p><a class="button-primary" href="%s">%s</a>',
 # __( 'To use term fields, please create a group to hold them.', 'wpcf' ),
-# admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_Term::EDIT_PAGE_SLUG,
+# admin_url() . 'admin.php?page=' . TermGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "To use term fields, please create a group to hold them."
 msgstr ""
@@ -1192,21 +1199,21 @@ msgstr ""
 
 # 'icon'  => 'fa fa-file',
 # 'description' => __( 'Fields that belong to pages, posts or custom types', 'wpcf' ),
-# 'link' => admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_Post::EDIT_PAGE_SLUG,
+# 'link' => admin_url() . 'admin.php?page=' . PostGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "Fields that belong to pages, posts or custom types"
 msgstr ""
 
 # 'icon'  => 'fa fa-user',
 # 'description' => __( 'Fields that belong to users', 'wpcf' ),
-# 'link' => admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_User::EDIT_PAGE_SLUG,
+# 'link' => admin_url() . 'admin.php?page=' . UserGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "Fields that belong to users"
 msgstr ""
 
 # 'icon'  => 'fa fa-tags',
 # 'description' => __( 'Fields that belong to taxonomy terms', 'wpcf' ),
-# 'link' => admin_url() . 'admin.php?page=' . Types_Viewmodel_Field_Group_Term::EDIT_PAGE_SLUG,
+# 'link' => admin_url() . 'admin.php?page=' . TermGroupViewmodel::EDIT_PAGE_SLUG,
 
 msgid "Fields that belong to taxonomy terms"
 msgstr ""
@@ -1307,6 +1314,20 @@ msgstr ""
 # 'or'       => __( 'Or...', 'wpcf' ),
 
 msgid "Front-end"
+msgstr ""
+
+# // translators: Admin notice that displays in the (block) post editor after the post is saved.
+# 'displayConditionsMightHaveChanged' => __( 'Conditions for displaying some custom fields on this page have changed.', 'wpcf' ),
+# // translators: Second part (with a link) of an admin notice that displays in the (block) post editor after the post is saved.
+
+msgid "Conditions for displaying some custom fields on this page have changed."
+msgstr ""
+
+# // translators: Second part (with a link) of an admin notice that displays in the (block) post editor after the post is saved.
+# 'reloadPage' => __( 'Reload this page to see the changes.', 'wpcf' ),
+# )
+
+msgid "Reload this page to see the changes."
 msgstr ""
 
 # // translators: URL; icon.
@@ -1458,26 +1479,26 @@ msgstr ""
 
 # 'connect' => __( 'Connect', 'wpcf' ),
 # 'connectExistingPlaceholder' => __( 'Type the name', 'wpcf' ),
-# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.<br />It will also affect all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, intermediary posts with relationships fields will be <strong>permanently deleted</strong>. Note that this involves all translations of affected posts.', 'wpcf' ),
 
 msgid "Type the name"
 msgstr ""
 
 # 'connectExistingPlaceholder' => __( 'Type the name', 'wpcf' ),
-# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.<br />It will also affect all translations of affected posts.', 'wpcf' ),
-# 'doYouReallyWantTrash' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.<br />It will also affect all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, intermediary posts with relationships fields will be <strong>permanently deleted</strong>. Note that this involves all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantTrash' => __( 'Do you really want to <strong>move the related post to Trash?</strong> All translations of that post will be moved to trash as well.', 'wpcf' ),
 
-msgid "Do you really want to disconnect it? The related post will not be deleted.<br />It will also affect all translations of affected posts."
+msgid "Do you really want to disconnect this post? As a result, intermediary posts with relationships fields will be <strong>permanently deleted</strong>. Note that this involves all translations of affected posts."
 msgstr ""
 
-# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.<br />It will also affect all translations of affected posts.', 'wpcf' ),
-# 'doYouReallyWantTrash' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.<br />It will also affect all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, intermediary posts with relationships fields will be <strong>permanently deleted</strong>. Note that this involves all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantTrash' => __( 'Do you really want to <strong>move the related post to Trash?</strong> All translations of that post will be moved to trash as well.', 'wpcf' ),
 # 'selectFieldsTitle' => __( 'Select columns to be displayed', 'wpcf' ),
 
-msgid "Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.<br />It will also affect all translations of affected posts."
+msgid "Do you really want to <strong>move the related post to Trash?</strong> All translations of that post will be moved to trash as well."
 msgstr ""
 
-# 'doYouReallyWantTrash' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.<br />It will also affect all translations of affected posts.', 'wpcf' ),
+# 'doYouReallyWantTrash' => __( 'Do you really want to <strong>move the related post to Trash?</strong> All translations of that post will be moved to trash as well.', 'wpcf' ),
 # 'selectFieldsTitle' => __( 'Select columns to be displayed', 'wpcf' ),
 # ),
 
@@ -1506,17 +1527,10 @@ msgid "Trash"
 msgstr ""
 
 # 'cannotBeUndone' => __( 'This cannot be undone!', 'wpcf' ),
-# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect it? The related post will not be deleted.', 'wpcf' ),
+# 'doYouReallyWantDisconnect' => __( 'Do you really want to disconnect this post? As a result, the intermediary post with relationships fields will be deleted.', 'wpcf' ),
 # ),
 
-msgid "Do you really want to disconnect it? The related post will not be deleted."
-msgstr ""
-
-# 'cannotBeUndone' => __( 'This cannot be undone!', 'wpcf' ),
-# 'doYouReallyWantDelete' => __( 'Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>.', 'wpcf' ),
-# ),
-
-msgid "Do you really want to trash it? The relationship will be disconnected and the related post <strong>will be moved to Trash</strong>."
+msgid "Do you really want to disconnect this post? As a result, the intermediary post with relationships fields will be deleted."
 msgstr ""
 
 # $post_fields_title = $has_relationship_fields
@@ -1545,6 +1559,34 @@ msgstr ""
 # }
 
 msgid "Invalid association"
+msgstr ""
+
+# // translators: Title of a setting section.
+# 'title' => __( 'REST API', 'wpcf' ),
+# 'content' => sprintf(
+
+msgid "REST API"
+msgstr ""
+
+# esc_attr( Toolset_Settings::EXPOSE_CUSTOM_FIELDS_IN_REST ),
+# __( 'Expose custom fields managed by Types for posts, users, and terms through the REST API', 'wpcf' ),
+# sprintf(
+
+msgid "Expose custom fields managed by Types for posts, users, and terms through the REST API"
+msgstr ""
+
+# // translators: Description of a setting. The placeholder will be replaced with a link that says "our documentation" (or a translation thereof)
+# __( 'This will add a "toolset-meta" property with custom fields to posts, users and terms that show in REST responses. Please refer to %s for further details.', 'wpcf' ),
+# // translators: Part of a description of the REST API setting with a link to documentation.
+
+msgid "This will add a \"toolset-meta\" property with custom fields to posts, users and terms that show in REST responses. Please refer to %s for further details."
+msgstr ""
+
+# // translators: Part of a description of the REST API setting with a link to documentation.
+# '<a href="https://toolset.com">' . __( 'our documentation', 'wpcf' ) . '</a>'
+# ),
+
+msgid "our documentation"
 msgstr ""
 
 # $context = array(
@@ -2136,10 +2178,10 @@ msgid "You can add fields to the relationship itself. Need help? Read about <a h
 msgstr ""
 
 # // TODO get urls ToolsetDoc-628.
-# 'relationshipNames' => __( 'Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. We will be able to edit the \'plural\' and \'singular\' labels, but not the slug.', 'wpcf' ),
+# 'relationshipNames' => __( 'Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. You will be able to later edit the "plural" and "singular" labels easily, but renaming the slug may be more problematic if it is already used in any existing shortcode attributes.', 'wpcf' ),
 # ),
 
-msgid "Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. We will be able to edit the 'plural' and 'singular' labels, but not the slug."
+msgid "Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. You will be able to later edit the \"plural\" and \"singular\" labels easily, but renaming the slug may be more problematic if it is already used in any existing shortcode attributes."
 msgstr ""
 
 # 'strings' => array(
@@ -3181,10 +3223,10 @@ msgid "Keep image proportional"
 msgstr ""
 
 # 'defaultValue' => 'true',
-# 'description'  => __( 'false=image will be cropped to specified height and width. Overridden if size is set', 'wpcf' )
+# 'description'  => __( 'Image will be cropped to specified height and width. Overridden if size is set', 'wpcf' )
 # ),
 
-msgid "false=image will be cropped to specified height and width. Overridden if size is set"
+msgid "Image will be cropped to specified height and width. Overridden if size is set"
 msgstr ""
 
 # 'resize' => array(
@@ -4721,6 +4763,34 @@ msgstr ""
 msgid "Return to the updates page"
 msgstr ""
 
+# $installer_doc_url  = 'https://wpml.org/?p=72674#automated-updates';
+# $installer_doc_link = '<a href="' . $installer_doc_url . '">' . __( 'OTGS Installer', 'installer' ) . '</a>';
+# 
+
+msgid "OTGS Installer"
+msgstr ""
+
+# echo sprintf(
+# __( '%s, responsible for receiving automated updates for WPML and Toolset, requires the following PHP component(s) in order to function:', 'installer' ),
+# $installer_doc_link
+
+msgid "%s, responsible for receiving automated updates for WPML and Toolset, requires the following PHP component(s) in order to function:"
+msgstr ""
+
+# 
+# $minimum_requirements_link = '<a href="https://wpml.org/?page_id=716">' . __( 'Minimum WPML requirements' ) . '</a>';
+# echo '<p>' . sprintf( __( 'Learn more: %s', 'installer' ), $minimum_requirements_link ) . '</p>';
+
+msgid "Minimum WPML requirements"
+msgstr ""
+
+# $minimum_requirements_link = '<a href="https://wpml.org/?page_id=716">' . __( 'Minimum WPML requirements' ) . '</a>';
+# echo '<p>' . sprintf( __( 'Learn more: %s', 'installer' ), $minimum_requirements_link ) . '</p>';
+# 
+
+msgid "Learn more: %s"
+msgstr ""
+
 # $theme_repo_name = $this->installer_theme_get_repo_product_name( $frontend_tab_selected );;
 # $response['unregistered_messages'] = sprintf( __( 'To install and update %s, please %sregister%s %s for this site.', 'installer' ),
 # $theme_repo_name, '<a href="' . $registration_url . '">', '</a>', $theme_repo_name );
@@ -4918,7 +4988,7 @@ msgid "Installer cannot contact our updates server to get information about the 
 msgstr ""
 
 # 
-# echo '<center>' . __( 'No repositories defined.', 'installer' ) . '</center>';
+# echo '<p>' . __( 'No repositories defined.', 'installer' ) . '</p>';
 # 
 
 msgid "No repositories defined."
@@ -4943,13 +5013,6 @@ msgstr ""
 # '<strong><i>' . $this->get_generic_product_name( $repository_id ) . '</i></strong>',
 
 msgid "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet. You can still use the plugin without registration, but you will not receive automated updates."
-msgstr ""
-
-# unset( $this->settings['repositories'][ $repository_id ]['subscription'] );
-# $error = __( 'Invalid site key for the current site. If the error persists, try to unregister first and then register again with the same site key.', 'installer' );
-# }
-
-msgid "Invalid site key for the current site. If the error persists, try to unregister first and then register again with the same site key."
 msgstr ""
 
 # $days    = 30;
@@ -5013,6 +5076,167 @@ msgstr ""
 # '<br />' . $message .
 
 msgid "Your subscription expires in %d days."
+msgstr ""
+
+# $repository_data->set_subscription( null );
+# $error = __( 'Invalid site key for the current site. If the error persists, try to un-register first and then register again with the same site key.', 'installer' );
+# }
+
+msgid "Invalid site key for the current site. If the error persists, try to un-register first and then register again with the same site key."
+msgstr ""
+
+# if ( ! $repository || ! $nonce || ! $site_key || ! wp_verify_nonce( $nonce, 'save_site_key_' . $repository ) ) {
+# wp_send_json_error( esc_html__( 'Invalid request!', 'installer' ) );
+# }
+
+msgid "Invalid request!"
+msgstr ""
+
+# 'commercial',
+# __( 'Installer Support', 'installer' ),
+# 'Installer Support',
+
+msgid "Installer Support"
+msgstr ""
+
+# 'title' => __( 'Installer Support', 'installer' ),
+# 'content' => __( 'For retrieving Installer debug information use the %s page.', 'installer' ),
+# 'link' => array(
+
+msgid "For retrieving Installer debug information use the %s page."
+msgstr ""
+
+# 'log'          => array(
+# 'title'             => __( 'Installer Log', 'installer' ),
+# 'request_url'       => __( 'Request URL', 'installer' ),
+
+msgid "Installer Log"
+msgstr ""
+
+# 'title'             => __( 'Installer Log', 'installer' ),
+# 'request_url'       => __( 'Request URL', 'installer' ),
+# 'request_arguments' => __( 'Request Arguments', 'installer' ),
+
+msgid "Request URL"
+msgstr ""
+
+# 'request_url'       => __( 'Request URL', 'installer' ),
+# 'request_arguments' => __( 'Request Arguments', 'installer' ),
+# 'response'          => __( 'Response', 'installer' ),
+
+msgid "Request Arguments"
+msgstr ""
+
+# 'request_arguments' => __( 'Request Arguments', 'installer' ),
+# 'response'          => __( 'Response', 'installer' ),
+# 'component'         => __( 'Component', 'installer' ),
+
+msgid "Response"
+msgstr ""
+
+# 'response'          => __( 'Response', 'installer' ),
+# 'component'         => __( 'Component', 'installer' ),
+# 'time'              => __( 'Time', 'installer' ),
+
+msgid "Component"
+msgstr ""
+
+# 'component'         => __( 'Component', 'installer' ),
+# 'time'              => __( 'Time', 'installer' ),
+# 'empty_log'         => __( 'Log is empty', 'installer' ),
+
+msgid "Time"
+msgstr ""
+
+# 'time'              => __( 'Time', 'installer' ),
+# 'empty_log'         => __( 'Log is empty', 'installer' ),
+# ),
+
+msgid "Log is empty"
+msgstr ""
+
+# 'tester'       => array(
+# 'title'        => __( 'Installer System Status', 'installer' ),
+# 'button_label' => __( 'Check Now', 'installer' ),
+
+msgid "Installer System Status"
+msgstr ""
+
+# 'title'        => __( 'Installer System Status', 'installer' ),
+# 'button_label' => __( 'Check Now', 'installer' ),
+# ),
+
+msgid "Check Now"
+msgstr ""
+
+# 'requirements' => array(
+# 'title' => __( 'Required PHP Libraries', 'installer' ),
+# ),
+
+msgid "Required PHP Libraries"
+msgstr ""
+
+# 'instances' => array(
+# 'title' => __( 'All Installer Instances', 'installer' ),
+# 'path' => __( 'Path', 'installer' ),
+
+msgid "All Installer Instances"
+msgstr ""
+
+# 'title' => __( 'All Installer Instances', 'installer' ),
+# 'path' => __( 'Path', 'installer' ),
+# 'version' => __( 'Version', 'installer' ),
+
+msgid "Path"
+msgstr ""
+
+# 'path' => __( 'Path', 'installer' ),
+# 'version' => __( 'Version', 'installer' ),
+# 'high_priority' => __( 'High priority', 'installer' ),
+
+msgid "Version"
+msgstr ""
+
+# 'version' => __( 'Version', 'installer' ),
+# 'high_priority' => __( 'High priority', 'installer' ),
+# 'delegated' => __( 'Delegated', 'installer' ),
+
+msgid "High priority"
+msgstr ""
+
+# 'high_priority' => __( 'High priority', 'installer' ),
+# 'delegated' => __( 'Delegated', 'installer' ),
+# ),
+
+msgid "Delegated"
+msgstr ""
+
+# 'type'        => 'api',
+# 'description' => __( 'WPML API server', 'installer' )
+# ),
+
+msgid "WPML API server"
+msgstr ""
+
+# 'type'        => 'api',
+# 'description' => __( 'Toolset API server', 'installer' )
+# ),
+
+msgid "Toolset API server"
+msgstr ""
+
+# 'type'        => 'products',
+# 'description' => __( 'WPML remote products file', 'installer' )
+# ),
+
+msgid "WPML remote products file"
+msgstr ""
+
+# 'type'        => 'products',
+# 'description' => __( 'Toolset remote products file', 'installer' )
+# ),
+
+msgid "Toolset remote products file"
 msgstr ""
 
 # echo esc_attr( sprintf(
@@ -7486,18 +7710,137 @@ msgstr ""
 msgid "Your security credentials have expired. Please reload the page to get new ones."
 msgstr ""
 
-# 'dialog' => array(
-# 'title' => __( 'Select a file for this field', 'wpv-views' ),
-# 'button' => __( 'Use this as field value', 'wpv-views' ),
+# /* translators: select2 helper text: when the search results could not be loaded */
+# 'errorLoading' => __( 'The results could not be loaded', 'wpv-views' ),
+# /* translators: select2 helper text: when your search term has 1 character over the allowed limit */
 
-msgid "Select a file for this field"
+msgid "The results could not be loaded"
 msgstr ""
 
-# 'title' => __( 'Select a file for this field', 'wpv-views' ),
-# 'button' => __( 'Use this as field value', 'wpv-views' ),
-# 'nonce' => wp_create_nonce( 'toolset_media_field_' . get_current_user_id() ),
+# /* translators: select2 helper text: when your search term has 1 character over the allowed limit */
+# 'inputTooLongSingular' => __( 'Please delete %NUM% character', 'wpv-views' ),
+# /* translators: select2 helper text: when your search term has %NUM% characters over the allowed limit */
 
-msgid "Use this as field value"
+msgid "Please delete %NUM% character"
+msgstr ""
+
+# /* translators: select2 helper text: when your search term has %NUM% characters over the allowed limit */
+# 'inputTooLongPlural' => __( 'Please delete %NUM% characters', 'wpv-views' ),
+# /* translators: select2 helper text: when your search term is %NUM% short under the minimum allowed limit */
+
+msgid "Please delete %NUM% characters"
+msgstr ""
+
+# /* translators: select2 helper text: when your search term is %NUM% short under the minimum allowed limit */
+# 'inputTooShort' => __( 'Please enter %NUM% or more characters', 'wpv-views' ),
+# /* translators: select2 helper text: when loading more results */
+
+msgid "Please enter %NUM% or more characters"
+msgstr ""
+
+# /* translators: select2 helper text: when loading more results */
+# 'loadingMore' => __( 'Loading more results...', 'wpv-views' ),
+# /* translators: select2 helper text: when you can only select 1 item */
+
+msgid "Loading more results..."
+msgstr ""
+
+# /* translators: select2 helper text: when you can only select 1 item */
+# 'maximumSelectedSingular' => __( 'You can only select %NUM% item', 'wpv-views' ),
+# /* translators: select2 helper text: when you can only select up to %NUM% items */
+
+msgid "You can only select %NUM% item"
+msgstr ""
+
+# /* translators: select2 helper text: when you can only select up to %NUM% items */
+# 'maximumSelectedPlural' => __( 'You can only select %NUM% items', 'wpv-views' ),
+# /* translators: select2 helper text: when no results were found */
+
+msgid "You can only select %NUM% items"
+msgstr ""
+
+# /* translators: select2 helper text: when no results were found */
+# 'noResults' => __( 'No results found', 'wpv-views' ),
+# /* translators: select2 helper text: while searching */
+
+msgid "No results found"
+msgstr ""
+
+# /* translators: select2 helper text: while searching */
+# 'searching' => __( 'Searching...', 'wpv-views' ),
+# )
+
+msgid "Searching..."
+msgstr ""
+
+# 'title' => array(
+# 'audio' => __( 'Audio file for this field', 'wpv-views' ),
+# 'file' => __( 'File for this field', 'wpv-views' ),
+
+msgid "Audio file for this field"
+msgstr ""
+
+# 'audio' => __( 'Audio file for this field', 'wpv-views' ),
+# 'file' => __( 'File for this field', 'wpv-views' ),
+# 'image' => __( 'Image for this field', 'wpv-views' ),
+
+msgid "File for this field"
+msgstr ""
+
+# 'file' => __( 'File for this field', 'wpv-views' ),
+# 'image' => __( 'Image for this field', 'wpv-views' ),
+# 'video' => __( 'Video for this field', 'wpv-views' ),
+
+msgid "Image for this field"
+msgstr ""
+
+# 'image' => __( 'Image for this field', 'wpv-views' ),
+# 'video' => __( 'Video for this field', 'wpv-views' ),
+# ),
+
+msgid "Video for this field"
+msgstr ""
+
+# ),
+# 'button' => __( 'Add %%FIELD_VALUE%%', 'wpv-views' ),
+# ),
+
+msgid "Add %%FIELD_VALUE%%"
+msgstr ""
+
+# 'title' => array(
+# 'audio' => __( 'Multiple audio files for this field', 'wpv-views' ),
+# 'file' => __( 'Multiple files for this field', 'wpv-views' ),
+
+msgid "Multiple audio files for this field"
+msgstr ""
+
+# 'audio' => __( 'Multiple audio files for this field', 'wpv-views' ),
+# 'file' => __( 'Multiple files for this field', 'wpv-views' ),
+# 'image' => __( 'Multiple images for this field', 'wpv-views' ),
+
+msgid "Multiple files for this field"
+msgstr ""
+
+# 'file' => __( 'Multiple files for this field', 'wpv-views' ),
+# 'image' => __( 'Multiple images for this field', 'wpv-views' ),
+# 'video' => __( 'Multiple videos for this field', 'wpv-views' ),
+
+msgid "Multiple images for this field"
+msgstr ""
+
+# 'image' => __( 'Multiple images for this field', 'wpv-views' ),
+# 'video' => __( 'Multiple videos for this field', 'wpv-views' ),
+# ),
+
+msgid "Multiple videos for this field"
+msgstr ""
+
+# ),
+# 'button' => __( 'Add multiple %%FIELD_VALUE%%', 'wpv-views' ),
+# ),
+
+msgid "Add multiple %%FIELD_VALUE%%"
 msgstr ""
 
 # array(
@@ -8915,10 +9258,10 @@ msgid "Select audio"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit audio', 'wpv-views' );
+# return __( 'Replace audio', 'wpv-views' );
 # }
 
-msgid "Edit audio"
+msgid "Replace audio"
 msgstr ""
 
 # ),
@@ -8998,7 +9341,14 @@ msgstr ""
 msgid "This field is locked for editing because WPML will copy its value from the original language."
 msgstr ""
 
-# protected function get_select_label() {
+# if ( $this->isRepetitive() ) {
+# return __( 'Select file(s)', 'wpv-views' );
+# } else {
+
+msgid "Select file(s)"
+msgstr ""
+
+# } else {
 # return __( 'Select file', 'wpv-views' );
 # }
 
@@ -9006,10 +9356,10 @@ msgid "Select file"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit file', 'wpv-views' );
+# return __( 'Replace file', 'wpv-views' );
 # }
 
-msgid "Edit file"
+msgid "Replace file"
 msgstr ""
 
 # sprintf(
@@ -9026,7 +9376,14 @@ msgstr ""
 msgid "You can add only images."
 msgstr ""
 
-# protected function get_select_label() {
+# if ( $this->isRepetitive() ) {
+# return __( 'Select image(s)', 'wpv-views' );
+# } else {
+
+msgid "Select image(s)"
+msgstr ""
+
+# } else {
 # return __( 'Select image', 'wpv-views' );
 # }
 
@@ -9034,10 +9391,10 @@ msgid "Select image"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit image', 'wpv-views' );
+# return __( 'Replace image', 'wpv-views' );
 # }
 
-msgid "Edit image"
+msgid "Replace image"
 msgstr ""
 
 # ) {
@@ -9075,7 +9432,14 @@ msgstr ""
 msgid "You can add only video."
 msgstr ""
 
-# protected function get_select_label() {
+# if ( $this->isRepetitive() ) {
+# return __( 'Select video(s)', 'wpv-views' );
+# } else {
+
+msgid "Select video(s)"
+msgstr ""
+
+# } else {
 # return __( 'Select video', 'wpv-views' );
 # }
 
@@ -9083,10 +9447,10 @@ msgid "Select video"
 msgstr ""
 
 # protected function get_edit_label() {
-# return __( 'Edit video', 'wpv-views' );
+# return __( 'Replace video', 'wpv-views' );
 # }
 
-msgid "Edit video"
+msgid "Replace video"
 msgstr ""
 
 # if (filesize($uploaded_file["tmp_name"]) > wp_max_upload_size()) {
@@ -9131,11 +9495,11 @@ msgstr ""
 msgid "You must define a regular expression for WPToolset_Cake_Validation::custom()"
 msgstr ""
 
-# <div class="js-wpt-repdrag wpt-repdrag">&nbsp;</div>
-# <a class="js-wpt-repdelete button button-small" data-wpt-type="<?php echo $cfg['type']; ?>" data-wpt-id="<?php echo $cfg['id']; ?>"><?php apply_filters( 'toolset_button_delete_repetition_text', printf( __( 'Delete %s', 'wpv-views' ), strtolower( $cfg['title'] ) ), $cfg ); ?></a>
-# </div>
+# data-wpt-id="<?php echo $cfg['id']; ?>">
+# <?php echo apply_filters( 'toolset_button_delete_repetition_text', __( 'Remove', 'wpv-views' ), $cfg ); ?>
+# </a>
 
-msgid "Delete %s"
+msgid "Remove"
 msgstr ""
 
 # echo '<span role="button" class="js-wpt-repdrag wpt-repdrag dashicons dashicons-move"></span>';
@@ -9143,6 +9507,13 @@ msgstr ""
 # echo '<span role="button" class="js-wpt-repdelete wpt-repdelete dashicons-before dashicons-trash" title="';
 
 msgid "%s repetition"
+msgstr ""
+
+# ?>
+# <a class="js-wpt-repdrag wpt-repdrag dashicons dashicons-move" title="<?php _e( 'Drag to change order', 'wpv-views' );?>">&nbsp;</a>
+# <?php
+
+msgid "Drag to change order"
 msgstr ""
 
 # echo '<input type="button" class="js-wpt-repadd wpt-repadd' . $button_extra_classnames . '" data-wpt-type="' . $cfg['type'] . '" data-wpt-id="' . $cfg['id'] . '" value="';
@@ -9167,10 +9538,10 @@ msgid "Divi Builder"
 msgstr ""
 
 # ) {
-# $this->name = __( 'Gutenberg', 'wpv-views' );
+# $this->name = __( 'Block Editor', 'wpv-views' );
 # return true;
 
-msgid "Gutenberg"
+msgid "Block Editor"
 msgstr ""
 
 # /* translators: Prefix for the Content Template name that is built using Layouts. */
@@ -9187,11 +9558,18 @@ msgstr ""
 msgid "Layouts"
 msgstr ""
 
+# public function initialize() {
+# $this->name = __( 'Classic Editor', 'wpv-views' );
+# 
+
+msgid "Classic Editor"
+msgstr ""
+
 # $notice_content = sprintf(
-# __( 'Done editing here? Return to the %1$sToolset Content Template editor%2$s.', 'wpv-views' ),
+# __( 'Done editing here? Return to the %1$sToolset Content Template editor.%2$s', 'wpv-views' ),
 # '<a href="' . admin_url( 'admin.php?page=ct-editor&ct_id=' . $ct_id ) . '">',
 
-msgid "Done editing here? Return to the %1$sToolset Content Template editor%2$s."
+msgid "Done editing here? Return to the %1$sToolset Content Template editor.%2$s"
 msgstr ""
 
 # public function adjust_post_updated_messages( $messages ) {
@@ -9290,6 +9668,90 @@ msgstr ""
 # '<a href="#" target="_blank">',
 
 msgid "%1$sDesigning templates with %2$s%3$s."
+msgstr ""
+
+# 'nonce' => wp_create_nonce( 'ct_kill_dissident_posts' ),
+# 'buttonLabel' => __( 'Apply to all', 'wpv-views' ),
+# ),
+
+msgid "Apply to all"
+msgstr ""
+
+# ),
+# 'suggestReload' => __( 'Please save your work and reload this editor to update the list of posts for previewing your design.', 'wpv-views' ),
+# );
+
+msgid "Please save your work and reload this editor to update the list of posts for previewing your design."
+msgstr ""
+
+# if ( null !== $this->parent_view ) {
+# add_meta_box( 'wpv-content-template-usage-metabox', __( 'Usage', 'wpv-views' ), array( $this, 'usage_owned_by_view_metabox' ), 'view-template', 'side', 'high' );
+# } else {
+
+msgid "Usage"
+msgstr ""
+
+# $this->archive_frontend = WPV_WordPress_Archive_Frontend::get_instance();
+# add_meta_box( 'wpv-content-template-usage-single-metabox', __( 'Usage: single pages', 'wpv-views' ), array( $this, 'usage_single_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-usage-cpt-archive-metabox', __( 'Usage: post archives', 'wpv-views' ), array( $this, 'usage_cpt_archive_metabox' ), 'view-template', 'side', 'high' );
+
+msgid "Usage: single pages"
+msgstr ""
+
+# add_meta_box( 'wpv-content-template-usage-single-metabox', __( 'Usage: single pages', 'wpv-views' ), array( $this, 'usage_single_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-usage-cpt-archive-metabox', __( 'Usage: post archives', 'wpv-views' ), array( $this, 'usage_cpt_archive_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-usage-taxonomy-archive-metabox', __( 'Usage: taxonomy archives', 'wpv-views' ), array( $this, 'usage_taxonomy_archive_metabox' ), 'view-template', 'side', 'high' );
+
+msgid "Usage: post archives"
+msgstr ""
+
+# add_meta_box( 'wpv-content-template-usage-cpt-archive-metabox', __( 'Usage: post archives', 'wpv-views' ), array( $this, 'usage_cpt_archive_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-usage-taxonomy-archive-metabox', __( 'Usage: taxonomy archives', 'wpv-views' ), array( $this, 'usage_taxonomy_archive_metabox' ), 'view-template', 'side', 'high' );
+# }
+
+msgid "Usage: taxonomy archives"
+msgstr ""
+
+# 
+# add_meta_box( 'wpv-content-template-css-metabox', __( 'CSS editor', 'wpv-views' ), array( $this, 'custom_css_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-user-editor-metabox', __( 'Editor for this Template', 'wpv-views' ), array( $this, 'user_editor_metabox' ), 'view-template', 'side', 'high' );
+
+msgid "CSS editor"
+msgstr ""
+
+# add_meta_box( 'wpv-content-template-css-metabox', __( 'CSS editor', 'wpv-views' ), array( $this, 'custom_css_metabox' ), 'view-template', 'side', 'high' );
+# add_meta_box( 'wpv-content-template-user-editor-metabox', __( 'Editor for this Template', 'wpv-views' ), array( $this, 'user_editor_metabox' ), 'view-template', 'side', 'high' );
+# 
+
+msgid "Editor for this Template"
+msgstr ""
+
+# $admin_url = admin_url( 'admin.php?page=ct-editor&ct_id=' . esc_attr( $this->template_object->id ) . '&ct_editor_choice=basic' );
+# echo '<a href="' . esc_url( $admin_url ) . '" title="' . esc_attr( __( 'Stop using the Block Editor on this Content Template', 'wpv-views' ) ) . '">'
+# . __( 'Use the Clasic Editor for this Template', 'wpv-views' )
+
+msgid "Stop using the Block Editor on this Content Template"
+msgstr ""
+
+# echo '<a href="' . esc_url( $admin_url ) . '" title="' . esc_attr( __( 'Stop using the Block Editor on this Content Template', 'wpv-views' ) ) . '">'
+# . __( 'Use the Clasic Editor for this Template', 'wpv-views' )
+# . '</a>';
+
+msgid "Use the Clasic Editor for this Template"
+msgstr ""
+
+# $loop_template_notice = sprintf(
+# __( 'This Content Template is used as the loop block for the %s <a href="%s" target="_blank">%s</a>.', 'wpv-views' ),
+# $this->parent_view->query_mode_display_name,
+
+msgid "This Content Template is used as the loop block for the %s <a href=\"%s\" target=\"_blank\">%s</a>."
+msgstr ""
+
+# $loop_template_notice = sprintf(
+# __( 'This Content Template is used as the loop block for the trashed %s %s.', 'wpv-views' ),
+# $this->parent_view->query_mode_display_name,
+
+msgid "This Content Template is used as the loop block for the trashed %s %s."
 msgstr ""
 
 # /* translators: Informative text about the editor used to create the Content Template. */
@@ -9920,6 +10382,20 @@ msgstr ""
 # '#inline' => true,
 
 msgid "Types will try to scale remote images."
+msgstr ""
+
+# '#type' => 'checkbox',
+# '#label' => __('Always apply image modifications done using Media Library', 'wpcf'),
+# '#description' => __('By default, the image shortcode [types field="image" size="full"] will display the URL of the field, without determining the underlying attachment object. This provides the best performance when using image fields. The downside of this is that image modifications done using Media Library are not used. Activate this option to always check for image modifications (performance will not be optimal)', 'wpcf'),
+
+msgid "Always apply image modifications done using Media Library"
+msgstr ""
+
+# '#label' => __('Always apply image modifications done using Media Library', 'wpcf'),
+# '#description' => __('By default, the image shortcode [types field="image" size="full"] will display the URL of the field, without determining the underlying attachment object. This provides the best performance when using image fields. The downside of this is that image modifications done using Media Library are not used. Activate this option to always check for image modifications (performance will not be optimal)', 'wpcf'),
+# '#inline' => true,
+
+msgid "By default, the image shortcode [types field=\"image\" size=\"full\"] will display the URL of the field, without determining the underlying attachment object. This provides the best performance when using image fields. The downside of this is that image modifications done using Media Library are not used. Activate this option to always check for image modifications (performance will not be optimal)"
 msgstr ""
 
 # $form['images_remote_clear'] = array(
@@ -11763,14 +12239,7 @@ msgstr ""
 msgid "User Field Groups"
 msgstr ""
 
-# {
-# $USERMETA_ACCESS_AREA_NAME = __( 'User Meta Fields Frontend Access', 'wpcf' );
-# $USERMETA_ACCESS_AREA_ID = '__USERMETA_FIELDS';
-
-msgid "User Meta Fields Frontend Access"
-msgstr ""
-
-# array('view_others_on_site', $default_role, __( 'View others fields on site', 'wpcf' )),*/
+# $usermeta_caps = array(
 # array('view_own_in_profile', $default_role, __( 'View own fields in profile', 'wpcf' )),
 # array('modify_own', $default_role, __( 'Modify own fields', 'wpcf' )),
 
@@ -11779,7 +12248,7 @@ msgstr ""
 
 # array('view_own_in_profile', $default_role, __( 'View own fields in profile', 'wpcf' )),
 # array('modify_own', $default_role, __( 'Modify own fields', 'wpcf' )),
-# /*
+# );
 
 msgid "Modify own fields"
 msgstr ""
@@ -11798,13 +12267,6 @@ msgstr ""
 msgid "User Meta Fields Access"
 msgstr ""
 
-# {
-# $FIELDS_ACCESS_AREA_NAME = __( 'Post Custom Fields Frontend Access', 'wpcf' );
-# $FIELDS_ACCESS_AREA_ID = '__FIELDS';
-
-msgid "Post Custom Fields Frontend Access"
-msgstr ""
-
 # /*array('view_fields_on_site', $default_role, __( 'View Fields On Site', 'wpcf' )),*/
 # array('view_fields_in_edit_page', $default_role, __( 'View Fields In Edit Page', 'wpcf' )),
 # array('modify_fields_in_edit_page', 'author', __( 'Modify Fields In Edit Page', 'wpcf' )),
@@ -11817,13 +12279,6 @@ msgstr ""
 # );
 
 msgid "Modify Fields In Edit Page"
-msgstr ""
-
-# {
-# $FIELDS_ACCESS_AREA_NAME = __( 'Post Fields Frontend Access', 'wpcf' );
-# $FIELDS_ACCESS_AREA_ID = '__FIELDS';
-
-msgid "Post Fields Frontend Access"
 msgstr ""
 
 # {
@@ -12946,14 +13401,14 @@ msgstr ""
 msgid "Error occured"
 msgstr ""
 
-# echo json_encode(array(
+# wp_send_json(array(
 # 'output' => __('Missing required data.', 'wpcf'),
 # ));
 
 msgid "Missing required data."
 msgstr ""
 
-# echo json_encode(array(
+# wp_send_json(array(
 # 'output' => __('Verification failed.', 'wpcf'),
 # ));
 
@@ -16544,9 +16999,9 @@ msgstr ""
 msgid "Drag to reorder."
 msgstr ""
 
-# '#inline' => true,
-# '#before' => '<li class="js-wpcf-tooltip wpcf-custom-field-disabled" data-tooltip="'.__( 'This field cannot be shown in Post Type listing due to its complexity.', 'wpcf' ).'">',
-# '#after' => '</li>',
+# '#before' => '<li class="js-wpcf-tooltip wpcf-custom-field-disabled" data-tooltip="'
+# . __( 'This field cannot be shown in Post Type listing due to its complexity.', 'wpcf' )
+# . '">',
 
 msgid "This field cannot be shown in Post Type listing due to its complexity."
 msgstr ""
@@ -16794,83 +17249,6 @@ msgstr ""
 # die;
 
 msgid "Wrong group."
-msgstr ""
-
-# if ( array_key_exists($candidate_key, $taxonomies) ) {
-# $ttt = __('unknown', 'wpcf');
-# if (
-
-msgid "unknown"
-msgstr ""
-
-# */
-# $text = preg_replace( '/PPP/', __('Posts'), $text);
-# $text = preg_replace( '/TTT/', __('Tags'), $text);
-
-msgid "Posts"
-msgstr ""
-
-# $text = preg_replace( '/PPP/', __('Posts'), $text);
-# $text = preg_replace( '/TTT/', __('Tags'), $text);
-# 
-
-msgid "Tags"
-msgstr ""
-
-# */
-# $data['message'] = __('Saving your changes', 'wpcf');
-# $data['spinner'] = apply_filters('wpcf_marketing_message', admin_url('/images/spinner.gif'), $data, 'spinner');
-
-msgid "Saving your changes"
-msgstr ""
-
-# $data['spinner'] = apply_filters('wpcf_marketing_message', admin_url('/images/spinner.gif'), $data, 'spinner');
-# $data['question'] = apply_filters('wpcf_marketing_message', __('Did you know?', 'wpcf'), $data, 'question');
-# /**
-
-msgid "Did you know?"
-msgstr ""
-
-# $content = '<div class="icon-toolset-logo icon-toolset">';
-# $content .= sprintf('<p class="wpcf-notif-header">%s</p>', $update? __('Updated!', 'wpcf'):__('Created!', 'wpcf') );
-# if ( 'endabled' == $this->state) {
-
-msgid "Updated!"
-msgstr ""
-
-# $content = '<div class="icon-toolset-logo icon-toolset">';
-# $content .= sprintf('<p class="wpcf-notif-header">%s</p>', $update? __('Updated!', 'wpcf'):__('Created!', 'wpcf') );
-# if ( 'endabled' == $this->state) {
-
-msgid "Created!"
-msgstr ""
-
-# '<h4><span class="icon-toolset-logo ont-color-orange"></span>%s</h4>',
-# __('Want to create templates with fields?', 'wpcf')
-# );
-
-msgid "Want to create templates with fields?"
-msgstr ""
-
-# '<p>%s</p>',
-# __('The full Toolset package allows you to design templates for content and insert fields using the WordPress editor.', 'wpcf')
-# );
-
-msgid "The full Toolset package allows you to design templates for content and insert fields using the WordPress editor."
-msgstr ""
-
-# ),
-# __('Meet Toolset', 'wpcf'),
-# esc_attr(
-
-msgid "Meet Toolset"
-msgstr ""
-
-# ),
-# __('Creating Templates for Content', 'wpcf')
-# );
-
-msgid "Creating Templates for Content"
 msgstr ""
 
 # {
@@ -17363,11 +17741,11 @@ msgstr ""
 msgid "Custom logic"
 msgstr ""
 
-# 'types_message_custom_post_type_saved',
-# __( 'Post Type saved', 'wpcf' ),
-# $data,
+# }
+# $operation = __('unknown', 'wpcf');
+# if (
 
-msgid "Post Type saved"
+msgid "unknown"
 msgstr ""
 
 # printf( '<p>%s %s<a href="%s" target="_blank">%s &raquo;</a></p>',
@@ -18245,396 +18623,11 @@ msgstr ""
 msgid "This post type is disabled, becouse is used as parent post."
 msgstr ""
 
-# $form['images_remote'] = array(
-# '#title' => __('Remote Images', 'wpcf'),
-# '#id' => 'images_remote',
-
-msgid "Remote Images"
-msgstr ""
-
-# '#type' => 'select',
-# '#title' => __('Images cache', 'wpcf'),
-# '#pattern' => sprintf(
-
-msgid "Images cache"
-msgstr ""
-
-# '#type' => 'checkbox',
-# '#title' => __('WPML Integration', 'wpcf'),
-# '#label' => __("When importing, add texts to WPML's String Translation table", 'wpcf'),
-
-msgid "WPML Integration"
-msgstr ""
-
-# '#value' => 'all',
-# '#title' => __("Show promotional messages on all custom post editing screens and on all Types create/edit pages", 'wpcf')
-# ),
-
-msgid "Show promotional messages on all custom post editing screens and on all Types create/edit pages"
-msgstr ""
-
-# '#value' => 'by_types',
-# '#title' => __("Show promotional messages only on post types that were created by Types and on all Types create/edit pages", 'wpcf')
-# ),
-
-msgid "Show promotional messages only on post types that were created by Types and on all Types create/edit pages"
-msgstr ""
-
-# '#value' => 'no',
-# '#title' => __("Don't show promotional messages anywhere", 'wpcf')
-# ),
-
-msgid "Don't show promotional messages anywhere"
-msgstr ""
-
-# '#pattern' => '<tr><th scope="row"><TITLE></th><td><ELEMENT><DESCRIPTION></td></th>',
-# '#title' =>  __('Help Box', 'wpcf'),
-# );
-
-msgid "Help Box"
-msgstr ""
-
-# '#default_value' => preg_match('/^(show|hide)$/', $settings['hide_standard_custom_fields_metabox'])? $settings['hide_standard_custom_fields_metabox']:'show',
-# '#title' => __('Custom Field Metabox', 'wpcf'),
-# '#pattern' => '<tr><th scope="row"><TITLE></th><td><ELEMENT><DESCRIPTION></td></th>',
-
-msgid "Custom Field Metabox"
-msgstr ""
-
-# '#attributes' => array('id'=>'general-settings-submit','class' => 'button-primary'),
-# '#value' => __('Save Changes', 'wpcf'),
-# );
-
-msgid "Save Changes"
-msgstr ""
-
-# }
-# wpcf_admin_message_store(__('Images cache cleared', 'wpcf'));
-# }
-
-msgid "Images cache cleared"
-msgstr ""
-
-# 
-# wpcf_admin_message_store(__('Settings saved.', 'wpcf'));
-# }
-
-msgid "Settings saved."
-msgstr ""
-
 # <input type="hidden" name="page" value="<?php echo esc_attr($_REQUEST['page']); ?>" />
 # <?php $listTable->search_box(__('Search User Field Groups', 'wpcf'), 'search_id'); ?>
 # <!-- Now we can render the completed list table -->
 
 msgid "Search User Field Groups"
-msgstr ""
-
-# if ( $update ) {
-# $message = __( 'Congratulations! Your Post Type %s was successfully updated.', 'wpcf' );
-# } else {
-
-msgid "Congratulations! Your Post Type %s was successfully updated."
-msgstr ""
-
-# } else {
-# $message = __( 'congratulations! your new Post Type %s was successfully created.', 'wpcf' );
-# }
-
-msgid "congratulations! your new Post Type %s was successfully created."
-msgstr ""
-
-# if ( $update) {
-# $message = __( 'Congratulations! Your custom fields group %s was successfully updated.', 'wpcf' );
-# } else {
-
-msgid "Congratulations! Your custom fields group %s was successfully updated."
-msgstr ""
-
-# } else {
-# $message = __( 'Congratulations! Your new custom fields group %s was successfully created.', 'wpcf' );
-# }
-
-msgid "Congratulations! Your new custom fields group %s was successfully created."
-msgstr ""
-
-# if ( $update) {
-# $message = __( 'Congratulations! Your Taxonomy %s was successfully updated.', 'wpcf' );
-# } else {
-
-msgid "Congratulations! Your Taxonomy %s was successfully updated."
-msgstr ""
-
-# } else {
-# $message = __( 'Congratulations! Your new Taxonomy %s was successfully created.', 'wpcf' );
-# }
-
-msgid "Congratulations! Your new Taxonomy %s was successfully created."
-msgstr ""
-
-# if ( $update) {
-# $message = __( 'Congratulations! Your user meta group %s was successfully updated.', 'wpcf' );
-# } else {
-
-msgid "Congratulations! Your user meta group %s was successfully updated."
-msgstr ""
-
-# } else {
-# $message = __( 'Congratulations! Your new user meta group %s was successfully created.', 'wpcf' );
-# }
-
-msgid "Congratulations! Your new user meta group %s was successfully created."
-msgstr ""
-
-# Types_Helper_Url::get_url( 'adding-fields', true ),
-# __( 'Enrich content using <strong>custom fields</strong>', 'wpcf' )
-# );
-
-msgid "Enrich content using <strong>custom fields</strong>"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'custom-taxonomy', true, 'using-taxonomy' ),
-# __( 'Organize content using <strong>taxonomy</strong>', 'wpcf' )
-# );
-
-msgid "Organize content using <strong>taxonomy</strong>"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'parent-child', true ),
-# __( 'Connect post types as <strong>parents and children</strong>', 'wpcf' )
-# );
-
-msgid "Connect post types as <strong>parents and children</strong>"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'custom-post-archives', true ),
-# __( 'Display custom post <strong>archives</strong>', 'wpcf' )
-# );
-
-msgid "Display custom post <strong>archives</strong>"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'custom-taxonomy-archives', true ),
-# __( 'Display Taxonomy <strong>archives</strong>', 'wpcf' )
-# );
-
-msgid "Display Taxonomy <strong>archives</strong>"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'displaying-user-fields', true ),
-# __( 'Display user fields', 'wpcf' )
-# );
-
-msgid "Display user fields"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'displaying-fields', true ),
-# __( 'Display post fields', 'wpcf' )
-# );
-
-msgid "Display post fields"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'repeating-fields-group', true ),
-# __( 'Create groups of repeating fields', 'wpcf' )
-# );
-
-msgid "Create groups of repeating fields"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'single-pages', true ),
-# __( 'Design templates for single pages', 'wpcf' )
-# );
-
-msgid "Design templates for single pages"
-msgstr ""
-
-# Types_Helper_Url::get_url( 'views-user-guide', true, 'query-and-display' ),
-# __( 'Load and display custom content', 'wpcf' )
-# );
-
-msgid "Load and display custom content"
-msgstr ""
-
-# <?php if ( $show_documentation_link ) { ?>
-# <a href="javascript:void(0);" class="wpcf-button show <?php if ( $update ) echo 'wpcf-show'; else echo 'wpcf-hide'; ?>"><?php _e( 'Show next steps and documentation', 'wpcf' ); ?><span class="wpcf-button-arrow show"></span></a>
-# <?php
-
-msgid "Show next steps and documentation"
-msgstr ""
-
-# <div class="wpcf-notif-dropdown<?php echo $class; ?>">
-# <span><strong><?php _e( 'Next, learn how to:', 'wpcf' ); ?></strong></span>
-# <?php if ( $type == 'post_type' ): ?>
-
-msgid "Next, learn how to:"
-msgstr ""
-
-# 
-# <span><strong><?php _e( 'Build complete sites without coding:', 'wpcf' ); ?></strong></span>
-# <ul>
-
-msgid "Build complete sites without coding:"
-msgstr ""
-
-# 
-# <a href="javascript:void(0);" class="wpcf-button hide" style="float:right;"><?php _e( 'Hide notifications', 'wpcf' ); ?><span class="wpcf-button-arrow hide"></span></a>
-# </div><!-- END .wpcf-notif-dropdown -->
-
-msgid "Hide notifications"
-msgstr ""
-
-# return array(
-# 'title' => __('Displaying Custom Content', 'wpcf'),
-# 'content' => '
-
-msgid "Displaying Custom Content"
-msgstr ""
-
-# <p>
-# ' . __( 'The complete Toolset package lets you display custom content on the site’s front-end easily, without writing PHP code.', 'wpcf' ) . '
-# </p>
-
-msgid "The complete Toolset package lets you display custom content on the site’s front-end easily, without writing PHP code."
-msgstr ""
-
-# 
-# <a target="_blank" href="'. Types_Helper_Url::get_url( 'compare-toolset-php', true ) . '"><b>' . __( 'Toolset vs. PHP comparison', 'wpcf' ) . '</b></a>
-# </div>
-
-msgid "Toolset vs. PHP comparison"
-msgstr ""
-
-# <a class="wpcf-arrow-right wpcf-no-glow" href="javascript:void(0)" data-wpcf-toggle-trigger="wpcf-displaying-custom-content-php-info">
-# ' . __( 'Show instructions for displaying custom content with PHP', 'wpcf' ) . '
-# </a>
-
-msgid "Show instructions for displaying custom content with PHP"
-msgstr ""
-
-# <p>
-# ' . __( 'If you are customizing an existing theme, consider <a href="https://codex.wordpress.org/Child_Themes" target="_blank">creating a child theme</a> first.', 'wpcf' ) . '
-# </p>
-
-msgid "If you are customizing an existing theme, consider <a href=\"https://codex.wordpress.org/Child_Themes\" target=\"_blank\">creating a child theme</a> first."
-msgstr ""
-
-# <p>
-# ' . __( 'Read about <a href="https://codex.wordpress.org/Post_Type_Templates" target="_blank">post type templates</a>, in the WordPress codex, to learn which template functions you should edit in your theme.', 'wpcf' ) . '
-# </p>
-
-msgid "Read about <a href=\"https://codex.wordpress.org/Post_Type_Templates\" target=\"_blank\">post type templates</a>, in the WordPress codex, to learn which template functions you should edit in your theme."
-msgstr ""
-
-# <p>
-# ' . __( 'Use <a href="https://codex.wordpress.org/Class_Reference/WP_Query" target="_blank">WP_Query</a> to load content from the database and display it.', 'wpcf' ) . '
-# </p>
-
-msgid "Use <a href=\"https://codex.wordpress.org/Class_Reference/WP_Query\" target=\"_blank\">WP_Query</a> to load content from the database and display it."
-msgstr ""
-
-# ' . sprintf(
-# __( 'Use %s to display custom fields in your PHP templates.', 'wpcf' ),
-# sprintf(
-
-msgid "Use %s to display custom fields in your PHP templates."
-msgstr ""
-
-# Types_Helper_Url::get_url( 'types-fields-api', true ),
-# __( 'Types fields API', 'wpcf' )
-# )
-
-msgid "Types fields API"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you display PPP without coding!', 'wpcf' ),
-# 'description' => __( 'See how Toolset can help you build custom WordPress sites without writing PHP', 'wpcf' ),
-
-msgid "Toolset lets you display PPP without coding!"
-msgstr ""
-
-# 'header' => __( 'Toolset lets you display PPP without coding!', 'wpcf' ),
-# 'description' => __( 'See how Toolset can help you build custom WordPress sites without writing PHP', 'wpcf' ),
-# 'link' => __( 'https://toolset.com/landing/types/', 'wpcf' ),
-
-msgid "See how Toolset can help you build custom WordPress sites without writing PHP"
-msgstr ""
-
-# 'description' => __( 'See how Toolset can help you build custom WordPress sites without writing PHP', 'wpcf' ),
-# 'link' => __( 'https://toolset.com/landing/types/', 'wpcf' ),
-# ),
-
-msgid "https://toolset.com/landing/types/"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you display TTT without coding!', 'wpcf' ),
-# 'description' => __( 'See how Toolset can help you build custom WordPress sites without writing PHP', 'wpcf' ),
-
-msgid "Toolset lets you display TTT without coding!"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you display custom fields without coding!', 'wpcf' ),
-# 'description' => __( 'See how Toolset can help you build custom WordPress sites without writing PHP', 'wpcf' ),
-
-msgid "Toolset lets you display custom fields without coding!"
-msgstr ""
-
-# array(
-# 'header' => __( 'You can build parametric searches for PPP using Toolset, without any PHP!', 'wpcf' ),
-# 'description' => __( 'Build custom classifieds sites with Toolset, on any theme, without writing PHP', 'wpcf' ),
-
-msgid "You can build parametric searches for PPP using Toolset, without any PHP!"
-msgstr ""
-
-# 'header' => __( 'You can build parametric searches for PPP using Toolset, without any PHP!', 'wpcf' ),
-# 'description' => __( 'Build custom classifieds sites with Toolset, on any theme, without writing PHP', 'wpcf' ),
-# 'link' => __('https://toolset.com/landing/types/', 'wpcf'),
-
-msgid "Build custom classifieds sites with Toolset, on any theme, without writing PHP"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you display a directory of TTT!', 'wpcf' ),
-# 'description' => __( 'Build custom classifieds sites with Toolset, on any theme, without writing PHP', 'wpcf' ),
-
-msgid "Toolset lets you display a directory of TTT!"
-msgstr ""
-
-# array(
-# 'description' => __( 'Develop flexible directory sites with Toolset, on any theme, without writing PHP', 'wpcf' ),
-# 'link' => __('https://toolset.com/landing/types/', 'wpcf'),
-
-msgid "Develop flexible directory sites with Toolset, on any theme, without writing PHP"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you build forms for editing PPP in the site’s front-end!', 'wpcf' ),
-# 'description' => __( 'Develop flexible directory sites with Toolset, on any theme, without writing PHP', 'wpcf' ),
-
-msgid "Toolset lets you build forms for editing PPP in the site’s front-end!"
-msgstr ""
-
-# array(
-# 'description' => __( 'Add a WooCommerce store to any theme using Toolset and no PHP coding', 'wpcf' ),
-# 'link' => __('https://toolset.com/landing/types/', 'wpcf'),
-
-msgid "Add a WooCommerce store to any theme using Toolset and no PHP coding"
-msgstr ""
-
-# array(
-# 'header' => __( 'Toolset lets you design product templates with fields and Taxonomy, but no coding!', 'wpcf' ),
-# 'description' => __( 'Add a WooCommerce store to any theme using Toolset and no PHP coding', 'wpcf' ),
-
-msgid "Toolset lets you design product templates with fields and Taxonomy, but no coding!"
-msgstr ""
-
-# array(
-# 'description' => __( 'Display custom content inside your blog with Toolset and no PHP coding', 'wpcf' ),
-# 'link' => __('https://toolset.com/landing/types/', 'wpcf'),
-
-msgid "Display custom content inside your blog with Toolset and no PHP coding"
 msgstr ""
 
 # if ( !empty( $page ) ) {

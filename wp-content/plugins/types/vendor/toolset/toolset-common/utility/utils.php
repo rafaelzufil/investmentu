@@ -60,7 +60,13 @@ if ( ! class_exists( 'Toolset_Utils', false ) ) {
 		 * @since 2.5.0
 		 */
 		public static function get_ajax_actions_array_to_exclude_on_frontend() {
-			return array( 'wpv_get_view_query_results', 'wpv_get_archive_query_results', 'render_element_changed', 'toolset_get_cred_form_block_preview' );
+			return array(
+				'wpv_get_view_query_results',
+				'wpv_get_archive_query_results',
+				'render_element_changed',
+				'toolset_get_cred_form_block_preview',
+				'cred_submit_form',
+			);
 		}
 
 		/**
@@ -231,7 +237,7 @@ if ( ! class_exists( 'Toolset_Utils', false ) ) {
 		 * "0" is also a valid value that we need to take into account.
 		 *
 		 * @param $field_value
-		 ** @return bool
+		 * @return bool
 		 *
 		 * @since 2.2.3
 		 */
@@ -245,63 +251,16 @@ if ( ! class_exists( 'Toolset_Utils', false ) ) {
 		/**
 		 * Return an ID of an attachment by searching the database with the file URL.
 		 *
-		 * First checks to see if the $url is pointing to a file that exists in
-		 * the wp-content directory. If so, then we search the database for a
-		 * partial match consisting of the remaining path AFTER the wp-content
-		 * directory. Finally, if a match is found the attachment ID will be
-		 * returned.
-		 *
-		 * Taken from:
-		 *
-		 * @link http://frankiejarrett.com/get-an-attachment-id-by-url-in-wordpress/
-		 *
-		 * @param string $url URL of the file.
-		 *
-		 * @return int|null Attachment ID if it exists.
 		 * @since 2.2.9
+		 * @deprecated Use \OTGS\Toolset\Common\Utils\Attachments::get_attachment_id_by_url() instead.
+		 *
+		 * @param string $url
+		 * @return int|null
 		 */
 		public static function get_attachment_id_by_url( $url ) {
+			$attachment_utils = new \OTGS\Toolset\Common\Utils\Attachments( new \OTGS\Toolset\Common\Utils\TypesGuidIdGateway() );
 
-			// Split the $url into two parts with the wp-content directory as the separator.
-			$parsed_url = explode( parse_url( WP_CONTENT_URL, PHP_URL_PATH ), $url );
-
-			// Get the host of the current site and the host of the $url, ignoring www.
-			$this_host = str_ireplace( 'www.', '', parse_url( home_url(), PHP_URL_HOST ) );
-			$file_host = str_ireplace( 'www.', '', parse_url( $url, PHP_URL_HOST ) );
-
-			// Return nothing if there aren't any $url parts or if the current host and $url host do not match.
-			$attachment_path = toolset_getarr( $parsed_url, 1 );
-			if ( ! isset( $attachment_path ) || empty( $attachment_path ) || ( $this_host != $file_host ) ) {
-				return null;
-			}
-
-			global $wpdb;
-
-			// Check for the guid with the exact url
-            // (will match in most cases and is way faster than partial match search)
-			$query = $wpdb->prepare(
-				"SELECT ID FROM $wpdb->posts WHERE guid = %s LIMIT 1",
-                $url
-			);
-
-			if( $attachment_id = $wpdb->get_var( $query ) ) {
-                // attachment id found
-			    return (int) $attachment_id;
-            }
-
-			// No match for the full $url. Checking for any attachment GUID with a partial path match.
-			// Example: /uploads/2013/05/test-image.jpg
-			$query = $wpdb->prepare(
-				"SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND guid LIKE %s LIMIT 1",
-				'%' . $attachment_path
-			);
-
-			if( $attachment_id = $wpdb->get_var( $query ) ) {
-				// attachment id found
-				return (int) $attachment_id;
-			}
-
-			return null;
+			return $attachment_utils->get_attachment_id_by_url( $url );
 		}
 
 

@@ -3,7 +3,7 @@
 if ( defined('ON_THE_GO_SYSTEMS_BRANDING_VERSION') ) return;
 
 if( !defined('ON_THE_GO_SYSTEMS_BRANDING_VERSION') ){
-	define( 'ON_THE_GO_SYSTEMS_BRANDING_VERSION', '2.1' );
+	define( 'ON_THE_GO_SYSTEMS_BRANDING_VERSION', '3.2' );
 }
 
 if( !defined('ON_THE_GO_SYSTEMS_BRANDING_ABS_PATH') ){

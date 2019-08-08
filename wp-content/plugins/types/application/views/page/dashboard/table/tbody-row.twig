@@ -92,11 +92,13 @@
             {% endfor %}
         </td>
     {% endif %}
-    <td>
-        {% for information in table.get_views() %}
-            {% include '@types/page/dashboard/table/tbody-cell.twig' %}
-        {% endfor %}
-    </td>
+	{% if not is_toolset_blocks_available %}
+		<td>
+			{% for information in table.get_views() %}
+				{% include '@types/page/dashboard/table/tbody-cell.twig' %}
+			{% endfor %}
+		</td>
+	{% endif %}
     <td>
         {% for information in table.get_forms() %}
             {% include '@types/page/dashboard/table/tbody-cell.twig' %}

@@ -34,7 +34,7 @@ class Toolset_User_Editors_Editor_Gutenberg
 			$views_active->is_met() &&
 			$gutenberg_active->is_met()
 		) {
-			$this->name = __( 'Gutenberg', 'wpv-views' );
+			$this->name = __( 'Block Editor', 'wpv-views' );
 			return true;
 		}
 
@@ -61,6 +61,7 @@ class Toolset_User_Editors_Editor_Gutenberg
 	public function make_ct_editable_by_gutenberg_editor( $args, $name ) {
 		if ( 'view-template' === $name ) {
 			$args['show_in_rest'] = true;
+			$args['supports'][] = 'custom-fields';
 		}
 		return $args;
 	}

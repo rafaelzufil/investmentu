@@ -207,10 +207,17 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 	public function register_assets() {
 		$toolset_assets_manager = Toolset_Assets_Manager::get_instance();
 
+		$types_shortcodes_dependencies = array( Toolset_Assets_Manager::SCRIPT_TOOLSET_SHORTCODE );
+		if ( is_admin() ) {
+			// 'wp-color-picker'  is an asset only available in the backend
+			// so it becomes an optional dependency, and the script itself checks its existence
+			// before initializing it on the relevant shortcode options
+			$types_shortcodes_dependencies[] = 'wp-color-picker';
+		}
 		$toolset_assets_manager->register_script(
 			self::SCRIPT_TYPES_SHORTCODE,
 			TYPES_RELPATH . '/public/js/types_shortcode.js',
-			array( Toolset_Assets_Manager::SCRIPT_TOOLSET_SHORTCODE ),
+			$types_shortcodes_dependencies,
 			TYPES_VERSION,
 			true
 		);
@@ -241,8 +248,8 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 				)
 			),
 			'title' => array(
-				'dialog'    => __( 'Types fields', 'wpcf' ),
-				'generated' => __( 'Generated shortcode', 'wpcf' ),
+				'dialog'    => __( 'Toolset - Types fields', 'wpcf' ),
+				'generated' => __( 'Toolset - generated shortcode', 'wpcf' ),
 				'button'    => __( 'Types', 'wpcf' ),
 			),
 			'validation' => array(
@@ -331,9 +338,7 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 
 		do_action( 'toolset_enqueue_scripts', array( 'types-shortcode' ) );
 		do_action( 'toolset_enqueue_styles', array(
-			Toolset_Assets_Manager::STYLE_JQUERY_UI_DIALOG,
-			Toolset_Assets_Manager::STYLE_TOOLSET_COMMON,
-			Toolset_Assets_Manager::STYLE_TOOLSET_DIALOGS_OVERRIDES,
+			Toolset_Assets_Manager::STYLE_TOOLSET_SHORTCODE,
 			Toolset_Assets_Manager::STYLE_SELECT2_CSS,
 			Toolset_Assets_Manager::STYLE_NOTIFICATIONS
 		) );
@@ -1180,8 +1185,6 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 	 * @todo Move this to a proper template
 	 */
 	public function generate_shortcodes_dialog() {
-
-		$dialog_links = array();
 		$dialog_content = '';
 
 		foreach ( $this->dialog_groups as $group_id => $group_data ) {
@@ -1190,11 +1193,17 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 				continue;
 			}
 
-			$dialog_links[] = '<li data-id="' . md5( $group_id ) . '" class="editor-addon-top-link" data-editor_addon_target="editor-addon-link-' . md5( $group_id ) . '">' . esc_html( $group_data['name'] ) . ' </li>';
-
-			$dialog_content .= '<div class="toolset-shortcodes-gui-dialog-group"><h4 data-id="' . md5( $group_id ) . '" class="group-title  editor-addon-link-' . md5( $group_id ) . '-target">' . esc_html( $group_data['name'] ) . '</h4>';
+			$dialog_content .= '<div class="toolset-collapsible js-toolset-collapsible is-opened">'
+				. '<h4 class="toolset-collapsible__header">'
+					. '<button type="button" aria-expanded="true" class="toolset-collapsible__toggle js-toolset-collapsible__toggle">
+							<svg class="toolset-collapsible__toggle-arrow" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false"><g><path fill="none" d="M0,0h24v24H0V0z"></path></g><g><path d="M12,8l-6,6l1.41,1.41L12,10.83l4.59,4.58L18,14L12,8z"></path></g></svg>
+							<span class="toolset-collapsible__title">'
+								. esc_html( $group_data['name'] )
+							. '</span>
+						</button>'
+				. '</h4>';
 			$dialog_content .= "\n";
-			$dialog_content .= '<ul class="toolset-shortcode-gui-group-list types-shortcode-gui-group-list js-types-shortcode-gui-group-list">';
+			$dialog_content .= '<div class="toolset-collapsible__body toolset-shortcodes__group js-types-shortcode-gui-group-list">';
 			$dialog_content .= "\n";
 			foreach ( $group_data['fields'] as $group_data_field_key => $group_data_field_data ) {
 				if (
@@ -1202,42 +1211,30 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 					|| empty( $group_data_field_data['callback'] )
 				) {
 					$dialog_content .= sprintf(
-						'<li class="item"><button class="button button-secondary button-small js-types-shortcode-gui-no-attributes" data-shortcode="%s" >%s</button></li>',
+						'<button class="toolset-shortcode-button js-toolset-shortcode-button js-types-shortcode-gui-no-attributes" data-shortcode="%s" >%s</button>',
 						'[' . esc_attr( $group_data_field_data['shortcode'] ) . ']',
 						esc_html( $group_data_field_data['name'] )
 					);
 				} else {
 					$dialog_content .= sprintf(
-						'<li class="item"><button class="button button-secondary button-small js-types-shortcode-gui" onclick="%s; return false;">%s</button></li>',
+						'<button class="toolset-shortcode-button js-toolset-shortcode-button js-types-shortcode-gui" onclick="%s; return false;">%s</button>',
 						$group_data_field_data['callback'],
 						esc_html( $group_data_field_data['name'] )
 					);
 				}
 				$dialog_content .= "\n";
 			}
-			$dialog_content .= '</ul>';
+			$dialog_content .= '</div>';
 			$dialog_content .= "\n";
 			$dialog_content .= '</div>';
 		}
 
-		$direct_links = implode( '', $dialog_links );
-
-		// add search box
-		$searchbar = '<div class="types-shortcode-gui-dialog-searchbar toolset-shortcode-gui-dialog-searchbar">';
-		$searchbar .=   '<label for="types-shortcode-gui-dialog-searchbar-input-for-types">' . __( 'Search', 'wpcf' ) . ': </label>';
-		$searchbar .=   '<input id="types-shortcode-gui-dialog-searchbar-input-for-types" type="text" class="types-shortcode-gui-dialog-sarch-field js-types-shortcode-gui-dialog-sarch-field" onkeyup="wpv_on_search_filter(this)" />';
-		$searchbar .= '</div>';
-
 		// generate output content
 		$out = '
-		<div id="js-types-shortcode-gui-dialog-container-main" class="toolset-shortcode-gui-dialog types-shortcode-gui-dialog">'
-			. "\n"
-			. '<div class="types-shortcode-gui-dialog-content js-types-shortcode-gui-dialog-content">'
+		<div id="js-types-shortcode-gui-dialog-container-main" class="toolset-dialog__body toolset-shortcodes js-toolset-dialog__body">'
+			. $this->get_shortcodes_search_bar( 'types-shortcode-gui-dialog-searchbar-input-for-types' )
+			. '<div class="toolset-shortcodes__wrapper js-toolset-shortcodes__wrapper js-types-shortcode-gui-dialog-content">'
 					. "\n"
-					. $searchbar
-					. "\n"
-					//. '<div class="direct-links-desc"><ul class="direct-links"><li class="direct-links-label">' . __( 'Jump to:', 'wpcf' ) . '</li>' . $direct_links . '</ul></div>'
-					//. "\n"
 					. $dialog_content
 					. '
 			</div>
@@ -1717,7 +1714,7 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 								'defaultForceValue' => '%%ALT%%'
 							)
 						),
-						'description' => __( 'For the alt and title attributes, you can also use placeholders to output the values of standard image fields added in WordPress: %%TITLE%%, %%ALT%%, %%CAPTION %%, and %%DESCRIPTION%%.', 'wpcf' )
+						'description' => __( 'You can use placeholders to output the values of standard image fields added in WordPress: %%TITLE%%, %%ALT%%, %%CAPTION%%, and %%DESCRIPTION%%.', 'wpcf' )
 					),
 					'align' => array(
 						'label'        => __( 'Align', 'wpcf' ),
@@ -1736,10 +1733,10 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 						'options'           => $image_size_attributes,
 						'defaultForceValue' => 'full'
 					),
-					// with size='custom'
 					'sizeCombo' => array(
 						'label'  => __( 'Size', 'wpcf' ),
 						'type'   => 'group',
+						'hidden' => true,
 						'fields' => array(
 							'width' => array(
 								'pseudolabel' => __( 'Width', 'wpcf' ),
@@ -1750,23 +1747,23 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 								'type'        => 'text'
 							)
 						),
-						'description' => __( 'Image will be resized before being sent to the client. width and height will be ignored if size is set. For Embedded media the width and height are maximum values and may be ignored if $content_width is set for the theme.', 'wpcf' )
+						'description' => __( 'Image will be resized before being sent to the client. For Embedded media, the width and height are maximum values and may be ignored if $content_width is set for the theme.', 'wpcf' )
 					),
-					// with size!='full'
 					'proportional' => array(
 						'label'        => __( 'Proportional', 'wpcf' ),
 						'type'         => 'radio',
+						'hidden' => true,
 						'options'      => array(
 							'false' => __( 'Do not keep image proportional', 'wpcf' ),
 							'true'  => __( 'Keep image proportional', 'wpcf' )
 						),
 						'defaultValue' => 'true',
-						'description'  => __( 'Image will be cropped to specified height and width. Overridden if size is set', 'wpcf' )
+						'description'  => __( 'Image will be cropped to specified height and width.', 'wpcf' )
 					),
-					// with size!='full'
 					'resize' => array(
 						'label'             => __( 'Image adjustment', 'wpcf' ),
 						'type'              => 'radio',
+						'hidden' => true,
 						'options'           => array(
 							'proportional' => __( 'Resize images to fit inside the new size. Width or height might be smaller than the specified dimensions', 'wpcf' ),
 							'crop'         => __( 'Crop images, so that they fill the specified dimensions exactly', 'wpcf' ),
@@ -1775,37 +1772,30 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 						),
 						'defaultForceValue' => 'proportional'
 					),
-					// with size!='full' and resize='pad'
 					'padding_color' => array(
 						'label'        => __( 'Padding color', 'wpcf' ),
 						'type'         => 'radio',
+						'hidden' => true,
 						'options'      => array(
 							'transparent'  => __( 'Transparent', 'wpcf' ),
 							'toolsetCombo' => __( 'Custom', 'wpcf' )
 						),
 						'defaultValue' => 'transparent',
 					),
-					// with size!='full' and resize='pad'
 					'toolsetCombo:padding_color' => array(
 						'type'        => 'text',
-						'description' => __( 'Hex color', 'wpcf' )
+						'hidden'      => true,
 					),
-					'attributesCombo' => array(
-						'type'   => 'group',
-						'fields' => array(
-							'class' => array(
-								'label' => __( 'Image tag extra classes', 'wpcf' ),
-								'type'        => 'text'
-							),
-							'style' => array(
-								'label' => __( 'Image tag inline style', 'wpcf' ),
-								'type'        => 'text'
-							)
-						),
-						'description' => __( 'Include specific classnames in the image tag, or add your own inline styles.', 'wpcf' )
-					)
-				)
-			)
+					'class' => array(
+						'label' => __( 'Image tag extra classes', 'wpcf' ),
+						'type'        => 'text'
+					),
+					'style' => array(
+						'label' => __( 'Image tag inline style', 'wpcf' ),
+						'type'        => 'text'
+					),
+				),
+			),
 		);
 
 		// Numeric is OK
@@ -2348,8 +2338,9 @@ class Types_Shortcode_Generator extends Toolset_Shortcode_Generator {
 		return $required_objects;
 	}
 	public function gform_noconflict_styles( $required_objects ) {
-		$required_objects[] = 'toolset-common';
-		$required_objects[] = 'toolset-dialogs-overrides-css';
+		$required_objects[] = Toolset_Assets_Manager::STYLE_TOOLSET_SHORTCODE;
+		$required_objects[] = Toolset_Assets_Manager::STYLE_SELECT2_CSS;
+		$required_objects[] = Toolset_Assets_Manager::STYLE_NOTIFICATIONS;
 		$required_objects[] = 'onthego-admin-styles';
 		return $required_objects;
 	}

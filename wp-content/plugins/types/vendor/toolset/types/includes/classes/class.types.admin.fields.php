@@ -1,22 +1,6 @@
 <?php
 require_once WPCF_INC_ABSPATH . '/classes/class.types.admin.page.php';
-/**
- * Summary.
- *
- * Description.
- *
- * @since x.x.x
- * @access (for functions: only use if private)
- *
- * @see Function/method/class relied on
- * @link URL
- * @global type $varname Description.
- * @global type $varname Description.
- *
- * @param type $var Description.
- * @param type $var Optional. Description.
- * @return type Description.
- */
+
 class Types_Admin_Fields extends Types_Admin_Page
 {
     private $meta_key_posts = '_wp_types_group_post_types';
@@ -583,23 +567,6 @@ class Types_Admin_Fields extends Types_Admin_Page
       return $custom_field_group;
     }
 
-    /**
-     * Summary.
-     *
-     * Description.
-     *
-     * @since x.x.x
-     * @access (for functions: only use if private)
-     *
-     * @see Function/method/class relied on
-     * @link URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description.
-     * @return type Description.
-     */
     private function get_empty_ul($close_ul = false)
     {
         return array(
@@ -612,73 +579,61 @@ class Types_Admin_Fields extends Types_Admin_Page
         );
     }
 
-    /**
-     * Summary.
-     *
-     * Description.
-     *
-     * @since x.x.x
-     * @access (for functions: only use if private)
-     *
-     * @see Function/method/class relied on
-     * @link URL
-     * @global type $varname Description.
-     * @global type $varname Description.
-     *
-     * @param type $var Description.
-     * @param type $var Optional. Description.
-     * @return type Description.
-     */
-    private function build_options($post_type, $fields, $option_name)
-    {
-        $options = array();
-        foreach($fields as $field => $data) {
-          // Skip repeatable field groups
-          if( ! is_array( $data ) ) {
-            continue;
-          }
 
-            if ( isset($data['data']['repetitive']) && $data['data']['repetitive']) {
-                continue;
-            }
-            switch( $data['type'] ) {
-            case 'embed':
-            case 'checkboxes':
-            case 'audio':
-            case 'file':
-            case 'textarea':
-            case 'video':
-            case 'wysiwyg':
-                $options[$field] = array(
-                    '#name' => sprintf($option_name, esc_attr($data['meta_key'])),
-                    '#title' => sprintf( '%s <small>(%s)</small>', $data['name'], $data['type']),
-                    '#value' => 0,
-                    '#inline' => true,
-                    '#before' => '<li class="js-wpcf-tooltip wpcf-custom-field-disabled" data-tooltip="'.__( 'This field cannot be shown in Post Type listing due to its complexity.', 'wpcf' ).'">',
-                    '#after' => '</li>',
-                    '#default_value' => 0,
-                    '#attributes' => array(
-                        'disabled' => 'disabled',
-                    ),
-                );
-                    continue;
-            default:
-                $options[$field] = array(
-                    '#name' => sprintf($option_name, esc_attr($data['meta_key'])),
-                    '#title' => sprintf( '%s <small>(%s)</small>', $data['name'], $data['type']),
-                    '#value' => 1,
-                    '#inline' => true,
-                    '#before' => '<li class="js-wpcf-custom-field">',
-                    '#after' => '</li>',
-                    '#default_value' => intval(isset($post_type['custom_fields']) && isset($post_type['custom_fields'][$data['meta_key']])),
-                    '#attributes' => array(
-                        'data-wpcf-key' => $data['meta_key'],
-                    ),
-                );
-            }
-        }
-        return $options;
-    }
+	private function build_options( $post_type, $fields, $option_name ) {
+		$options = array();
+		foreach ( $fields as $field => $data ) {
+			// Skip repeatable field groups
+			if ( ! is_array( $data ) ) {
+				continue;
+			}
+
+			if ( isset( $data['data']['repetitive'] ) && $data['data']['repetitive'] ) {
+				continue;
+			}
+			switch ( $data['type'] ) {
+				case 'embed':
+				case 'checkboxes':
+				case 'audio':
+				case 'file':
+				case 'textarea':
+				case 'video':
+				case 'wysiwyg':
+					$options[ $field ] = array(
+						'#name' => sprintf( $option_name, esc_attr( $data['meta_key'] ) ),
+						'#title' => sprintf( '%s <small>(%s)</small>', $data['name'], $data['type'] ),
+						'#value' => 0,
+						'#inline' => true,
+						'#before' => '<li class="js-wpcf-tooltip wpcf-custom-field-disabled" data-tooltip="'
+							. __( 'This field cannot be shown in Post Type listing due to its complexity.', 'wpcf' )
+							. '">',
+						'#after' => '</li>',
+						'#default_value' => 0,
+						'#attributes' => array(
+							'disabled' => 'disabled',
+						),
+					);
+					break;
+				default:
+					$options[ $field ] = array(
+						'#name' => sprintf( $option_name, esc_attr( $data['meta_key'] ) ),
+						'#title' => sprintf( '%s <small>(%s)</small>', $data['name'], $data['type'] ),
+						'#value' => 1,
+						'#inline' => true,
+						'#before' => '<li class="js-wpcf-custom-field">',
+						'#after' => '</li>',
+						'#default_value' => intval( isset( $post_type['custom_fields'] )
+							&& isset( $post_type['custom_fields'][ $data['meta_key'] ] ) ),
+						'#attributes' => array(
+							'data-wpcf-key' => $data['meta_key'],
+						),
+					);
+					break;
+			}
+		}
+
+		return $options;
+	}
 
 
     /**

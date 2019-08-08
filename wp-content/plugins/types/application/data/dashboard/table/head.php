@@ -126,4 +126,10 @@ else if( defined( 'WPDDL_DEVELOPMENT' ) || defined( 'WPDDL_PRODUCTION' ) ) {
 	$question_marks['template']['description'][1]['label'] = __( 'Creating templates with Layouts', 'wpcf' );
 }
 
+// Remove Views if Toolset Blocks is active
+$tb_active_condition = new Toolset_Condition_Plugin_Toolset_Blocks_Active();
+if ( $tb_active_condition->is_met() ) {
+	unset( $question_marks['views'] );
+}
+
 return $question_marks;

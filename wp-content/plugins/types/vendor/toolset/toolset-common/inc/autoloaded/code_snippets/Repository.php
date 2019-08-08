@@ -13,20 +13,6 @@ namespace OTGS\Toolset\Common\CodeSnippets;
 class Repository {
 
 
-	/**
-	 * @var string Name of the option for all code snippets.
-	 *
-	 * The option as a following structure:
-	 *
-	 * array(
-	 *    'snippets' => array( $snippet_data, ... )
-	 * )
-	 *
-	 * For the structure of $snippet_data, check the SnippetOption class.
-	 */
-	const SNIPPET_OPTION_NAME = 'toolset_code_snippet_options';
-
-
 	/** @var Snippet[] */
 	private $snippets = array();
 
@@ -48,7 +34,10 @@ class Repository {
 
 	/** @var bool True if there are some unsaved changes in snippet options. */
 	private $needs_option_update = false;
-	/** @noinspection PhpDocMissingThrowsInspection */
+
+
+	/** @var SnippetOptionsRecord */
+	private $options_record;
 
 
 	/**
@@ -56,10 +45,14 @@ class Repository {
 	 *
 	 * @param SnippetBuilder $snippet_builder
 	 * @param Explorer $snippet_explorer
+	 * @param SnippetOptionsRecord $options_record
 	 */
-	public function __construct( SnippetBuilder $snippet_builder, Explorer $snippet_explorer ) {
+	public function __construct(
+		SnippetBuilder $snippet_builder, Explorer $snippet_explorer, SnippetOptionsRecord $options_record
+	) {
 		$this->snippet_builder = $snippet_builder;
 		$this->snippet_explorer = $snippet_explorer;
+		$this->options_record = $options_record;
 	}
 
 
@@ -117,7 +110,7 @@ class Repository {
 	 */
 	private function get_options() {
 		if ( null === $this->options ) {
-			$this->options = toolset_ensarr( get_option( self::SNIPPET_OPTION_NAME ) );
+			$this->options = toolset_ensarr( $this->options_record->getOption() );
 		}
 
 		return $this->options;
@@ -155,7 +148,7 @@ class Repository {
 		}
 		$this->options['snippets'] = $snippet_options;
 
-		update_option( self::SNIPPET_OPTION_NAME, $this->options, true );
+		$this->options_record->updateOption( $this->options );
 
 		$this->needs_option_update = false;
 	}

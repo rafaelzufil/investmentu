@@ -357,6 +357,15 @@ class WPCF_Field
             $value = $this->cf['data']['set_value'];
         }
 
+		// Check for Post Reference Field
+		if( is_array( $this->cf ) && isset( $this->cf['type'] ) && $this->cf['type'] == 'post' ) {
+			// run the field save hooks
+			$this->_action_save( $this->cf, $value, null, $value );
+
+			// and abort as we do not want to store the post reference field on post meta
+			return;
+		}
+
         // Apply filters on the field value.
         $original_value = $value;
         unset( $value );

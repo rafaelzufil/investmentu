@@ -177,8 +177,8 @@ add_action( 'wp_ajax_wpcf_get_forbidden_names', 'ajax_wpcf_is_reserved_name' );
 /**
  * Checks if name is reserved.
  *
- * @param type $name
- * @return type
+ * @param $name
+ * @return WP_Error|bool
  */
 function wpcf_is_reserved_name($name, $context, $check_pages = true)
 {

@@ -4,7 +4,7 @@ namespace OTGS\Toolset\Types\Controller\Page\Extension;
 
 use OTGS\Toolset\Types\Post\Import\Association\View\Notice;
 use OTGS\Toolset\Types\Post\Meta\Associations as AssociationsMeta;
-use OTGS\Toolset\Types\Wordpress\Option\IOption;
+use OTGS\Toolset\Common\Wordpress\Option\IOption;
 use OTGS\Toolset\Types\Wordpress\Postmeta\Storage as StoragePostmeta;
 
 /**
@@ -52,6 +52,7 @@ class AssociationsImport {
 		$this->setIsImportAvailable();
 		$this->showAdminNotice();
 	}
+
 
 	/**
 	 * Set the state if an import is availiable or not.

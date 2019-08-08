@@ -30,7 +30,7 @@ class WPToolset_Forms_Validation {
     );
 
     function __construct($formID, $formSET) {
-        $this->__formID = trim( $formID, '#' );
+    	$this->__formID = trim( $formID, '#' );
         $this->__formSET = $formSET;
 
         // Register

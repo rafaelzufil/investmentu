@@ -274,6 +274,9 @@ class Toolset_Common_Bootstrap {
 			$upgrade_controller = Toolset_Upgrade_Controller::get_instance();
 			$upgrade_controller->initialize();
 
+			$rest_controller = new \OTGS\Toolset\Common\Rest\Controller();
+			$rest_controller->initialize();
+
 			// Manually load the more sensitive code.
 			if ( ! class_exists( 'Toolset_Settings', false ) ) {
 				require_once TOOLSET_COMMON_PATH . '/inc/toolset.settings.class.php';
@@ -328,15 +331,11 @@ class Toolset_Common_Bootstrap {
 				new Toolset_Relevanssi_Compatibility();
 			}
 
-            if ( ! class_exists( 'Toolset_CssComponent', false ) ) {
+			if ( ! class_exists( 'Toolset_CssComponent', false ) ) {
 				require_once( TOOLSET_COMMON_PATH . '/inc/toolset.css.component.class.php' );
-				Toolset_CssComponent::getInstance();
+				$bootstrap_grid_button = new Toolset_CssComponent();
+				$bootstrap_grid_button->initialize();
 			}
-
-			if ( ! class_exists( 'Toolset_Bootstrap_Loader', false ) ) {
-                require_once( TOOLSET_COMMON_PATH . '/inc/toolset.bootstrap.loader.class.php' );
-                Toolset_Bootstrap_Loader::getInstance();
-            }
 
 			// Load Admin Notices Manager
 			if( ! class_exists( 'Toolset_Admin_Notices_Manager', false ) ) {
@@ -365,27 +364,27 @@ class Toolset_Common_Bootstrap {
 			/** @var RequestMode $request_mode */
 			$request_mode = toolset_dic_make( '\OTGS\Toolset\Common\Utils\RequestMode' );
 
-			// Initialize the AJAX handler if DOING_AJAX.
-			//
-			// Otherwise we'll only register it with the autoloader so that it's still safe to create subclasses
-			// from it and use them throughout plugins without too much limitations.
+			// Register the AJAX controller with the autoloader so that it's always available, even if we're not
+			// DOING_AJAX right now.
 			$ajax_class_path = TOOLSET_COMMON_PATH . '/inc/toolset.ajax.class.php';
-			if( ( RequestMode::AJAX == $request_mode->get() )
-				&& ! class_exists( 'Toolset_Ajax', false ) )
-			{
-				require_once $ajax_class_path;
-				Toolset_Ajax::initialize();
-			} else {
-				$autoloader = Toolset_Common_Autoloader::get_instance();
-				$autoloader->register_classmap( array( 'Toolset_Ajax' => $ajax_class_path ) );
-			}
+			$autoloader = Toolset_Common_Autoloader::get_instance();
+			$autoloader->register_classmap( array( 'Toolset_Ajax' => $ajax_class_path ) );
 
 			$this->register_relationships();
 
-			// Initialize the admin controller for various tasks if we're in the backend.
-			if( RequestMode::AJAX === $request_mode->get() ) {
-				$admin_controller = new Toolset_Admin_Controller();
-				$admin_controller->initialize();
+			// Initialize a controller per request mode.
+			switch( $request_mode->get() ) {
+				case RequestMode::ADMIN:
+					$admin_controller = new \OTGS\Toolset\Common\AdminController();
+					$admin_controller->initialize();
+					break;
+				case RequestMode::FRONTEND:
+					$frontend_controller = new \OTGS\Toolset\Common\FrontendController();
+					$frontend_controller->initialize();
+					break;
+				case RequestMode::AJAX:
+					Toolset_Ajax::initialize();
+					break;
 			}
 
 			require_once TOOLSET_COMMON_PATH . '/inc/public_api/loader.php';

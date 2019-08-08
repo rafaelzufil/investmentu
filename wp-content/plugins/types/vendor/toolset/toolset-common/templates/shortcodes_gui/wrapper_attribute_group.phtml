@@ -1,7 +1,7 @@
 <?php
 /**
  * underscore.js template for the shared shortcodes GUI.
- * 
+ *
  * Component: wrapper for groups of attributes
  *
  * @since 3.1
@@ -18,7 +18,7 @@
         #>
         <ul class="toolset-shortcode-gui-dialog-item-group js-toolset-shortcode-gui-dialog-item-group">
             <# _.each( data.fields, function( fieldData, fieldAttribute ) { #>
-                <li style="width:<# print( columnsWidth ); #>%;min-height:1px;float:left;">
+                <li>
                     <#
                     fieldData = _.defaults( fieldData, { shortcode: data.shortcode, templates: data.templates } );
                     fieldData = _.defaults( fieldData, { defaultValue: '', required: false, hidden: false, placeholder: '' } );

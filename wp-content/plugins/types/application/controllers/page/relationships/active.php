@@ -23,7 +23,7 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 	/** @var null|Toolset_Gui_Base Use get_gui_base() instead of accessing this directly. */
 	private $_gui_base;
 
-	/** @var null|Twig_Environment */
+	/** @var null|\OTGS\Toolset\Twig\Environment */
 	private $_twig;
 
 	/** @var null|Types_Viewmodel_Relationship_Definition_Factory */
@@ -138,7 +138,10 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 	 */
 	private function add_metabox_support() {
 		// User can choose between 1 or 2 columns (default 2)
-		add_screen_option( 'layout_columns', array( 'max' => 2, 'default' => 2 ) );
+		add_screen_option( 'layout_columns', array(
+			'max' => 2,
+			'default' => 2,
+		) );
 
 		$this->add_meta_boxes();
 	}
@@ -222,7 +225,7 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 		$types_version = $this->constants->constant( 'TYPES_VERSION' );
 
 		wp_enqueue_script(
-			Types_Page_Relationships::MAIN_ASSET_HANDLE,
+			self::MAIN_ASSET_HANDLE,
 			$this->constants->constant( 'TYPES_RELPATH' ) . '/public/page/relationships/main.js',
 			array(
 				'jquery',
@@ -244,23 +247,23 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 		);
 
 		wp_enqueue_style(
-			Types_Page_Relationships::MAIN_ASSET_HANDLE,
+			self::MAIN_ASSET_HANDLE,
 			$this->constants->constant( 'TYPES_RELPATH' ) . '/public/page/relationships/style.css',
 			array(
 				Toolset_Gui_Base::STYLE_GUI_BASE,
 				// For field type icons
 				Toolset_Assets_Manager::STYLE_FONT_AWESOME,
 				Types_Asset_Manager::STYLE_BASIC_CSS,
-				Toolset_Gui_Base::STYLE_GUI_MIXIN_BATCH_PROCESS_DIALOG
+				Toolset_Gui_Base::STYLE_GUI_MIXIN_BATCH_PROCESS_DIALOG,
 			),
 			$types_version
 		);
 
 		wp_enqueue_style(
-			Types_Page_Relationships::WIZARD_ASSET_HANDLE,
+			self::WIZARD_ASSET_HANDLE,
 			$this->constants->constant( 'TYPES_RELPATH' ) . '/public/page/relationships/css/wizard.css',
 			array(
-				Types_Page_Relationships::MAIN_ASSET_HANDLE,
+				self::MAIN_ASSET_HANDLE,
 				Toolset_Assets_Manager::STYLE_FONT_AWESOME,
 				'toolset-notifications-css',
 			),
@@ -279,10 +282,10 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 			}
 		";
 
-		wp_add_inline_style( Types_Page_Relationships::WIZARD_ASSET_HANDLE, $custom_css );
+		wp_add_inline_style( self::WIZARD_ASSET_HANDLE, $custom_css );
 
 		wp_enqueue_style(
-			Types_Page_Relationships::JQUERY_UI_ASSET_HANDLE,
+			self::JQUERY_UI_ASSET_HANDLE,
 			$this->constants->constant( 'TYPES_RELPATH' ) . '/public/page/relationships/css/jquery-ui-slider.css',
 			array(),
 			$types_version
@@ -343,9 +346,6 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 	}
 
 
-	/**
-	 * @throws Twig_Error_Loader
-	 */
 	protected function prepare_dialogs() {
 
 		if ( null === $this->_dialog_box_factory ) {
@@ -373,7 +373,6 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 			'@relationships/dialogs/confirm_cardinality_change.twig'
 		);
 
-
 		$this->_dialog_box_factory->create(
 			'types-merge-relationships',
 			$this->get_twig(),
@@ -383,14 +382,14 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 
 	}
 
-
+	/** @noinspection PhpDocMissingThrowsInspection */
 	/**
-	 * @return null|Twig_Environment
-	 * @throws Twig_Error_Loader
+	 * @return null|\OTGS\Toolset\Twig\Environment
 	 */
 	private function get_twig() {
 		if ( null === $this->_twig ) {
 
+			/** @noinspection PhpUnhandledExceptionInspection */
 			$this->_twig = $this->get_gui_base()->create_twig_environment(
 				array(
 					'relationships' => $this->constants->constant( 'TYPES_ABSPATH' ) . '/application/views/page/relationships',
@@ -458,7 +457,7 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 					// translators: 1: an URL 2: the title of this URL.
 					'addFields' => sprintf( __( 'You can add fields to the relationship itself. Need help? Read about <a href="%1$s" title="%2$s" target="_blank">using fields in relationships</a>%3$s.', 'wpcf' ), 'https://toolset.com/documentation/post-relationships/how-to-set-up-post-relationships-using-toolset/', '', $external_icon ),
 					// TODO get urls ToolsetDoc-628.
-					'relationshipNames' => __( 'Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. We will be able to edit the \'plural\' and \'singular\' labels, but not the slug.', 'wpcf' ),
+					'relationshipNames' => __( 'Please choose a name for the relationship. This name identifies the relationship and allows you to use it in different parts of the site. You will be able to later edit the "plural" and "singular" labels easily, but renaming the slug may be more problematic if it is already used in any existing shortcode attributes.', 'wpcf' ),
 				),
 			),
 			'column' => array(
@@ -511,7 +510,7 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 				),
 				'bulkAction' => array(
 					'select' => __( 'Select', 'wpcf' ),
-					'merge' => __( 'Merge', 'wpcf' )
+					'merge' => __( 'Merge', 'wpcf' ),
 				),
 				'noPostTypesPlaceholder' => _x( 'posts', 'generic name when there are no post types selected', 'wpcf' ),
 				'or' => _x( 'or', 'in the enumeration of post types', 'wpcf' ),
@@ -558,13 +557,13 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 					'phaseLabels' => array(
 						Types_Ajax_Handler_Merge_Relationships::PHASE_SETUP => __( 'Configuring the new many-to-many relationship.', 'wpcf' ),
 						Types_Ajax_Handler_Merge_Relationships::PHASE_MERGE_ASSOCIATIONS => __( 'Transforming associations.', 'wpcf' ),
-						Types_Ajax_Handler_Merge_Relationships::PHASE_CLEANUP => __( 'Removing previous relationships and performing clean-up.', 'wpcf' )
+						Types_Ajax_Handler_Merge_Relationships::PHASE_CLEANUP => __( 'Removing previous relationships and performing clean-up.', 'wpcf' ),
 					),
 					'resultMessage' => array(
 						'warning' => __( 'The relationship merging has finished with some warnings. Please check technical details for more information.', 'wpcf' ),
 						'error' => __( 'An error has occurred during the relationship merging. Please contact the Toolset support forum with the copy of the technical details you will find below.', 'wpcf' ),
-						'success' => __( 'Relationships have been successfully merged.', 'wpcf' )
-					)
+						'success' => __( 'Relationships have been successfully merged.', 'wpcf' ),
+					),
 				),
 				// translators: post type name.
 				'disabledPostTypesSingular' => __( '<strong>%s</strong> post type does not exist or is currently inactive', 'wpcf' ),
@@ -715,9 +714,9 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 	 * @param array $args Metabox arguments. One of the elements is 'args' passed
 	 *     from the add_meta_box() call.
 	 *
-	 * @throws Twig_Error_Loader
-	 * @throws Twig_Error_Runtime
-	 * @throws Twig_Error_Syntax
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 * @since m2m
 	 */
 	public function render_metabox(
@@ -735,6 +734,7 @@ class Types_Page_Relationships extends Types_Page_Persistent {
 
 		$twig = $this->get_twig();
 
+		/** @noinspection PhpUnhandledExceptionInspection */
 		echo $twig->render( $template_name, $context );
 	}
 

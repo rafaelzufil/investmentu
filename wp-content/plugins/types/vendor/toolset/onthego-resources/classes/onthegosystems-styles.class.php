@@ -46,15 +46,20 @@ class OnTheGoSystemsStyles_Class{
     {
         if ( 
 			is_admin() 
-			|| defined('WPDDL_VERSION') 
+			|| (
+                // Load on frontend for Layouts related needs, only if the current usre is logged in.
+                // Otherwise, the current user will never reach the Layouts frontend editor.
+                defined('WPDDL_VERSION')
+                && is_user_logged_in()
+            )
 		) {
-            wp_enqueue_style( 'onthego-styles' );
+            wp_enqueue_style( 'onthego-admin-styles' );
         }
     }
 	
 	public function enforce_enqueue_styles() {
-		if ( ! wp_style_is( 'onthego-styles' ) ) {
-			wp_enqueue_style( 'onthego-styles' );
+		if ( ! wp_style_is( 'onthego-admin-styles' ) ) {
+			wp_enqueue_style( 'onthego-admin-styles' );
 		}
 	}
 

@@ -152,5 +152,9 @@
 
 
 {% macro spinner(visibilityCondition) %}
-    <span class="spinner" data-bind="style: { visibility: ({{ visibilityCondition }} ? 'visible' : 'hidden') }"></span>
+    <span class="spinner"
+			data-bind="style: { visibility: ({{ visibilityCondition }} ? 'visible' : 'hidden') },
+				{# this is to make the spinner show in case it is still depending on the "display: none" style - keep it #}
+				visible: {{ visibilityCondition }}"
+	></span>
 {% endmacro %}

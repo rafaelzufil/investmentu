@@ -69,6 +69,7 @@ class Toolset_Singleton_Factory {
 		}
 
 		// get all arguments
+		// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 		$arguments = func_get_args();
 
 		// drop $class argument

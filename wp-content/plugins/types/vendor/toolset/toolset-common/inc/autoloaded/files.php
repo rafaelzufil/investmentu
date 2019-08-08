@@ -162,6 +162,16 @@ class Toolset_Files {
 		return unlink( $filename );
 	}
 
+	/**
+	 * @unlink()
+	 *
+	 * @link http://php.net/manual/en/function.unlink.php
+	 * @param string $filename
+	 * @return bool
+	 */
+	public function unlink_silent( $filename ) {
+		return @unlink( $filename );
+	}
 
 	/**
 	 * include

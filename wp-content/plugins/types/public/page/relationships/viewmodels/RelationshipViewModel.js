@@ -549,7 +549,7 @@ Types.page.relationships.viewmodels.RelationshipViewModel = function(modelSource
 
 
         onSlugChange: function() {
-            self.display.showSlugWarning(true && self.hasChanged());
+            self.display.showSlugWarning(self.changedProperties().indexOf('newSlug') !== -1);
             return true;
         },
 

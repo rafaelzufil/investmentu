@@ -28,6 +28,10 @@
 		<div class="c-rgx__body">
 			<!-- ko if: repeatableGroup.items().length == 0 -->
 			<div class="c-rgx__empty--container" data-bind="visible: repeatableGroup.controlsActive">
+				<span class="spinner"
+					data-bind="style: { visibility: ( $data.repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isAddingItem"
+					style="float: left;"
+				></span>
 				<a class="button" data-bind="click: repeatableGroup.addItem, text: 'Add first ' + repeatableGroup.title"> </a>
 			</div>
 			<!-- /ko -->
@@ -44,7 +48,11 @@
 
 	<!-- ko if: repeatableGroup.items().length > 0 -->
 	<p class="c-rgx__btn--add"  data-bind="visible: repeatableGroup.controlsActive">
-        <a class="button" data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
+		<span class="spinner"
+			data-bind="style: { visibility: ( $data.repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isAddingItem"
+			style="float: left;"
+		></span>
+		<a class="button" data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
 	</p>
 	<!-- /ko -->
 </script>
@@ -123,10 +131,16 @@
 		<!-- /ko -->
 
 		<div class="c-rgx__nested--control">
-			<span class="c-rgx__count"><span class="c-rgx__count--number" data-bind="text: $data.repeatableGroup.items().length"></span></span>
+			<span class="c-rgx__count" data-bind="visible: ! $data.repeatableGroup.isPopulating()">
+				<span class="c-rgx__count--number" data-bind="text: ( $data.repeatableGroup.isPopulated() ? $data.repeatableGroup.items().length : '?' )"></span>
+			</span>
+			<span class="spinner"
+				data-bind="style: { visibility: ( $data.repeatableGroup.isPopulating() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isPopulating"
+				style="float: left;"
+			></span>
 
 			<!-- ko template: $data.repeatableGroup.visible() === false
-			? $data.repeatableGroup.items().length > 0
+			? $data.repeatableGroup.items().length > 0 || ! $data.repeatableGroup.isPopulated()
 				? 'tplItemGroupToggleShow'
 				: 'tplItemGroupToggleCreate'
 			: 'tplItemGroupToggleHide' --><!-- /ko -->
@@ -136,14 +150,27 @@
 
 <?php /* Group Toggle/Create - Show Button */ ?>
 <script type="text/html" id="tplItemGroupToggleShow">
-	<a href="#" class="button c-rgx__btn js-wpcf-tooltip" data-bind="{ click: $data.repeatableGroup.toggleGroupVisibility, attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() } }">
-		<span><?php _e( 'Show', 'wpcf' ); ?></span>
+	<a href="#" class="button c-rgx__btn js-wpcf-tooltip" data-bind="
+		click: $data.repeatableGroup.showButtonClick,
+		attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() },
+		disable: $data.repeatableGroup.isPopulating"
+	>
+        <span data-bind="text: (
+        	$data.repeatableGroup.isPopulated()
+        		? '<?php _e( 'Show', 'wpcf' ); ?>'
+        		: ( $data.repeatableGroup.isPopulating() ? '<?php _e( 'Loading...', 'wpcf' ); ?>' : '<?php _e( 'Load', 'wpcf' ); ?>' )
+        	)"
+		></span>
 	</a>
 </script>
 
 <?php /* Group Toggle/Create - Create Button */ ?>
 <script type="text/html" id="tplItemGroupToggleCreate">
     <span data-bind="visible: repeatableGroup.controlsActive">
+		<span class="spinner"
+			data-bind="style: { visibility: ( $data.repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isAddingItem"
+			style="float: left;"
+		></span>
         <a href="#" class="button c-rgx__btn js-wpcf-tooltip" data-bind="click: function( item, event ) { repeatableGroup.addItem(item, event); }, attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() }">
             <span><?php _e( 'Create', 'wpcf' ); ?></span>
         </a>
@@ -160,12 +187,14 @@
 <?php /* Group nested in Item */ ?>
 <script type="text/html" id="tplItemGroup">
 	<tr class="c-rgx__tr--nested" data-bind="visible: $data.repeatableGroup.visible">
-		<!-- ko if: $data.item.group.level <= 1 -->
+		<!-- ko if: $data.item.group.level < 1 -->
 		<th class="c-rgx__th c-rgx__th--invisible"></th>
 		<!-- /ko -->
 		<td class="c-rgx__td c-rgx__td--group-container js-rgx__td--group-container" data-bind="attr: { colspan: $data.item.group.headlines().length }">
 			<!-- ko if: $data.repeatableGroup.items().length > 0 -->
-			<div class="c-rgx">
+			<div class="c-rgx c-rgx--overflow-fix"
+			     data-bind="style: { 'max-width': $data.item.group.level == 1 ? $data.repeatableGroup.nestedContainerElementMaxWidth() : 'none'},"
+			>
 				<table class="c-rgx__table c-rgx__table--slave" data-bind="typesRepeatableGroupSortable: $data.repeatableGroup.items">
 					<thead class="c-rgx__thead" data-bind="template: { name: 'tplHeadlines', foreach: $data.repeatableGroup }"></thead>
 					<!-- ko foreach: $data.repeatableGroup.items -->
@@ -174,6 +203,10 @@
 				</table>
 
 				<p class="c-rgx__btn--add">
+					<span class="spinner"
+						data-bind="style: { visibility: ( $data.repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isAddingItem"
+						style="float: left;"
+					></span>
                     <span data-bind="visible: repeatableGroup.controlsActive">
 					    <a class="button c-rgx__btn" data-bind="click: repeatableGroup.addItem, text: 'Add new ' + repeatableGroup.title"> </a>
                     </span>
@@ -181,7 +214,7 @@
 			</div>
 			<!-- /ko -->
 		</td>
-		<!-- ko if: $data.item.group.level <= 1 -->
+		<!-- ko if: $data.item.group.level < 1 -->
 		<th class="c-rgx__th c-rgx__th--invisible"></th>
 		<!-- /ko -->
 	</tr>

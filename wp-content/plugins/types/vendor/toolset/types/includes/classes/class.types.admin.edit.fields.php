@@ -418,7 +418,7 @@ abstract class Types_Admin_Edit_Fields extends Types_Admin_Page
 	        }
 	        $form_data['data']['repetitive'] = $is_repetitive_as_string;
 
-            $tooltip = ' <i class="fa fa-question-circle icon-question-sign js-show-tooltip hidden" data-header="' . __( 'Options disabled', 'wpcf' ) .'" data-content="' . __( 'Repeatable fields are currently not supported inside RFG - the field can only have one value inside a RFG', 'wpcf' ) .'"></i>';
+            $tooltip = ' <i class="fa fa-question-circle icon-question-sign js-show-tooltip js-types-repeatable-field-disabled-tooltip hidden" data-header="' . __( 'Options disabled', 'wpcf' ) .'" data-content="' . __( 'Repeatable fields are currently not supported inside RFG - the field can only have one value inside a RFG', 'wpcf' ) .'"></i>';
 
             $form_field['repetitive'] = array(
                 '#type' => 'radios',

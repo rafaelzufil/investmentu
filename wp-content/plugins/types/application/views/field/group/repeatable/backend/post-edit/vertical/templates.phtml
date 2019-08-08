@@ -28,7 +28,11 @@
         <div class="c-rgy__body">
             <!-- ko if: repeatableGroup.items().length == 0 -->
             <div class="c-rgx__empty--container" data-bind="visible: repeatableGroup.controlsActive">
-                <a class="button"
+				<span class="spinner"
+					data-bind="style: { visibility: ( repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: repeatableGroup.isAddingItem"
+					style="float: left;"
+				></span>
+				<a class="button"
                    data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add first', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
             </div>
             <!-- /ko -->
@@ -52,7 +56,11 @@
 
     <!-- ko if: repeatableGroup.items().length > 0 -->
     <p class="c-rgx__btn--add"  data-bind="visible: repeatableGroup.controlsActive">
-        <a class="button" data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
+		<span class="spinner"
+			data-bind="style: { visibility: ( repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: repeatableGroup.isAddingItem"
+			style="float: left;"
+		></span>
+		<a class="button" data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
     </p>
     <!-- /ko -->
 </script>
@@ -120,7 +128,8 @@
                     <i class="fa fa-pencil"></i>
                 </div>
             </div>
-            <div class="c-rgy__item--fields" data-bind="visible: $data.visible">
+			<?php /* Note that the collapsible class is important for highlighting fields on validation errors. */ ?>
+            <div class="c-rgy__item--fields collapsible" data-bind="visible: $data.visible">
 	            <?php /* This field won't be stored. It's here to make sure the RFG is in $_POST for sorting */ ?>
                 <input type="hidden" data-bind="attr: { name: 'types-repeatable-group['+ $data.id +'][_id]', value: $data.id }" />
 
@@ -181,11 +190,18 @@
          data-bind="css: { 'c-rgy__group--toggle-active': $data.repeatableGroup.visible() === true } ">
 
         <div class="c-rgx__nested--control">
-            <span class="c-rgx__count"><span class="c-rgx__count--number"
-                                             data-bind="text: $data.repeatableGroup.items().length"></span></span>
+            <span class="c-rgx__count" data-bind="visible: ! $data.repeatableGroup.isPopulating()">
+				<span class="c-rgx__count--number"
+					data-bind="text: ( $data.repeatableGroup.isPopulated() ? $data.repeatableGroup.items().length : '?' )"
+				></span>
+			</span>
+			<span class="spinner"
+				data-bind="style: { visibility: ( $data.repeatableGroup.isPopulating() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isPopulating"
+				style="float: left;"
+			></span>
 
             <!-- ko template: $data.repeatableGroup.visible() === false
-			? $data.repeatableGroup.items().length > 0
+			? ( $data.repeatableGroup.items().length > 0 || ! $data.repeatableGroup.isPopulated())
 				? 'tplItemGroupToggleShow'
 				: 'tplItemGroupToggleCreate'
 			: 'tplItemGroupToggleHide' --><!-- /ko -->
@@ -198,14 +214,26 @@
 <?php /* Group Toggle/Create - Show Button */ ?>
 <script type="text/html" id="tplItemGroupToggleShow">
     <a href="#" class="button c-rgx__btn js-wpcf-tooltip"
-       data-bind="{ click: $data.repeatableGroup.toggleGroupVisibility, attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() } }">
-        <span><?php _e( 'Show', 'wpcf' ); ?></span>
+       data-bind="
+       		click: $data.repeatableGroup.showButtonClick,
+       		attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() },
+			disabled: $data.repeatableGroup.isPopulating"
+	>
+        <span data-bind="text: (
+        	$data.repeatableGroup.isPopulated() ?
+        	'<?php _e( 'Show', 'wpcf' ); ?>'
+        	: $data.repeatableGroup.isPopulating() ? '<?php _e( 'Loading...', 'wpcf' ); ?>' : '<?php _e( 'Load', 'wpcf' ); ?>')"
+		></span>
     </a>
 </script>
 
 <?php /* Group Toggle/Create - Create Button */ ?>
 <script type="text/html" id="tplItemGroupToggleCreate">
     <span data-bind="visible: repeatableGroup.controlsActive">
+		<span class="spinner"
+			data-bind="style: { visibility: ( repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: repeatableGroup.isAddingItem"
+			style="float: left;"
+		></span>
         <a href="#" class="button c-rgx__btn js-wpcf-tooltip"
            data-bind="click: function( item, event ) { repeatableGroup.addItem(item, event); }, attr: { 'data-tooltip': $data.repeatableGroup.listHeadlines() }">
             <span><?php _e( 'Create', 'wpcf' ); ?></span>
@@ -222,9 +250,16 @@
 
 <?php /* Group nested in Item */ ?>
 <script type="text/html" id="tplItemGroup">
-    <div class="c-rgy--nested" data-bind="visible: $data.repeatableGroup.visible, style: { 'z-index': 10050 - $data.item.group.level }">
+    <div class="c-rgy--nested"
+		data-bind="visible: $data.repeatableGroup.visible,
+			style: { 'z-index': 10050 - $data.item.group.level, 'transform': $data.repeatableGroup.verticalTransformStyle },
+			attr: { 'data-rfg-id': $data.repeatableGroup.id, 'data-parent-post-id': $data.repeatableGroup.getParent() }"
+	>
         <!-- ko if: $data.repeatableGroup.items().length > 0 -->
-        <div class="c-rgx c-rgy__body--nested">
+        <div class="c-rgx c-rgy__body--nested"
+             data-bind="style: { 'max-height': $data.repeatableGroup.nestedContainerElementMaxHeight()},
+             attr: { class: $data.repeatableGroup.nestedContainerElementClass() }"
+        >
 
             <p class="c-rgx__title" data-bind="text: $data.repeatableGroup.title"></p>
 
@@ -232,11 +267,11 @@
                 <table class="c-rgx__table c-rgx__table--slave"
                        data-bind="typesRepeatableGroupSortable: $data.repeatableGroup.items">
                     <thead> <?php /* IMPORTANT to keep thead - for having same markup as horizontal at this place */ ?>
-                    <tr>
-                        <th><?php /* sort col */ ?></th>
-                        <th><?php /* item col */ ?></th>
-                        <th><?php /* delete col */ ?></th>
-                    </tr>
+						<tr>
+							<th><?php /* sort col */ ?></th>
+							<th><?php /* item col */ ?></th>
+							<th><?php /* delete col */ ?></th>
+						</tr>
                     </thead>
                     <!-- ko foreach: $data.repeatableGroup.items -->
                     <!-- ko template: { name: 'tplItems' } --><!-- /ko -->
@@ -245,10 +280,20 @@
             </div>
             <p class="c-rgx__btn--add">
                 <span data-bind="visible: repeatableGroup.controlsActive">
-                <a class="button c-rgx__btn"
-                   data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
-                </span>
-            </p>
+					<a class="button c-rgx__btn"
+						data-bind="click: repeatableGroup.toggleGroupVisibility,
+							visible: repeatableGroup.needsOverflowFix"
+					>
+						<?php _e( 'Hide', 'wpcf' ); ?>
+					</a>
+					<a class="button c-rgx__btn"
+					   data-bind="click: repeatableGroup.addItem, text: '<?php _e( 'Add New', 'wpcf' ); ?>' + ' ' + repeatableGroup.title"> </a>
+					<span class="spinner"
+						data-bind="style: { visibility: ( $data.repeatableGroup.isAddingItem() ? 'visible' : 'hidden') }, visible: $data.repeatableGroup.isAddingItem"
+						style="float: left;"
+					></span>
+				</span>
+			</p>
 
         </div>
         <!-- /ko -->

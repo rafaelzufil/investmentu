@@ -15,10 +15,16 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 
 	protected $_validation = array( 'required' );
 
+	/**
+	 * @var int The ID of the current post to attach files to
+	 */
+	private $parent_id = 0;
+
 	//protected $_defaults = array('filename' => '', 'button_style' => 'btn2');
 
 	public function init() {
 		WPToolset_Field_File::file_enqueue_scripts();
+		$this->set_current_parent_id();
 		$this->set_placeholder_as_attribute();
 	}
 
@@ -53,6 +59,27 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 				global $post;
 				if ( is_object( $post ) ) {
 					wp_enqueue_media( array( 'post' => $post->ID ) );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Calculate the current post ID so media instances are binded to the right parent.
+	 *
+	 * @since 3.3.9
+	 */
+	private function set_current_parent_id() {
+		if (
+			Toolset_Utils::is_real_admin()
+			&& did_action( 'current_screen' ) > 0
+		) {
+			$screen = get_current_screen();
+
+			if ( isset( $screen->post_type ) && isset( $screen->base ) && 'post' == $screen->base ) {
+				global $post;
+				if ( is_object( $post ) ) {
+					$this->parent_id = $post->ID;
 				}
 			}
 		}
@@ -133,6 +160,8 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 
 		$meta_data = array(
 			'metakey' => $this->getName(),
+			'title' => $this->getTitle(),
+			'parent' => $this->parent_id,
 			'type' => $type,
 			'multiple' => $this->isRepetitive(),
 			'preview' => '',
@@ -141,14 +170,19 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 		);
 
 		$button = sprintf(
-			'<button class="js-wpt-file-upload js-toolset-media-field-trigger button button-secondary" data-meta=\'%s\' data-wpt-type="%s"%s>%s</button>',
-			wp_json_encode( $meta_data ),
+			'<button class="js-wpt-file-upload js-toolset-media-field-trigger button button-small button-secondary" data-meta=\'%s\' data-wpt-type="%s" %s>%s</button>',
+			esc_attr( wp_json_encode( $meta_data ) ),
 			$type,
 			$button_status,
 			( empty( $value ) ? $this->get_select_label() : $this->get_edit_label() )
 		);
 
 		// Set form
+		$form[] = array(
+			'#type' => 'markup',
+			'#markup' => '<div class="js-wpt-file-preview wpt-file-preview">' . $preview . '</div>',
+		);
+
 		$form[] = array(
 			'#type' => 'textfield',
 			'#name' => $this->getName(),
@@ -162,11 +196,6 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 			'wpml_action' => $wpml_action,
 		);
 
-		$form[] = array(
-			'#type' => 'markup',
-			'#markup' => '<div class="js-wpt-file-preview wpt-file-preview">' . $preview . '</div>',
-		);
-
 		return $form;
 	}
 
@@ -178,7 +207,11 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 	 * @since 3.3
 	 */
 	protected function get_select_label() {
-		return __( 'Select file', 'wpv-views' );
+		if ( $this->isRepetitive() ) {
+			return __( 'Select file(s)', 'wpv-views' );
+		} else {
+			return __( 'Select file', 'wpv-views' );
+		}
 	}
 
 	/**
@@ -189,7 +222,7 @@ class WPToolset_Field_File extends WPToolset_Field_Textfield {
 	 * @since 3.3
 	 */
 	protected function get_edit_label() {
-		return __( 'Edit file', 'wpv-views' );
+		return __( 'Replace file', 'wpv-views' );
 	}
 
 }

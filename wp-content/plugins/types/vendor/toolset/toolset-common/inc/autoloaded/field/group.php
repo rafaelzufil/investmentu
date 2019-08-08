@@ -207,15 +207,15 @@ abstract class Toolset_Field_Group implements publicAPI\CustomFieldGroup {
 
 		$updated_post_id = wp_update_post( $args );
 
-		if( 0 !== $updated_post_id ) {
-			// Refresh the post object
-			$this->post = WP_Post::get_instance( $updated_post_id );
-
-			$this->execute_group_updated_action();
-			return true;
-		} else {
+		if( 0 === $updated_post_id ) {
 			return false;
 		}
+
+		// Refresh the post object
+		$this->post = WP_Post::get_instance( $updated_post_id );
+
+		$this->execute_group_updated_action();
+		return true;
 	}
 
 

@@ -85,9 +85,9 @@ class SettingsTab {
 	 * Renders the main content of the setting tab (listing & co.) and returns the output.
 	 *
 	 * @return string
-	 * @throws \Twig_Error_Loader
-	 * @throws \Twig_Error_Runtime
-	 * @throws \Twig_Error_Syntax
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 */
 	public function render_main_content() {
 		/** @noinspection PhpUnhandledExceptionInspection */
@@ -113,9 +113,9 @@ class SettingsTab {
 	 * Renders the left side of the settings section which should be displayed below the section title.
 	 *
 	 * @return string
-	 * @throws \Twig_Error_Loader
-	 * @throws \Twig_Error_Runtime
-	 * @throws \Twig_Error_Syntax
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 */
 	public function render_left_side() {
 		/** @noinspection PhpUnhandledExceptionInspection */

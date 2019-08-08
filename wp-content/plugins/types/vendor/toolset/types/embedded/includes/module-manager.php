@@ -1319,6 +1319,7 @@ function wpcf_admin_import_data_from_xmlstring( $data = '', $_type = 'types',
                 'post_type' => TYPES_CUSTOM_FIELD_GROUP_CPT_NAME,
                 'post_title' => $group['post_title'],
                 'post_content' => !empty( $group['post_content'] ) ? $group['post_content'] : '',
+				'post_name' => $group['__types_id']
             );
             if ( (isset( $group['add'] ) && $group['add'] ) ) {
                 $post_to_update = $wpdb->get_var(
@@ -1369,14 +1370,19 @@ function wpcf_admin_import_data_from_xmlstring( $data = '', $_type = 'types',
                     }
                 }
                 // Update meta
+				// Collecting all field groups IDs to update assignments when the import is finished.
                 if ( !empty( $group['meta'] ) ) {
                     foreach ( $group['meta'] as $meta_key => $meta_value ) {
-                        if ( ! is_array( $meta_value ) && preg_match( '/(' . Types_Field_Group_Repeatable::PREFIX . '[a-z0-9_-]+)/', $meta_value, $m ) ) {
-                            if ( ! isset( $groups_with_rfgs[ $m[1] ] ) ) {
-                                $groups_with_rfgs[ $m[1] ] = array();
-                            }
-                            $groups_with_rfgs[ $m[1] ][] = $group_wp_id;
-                        }
+	                    if ( ! is_array( $meta_value ) && preg_match_all( '/(' . Types_Field_Group_Repeatable::PREFIX . '[a-z0-9_-]+)/', $meta_value, $m ) ) {
+		                    if ( isset( $m[1] ) ) {
+			                    foreach( $m[1] as $group_name ) {
+				                    if ( ! isset( $groups_with_rfgs[ $group_name ] ) ) {
+					                    $groups_with_rfgs[ $group_name ] = array();
+				                    }
+				                    $groups_with_rfgs[ $group_name ][] = $group_wp_id;
+			                    }
+		                    }
+	                    }
                         update_post_meta( $group_wp_id, $meta_key,
                                 maybe_unserialize( $meta_value ) );
                     }

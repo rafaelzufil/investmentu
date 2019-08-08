@@ -15,7 +15,7 @@ final class Types_Asset_Help_Tab_Loader {
 	private static $instance;
 
 	public static function get_instance() {
-		if( null == self::$instance ) {
+		if ( null == self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -47,7 +47,7 @@ final class Types_Asset_Help_Tab_Loader {
 		}
 
 		$help_content = $this->get_help_content( $current_page );
-		if( null == $help_content ) {
+		if ( null == $help_content ) {
 			return;
 		}
 
@@ -157,13 +157,17 @@ final class Types_Asset_Help_Tab_Loader {
 	 * Render help tab content from its configuration.
 	 *
 	 * @param string $page_name Name of current page.
+	 *
 	 * @return array|null Null when no help tab should be displayed, or an array with keys 'title' and 'content'.
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 * @since 2.0
 	 */
 	private function get_help_content( $page_name ) {
 
 		$config = $this->get_help_config( $page_name );
-		if( null == $config ) {
+		if ( null == $config ) {
 			return null;
 		}
 
@@ -171,7 +175,7 @@ final class Types_Asset_Help_Tab_Loader {
 
 		return array(
 			'title' => toolset_getarr( $config, 'title' ),
-			'content' => $twig->render( toolset_getarr( $config, 'template' ), toolset_getarr( $config, 'context' ) )
+			'content' => $twig->render( toolset_getarr( $config, 'template' ), toolset_getarr( $config, 'context' ) ),
 		);
 	}
 
@@ -182,7 +186,11 @@ final class Types_Asset_Help_Tab_Loader {
 	 * Some pages, like Custom Fields, needs several tabs, one for section.
 	 *
 	 * @param string $page_name Name of current page.
+	 *
 	 * @return array|null Null when no help tab should be displayed, or an multiple arrays with keys 'title' and 'content'.
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
+	 * @throws \OTGS\Toolset\Twig\Error\RuntimeError
+	 * @throws \OTGS\Toolset\Twig\Error\SyntaxError
 	 * @since 2.3
 	 */
 	private function get_multiple_help_contents( $page_name ) {
@@ -203,18 +211,18 @@ final class Types_Asset_Help_Tab_Loader {
 		return $configs;
 	}
 
-	/** @var Twig_Environment|null */
+	/** @var \OTGS\Toolset\Twig\Environment|null */
 	private $twig = null;
 
 
 	/**
-	 * @return Twig_Environment Initialized Twig environment object for help tab content rendering.
-	 * @throws Twig_Error_Loader
+	 * @return \OTGS\Toolset\Twig\Environment Initialized Twig environment object for help tab content rendering.
+	 * @throws \OTGS\Toolset\Twig\Error\LoaderError
 	 * @since 2.0
 	 */
 	private function get_twig() {
 
-		if( null == $this->twig ) {
+		if ( null == $this->twig ) {
 
 			$tcb = Toolset_Common_Bootstrap::get_instance();
 			$tcb->register_gui_base();
@@ -223,7 +231,7 @@ final class Types_Asset_Help_Tab_Loader {
 
 			$this->twig = $gui_base->create_twig_environment(
 				array(
-					'help' => TYPES_ABSPATH . '/application/views/help'
+					'help' => TYPES_ABSPATH . '/application/views/help',
 				)
 			);
 		}

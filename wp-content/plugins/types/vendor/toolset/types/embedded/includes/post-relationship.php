@@ -672,8 +672,8 @@ function wpcf_pr_admin_post_meta_box_belongs_form( $post, $type, $belongs ) {
 
 	if ( $is_translated_post_type ) {
 		$wpml_current_language = apply_filters( 'wpml_current_language', '' );
-		$wpml_join = " JOIN {$wpdb->prefix}icl_translations t ";
-		$wpml_where = " AND p.ID = t.element_id AND t.language_code = %s AND t.element_type = concat( 'post_', %s ) ";
+		$wpml_join = " JOIN {$wpdb->prefix}icl_translations icl_t ";
+		$wpml_where = " AND p.ID = icl_t.element_id AND icl_t.language_code = %s AND icl_t.element_type = concat( 'post_', %s ) ";
 		$values_to_prepare[] = $wpml_current_language;
 		$values_to_prepare[] = sanitize_text_field( $type );
 
@@ -1012,8 +1012,7 @@ function wpcf_pr_admin_wpcf_relationship_search() {
 		$is_translated_post_type
 	);
 
-	echo json_encode( $results );
-	die;
+	wp_send_json( $results );
 }
 
 /**
@@ -1039,8 +1038,8 @@ function wpcf_pr_admin_wpcf_relationship_search_process( $post_type, $post_statu
 	// TODO Almost the same query is in wpcf_pr_admin_post_meta_box_belongs_form(), DRY.
 	if ( $is_translated_post_type ) {
 		$wpml_current_language = apply_filters( 'wpml_current_language', '' );
-		$wpml_join = " JOIN {$wpdb->prefix}icl_translations t ";
-		$wpml_where = " AND p.ID = t.element_id AND t.language_code = %s AND t.element_type = concat( 'post_', %s ) ";
+		$wpml_join = " JOIN {$wpdb->prefix}icl_translations icl_t ";
+		$wpml_where = " AND p.ID = icl_t.element_id AND icl_t.language_code = %s AND icl_t.element_type = concat( 'post_', %s ) ";
 		$values_to_prepare[] = $wpml_current_language;
 		$values_to_prepare[] = $post_type;
 
@@ -1114,20 +1113,18 @@ function wpcf_pr_admin_wpcf_relationship_entry() {
 		'post_type' => $wpcf_post['post_type'],
 		'save' => 'no-save',
 	);
-	echo json_encode( $wpcf_post );
-	die;
+	wp_send_json( $wpcf_post );
 }
 
 // Deprecated since the introduction of select v.4
 function wpcf_pr_admin_wpcf_relationship_delete() {
 	wpcf_pr_admin_wpcf_relationship_check();
 	delete_post_meta( (int) $_REQUEST['post_id'], sprintf( '_wpcf_belongs_%s_id', sanitize_text_field( $_REQUEST['post_type'] ) ) );
-	echo json_encode(
+	wp_send_json(
 		array(
 			'target' => sprintf( '#wpcf_pr_belongs_%d_%s-wrapper', (int) $_REQUEST['post_id'], sanitize_text_field( $_REQUEST['post_type'] ) ),
 		)
 	);
-	die;
 }
 
 // Deprecated since the introduction of select v.4

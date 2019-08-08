@@ -944,16 +944,17 @@ jQuery(document).ready(function($){
  * @since 3.0
  */
 var wpcfDisableRepeatableFieldOption = function( $fieldContainer ) {
-    var insideRFG = $fieldContainer.parents( '.types-repeatable-group:first' ).length > 0;
-    var $repetitiveOptions = $fieldContainer.find( 'input:radio[name*="[repetitive]"]' );
-    if ( insideRFG ) {
-        $repetitiveOptions.last().attr( 'checked', 'checked' );
-        $repetitiveOptions.attr( 'disabled', 'disabled' );
-    } else {
-        $repetitiveOptions.removeAttr( 'disabled', 'disabled' );
-    }
-    $fieldContainer.find( '.js-show-tooltip' ).toggleClass( 'hidden' );
-}
+	var insideRFG = $fieldContainer.parents( '.types-repeatable-group:first' ).length > 0;
+	var $repetitiveOptions = $fieldContainer.find( 'input:radio[name*="[repetitive]"]' );
+	if (insideRFG) {
+		$repetitiveOptions.last().attr( 'checked', 'checked' );
+		$repetitiveOptions.attr( 'disabled', 'disabled' );
+		$fieldContainer.find( '.js-show-tooltip.js-types-repeatable-field-disabled-tooltip' ).removeClass( 'hidden' );
+	} else {
+		$repetitiveOptions.removeAttr( 'disabled', 'disabled' );
+		$fieldContainer.find( '.js-show-tooltip.js-types-repeatable-field-disabled-tooltip' ).addClass( 'hidden' );
+	}
+};
 
 
 /**

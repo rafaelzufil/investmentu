@@ -47,14 +47,18 @@ class Toolset_Blocks {
 	 * @return array
 	 */
 	public function register_toolset_block_category( $categories ) {
-		return array_merge(
-			$categories,
-			array(
+		if ( ! array_search( 'toolset', array_column( $categories, 'slug' ), true ) ) {
+			$categories = array_merge(
+				$categories,
 				array(
-					'slug'  => 'toolset',
-					'title' => __( 'Toolset', 'wpv-views' ),
-				),
-			)
-		);
+					array(
+						'slug'  => 'toolset',
+						'title' => __( 'Toolset', 'wpv-views' ),
+					),
+				)
+			);
+		}
+
+		return $categories;
 	}
 }

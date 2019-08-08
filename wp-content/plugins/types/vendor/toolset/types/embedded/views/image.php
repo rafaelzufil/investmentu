@@ -342,7 +342,7 @@ class Types_Image_Utils
     /**
      * Returns instance.
      * 
-     * @return type
+     * @return Types_Image_Utils
      */
     public static function getInstance() {
         if ( is_null( self::$__singleton ) ) {
@@ -377,42 +377,60 @@ class Types_Image_Utils
         return self::$__cache->setCache( 'check_edit_requirements', true );
     }
 
-    /**
-     * Determines current writable path.
-     * 
-     * @param type $img
-     * @return type
-     */
-    public static function getWritablePath( $img = null ) {
-        if ( !is_null( $img ) ) {
-            if ( $cached = self::$__cache->getCache( "writable_path_$img" ) ) {
-                return $cached;
-            }
-            $dir = dirname( $img ) . DIRECTORY_SEPARATOR;
-            if ( !is_writable( $dir ) || !is_dir( $dir ) ) {
-                return self::$__cache->setCache( "writable_path_$img",
-                                new WP_Error( __CLASS__ . '::' . __METHOD__,
-                                'Destination dir not writable' ) );
-            }
-            return self::$__cache->setCache( "writable_path_$img", $dir );
-        }
-        if ( $cached = self::$__cache->getCache( 'temp_writable_path' ) ) {
-            return $cached;
-        }
-        $upload_info = self::uploadInfo();
-        if ( !$upload_info ) {
-            return self::$__cache->setCache( 'temp_writable_path',
-                            new WP_Error( __CLASS__ . '::' . __METHOD__,
-                            'WP upload dir error' ) );
-        }
-        $dir = $upload_info['basedir'] . DIRECTORY_SEPARATOR . self::DESTINATION_DIR . DIRECTORY_SEPARATOR;
-        if ( !wp_mkdir_p( $dir ) || !is_writable( $dir ) || !is_dir( $dir ) ) {
-            return self::$__cache->setCache( 'temp_writable_path',
-                            new WP_Error( __CLASS__ . '::' . __METHOD__,
-                            'Can not create writable dir' ) );
-        }
-        return self::$__cache->setCache( 'temp_writable_path', $dir );
-    }
+
+	/**
+	 * Determines current writable path.
+	 *
+	 * @param $img
+	 * @param bool $create_if_missing
+	 *
+	 * @return mixed
+	 */
+	public static function getWritablePath( $img = null, $create_if_missing = true ) {
+		if ( ! is_null( $img ) ) {
+			if ( $cached = self::$__cache->getCache( "writable_path_$img" ) ) {
+				return $cached;
+			}
+			$dir = dirname( $img ) . DIRECTORY_SEPARATOR;
+			if ( ! is_writable( $dir ) || ! is_dir( $dir ) ) {
+				return self::$__cache->setCache(
+					"writable_path_$img",
+					new WP_Error( __CLASS__ . '::' . __METHOD__, 'Destination dir not writable' )
+				);
+			}
+
+			return self::$__cache->setCache( "writable_path_$img", $dir );
+		}
+		if ( $cached = self::$__cache->getCache( 'temp_writable_path' ) ) {
+			return $cached;
+		}
+		$upload_info = self::uploadInfo();
+		if ( ! $upload_info ) {
+			return self::$__cache->setCache(
+				'temp_writable_path',
+				new WP_Error( __CLASS__ . '::' . __METHOD__, 'WP upload dir error' )
+			);
+		}
+		$dir = $upload_info['basedir'] . DIRECTORY_SEPARATOR . self::DESTINATION_DIR . DIRECTORY_SEPARATOR;
+
+		if ( ! $create_if_missing && ! file_exists( $dir ) ) {
+			// Do not create the directory if missing.
+			return null;
+		}
+
+		if (
+			! is_writable( $dir )
+			|| ! is_dir( $dir )
+			|| ! wp_mkdir_p( $dir )
+		) {
+			return self::$__cache->setCache(
+				'temp_writable_path',
+				new WP_Error( __CLASS__ . '::' . __METHOD__, 'Can not create writable dir' )
+			);
+		}
+
+		return self::$__cache->setCache( 'temp_writable_path', $dir );
+	}
 
     /**
      * Checks if image is valid.
@@ -771,29 +789,35 @@ class Types_Cache
     /**
      * Returns adjusted cache key.
      * 
-     * @param type $key
-     * @return type
+     * @param $key
+     * @return
      */
     private function getCacheKey( $key ) {
         return md5( maybe_serialize( $key ) );
     }
 
-    /**
-     * Returns cache if available, otherwise false.
-     * 
-     * @param type $key
-     */
+
+	/**
+	 * Returns cache if available, otherwise false.
+	 *
+	 * @param $key
+	 *
+	 * @return bool|mixed
+	 */
     public function getCache( $key ) {
         $cache_key = $this->getCacheKey( $key );
         return isset( $this->__cache[$cache_key] ) ? $this->__cache[$cache_key] : false;
     }
 
-    /**
-     * Sets cache.
-     * 
-     * @param type $key
-     * @param type $data
-     */
+
+	/**
+	 * Sets cache.
+	 *
+	 * @param $key
+	 * @param $data
+	 *
+	 * @return mixed
+	 */
     public function setCache( $key, $data ) {
         $this->__cache[$this->getCacheKey( $key )] = $data;
         return $data;
@@ -837,6 +861,7 @@ class Types_Error extends WP_Error
 	            $data = $message->error_data;
             }
         } else {
+        	// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.Changed
             $db = debug_backtrace();
             $code = "{$db[1]['class']}::{$db[1]['function']}()";
         }

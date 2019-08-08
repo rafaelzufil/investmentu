@@ -26,6 +26,22 @@ abstract class Toolset_Field_Group_Factory {
 
 
 	/**
+	 * @var array Array of field group instances for this post type, indexed by names (post slugs).
+	 */
+	private $field_groups = array();
+
+
+	/**
+	 * @var WP_Post[][] Cache for WP_Post objects representing field groups.
+	 *
+	 * Access only through get_cache_for_query_args(), set_cache_for_query_args() or reset_query_cache().
+	 *
+	 * @since Types 3.3
+	 */
+	private $group_query_cache = array();
+
+
+	/**
 	 * Singleton parent.
 	 *
 	 * @link http://stackoverflow.com/questions/3126130/extending-singletons-in-php
@@ -46,6 +62,7 @@ abstract class Toolset_Field_Group_Factory {
 		$this->wp_post_factory = $wp_post_factory ?: new WpPostFactory();
 
 		add_action( 'wpcf_field_group_renamed', array( $this, 'field_group_renamed' ), 10, 2 );
+		add_action( 'wpcf_group_updated', array( $this, 'reset_query_cache' ) );
 	}
 
 
@@ -171,20 +188,20 @@ abstract class Toolset_Field_Group_Factory {
 			$query_args['post_status'] = 'hidden';
 		}
 
-		$query = $this->wp_query_factory->create( $query_args );
-		if( ! $query->have_posts() ) {
+		$posts = $this->get_cache_for_query_args( $query_args );
+
+		if( null === $posts ) {
+			$query = $this->wp_query_factory->create( $query_args );
+			$posts = $query->posts;
+			$this->set_cache_for_query_args( $query_args, $posts );
+		}
+
+		if( empty( $posts ) ) {
 			return false;
 		}
 
-		$fg_post = $query->get_posts();
-		return $fg_post[0];
+		return array_pop( $posts );
 	}
-
-
-	/**
-	 * @var array Array of field group instances for this post type, indexed by names (post slugs).
-	 */
-	private $field_groups = array();
 
 
 	/**
@@ -282,6 +299,8 @@ abstract class Toolset_Field_Group_Factory {
 			$this->clear_from_cache( $original_name );
 			$this->save_to_cache( $field_group );
 		}
+
+		$this->reset_query_cache();
 	}
 
 
@@ -323,6 +342,8 @@ abstract class Toolset_Field_Group_Factory {
 
 		// Store the mandatory postmeta, just to be safe. I'm not sure about invariants here.
 		update_post_meta( $post_id, Toolset_Field_Group::POSTMETA_FIELD_SLUGS_LIST, '' );
+
+		$this->reset_query_cache();
 
 		$field_group = $this->load_field_group( $post_id );
 
@@ -398,8 +419,13 @@ abstract class Toolset_Field_Group_Factory {
 
 		$query_args['ignore_sticky_posts'] = true;
 
-		$query = $this->wp_query_factory->create( $query_args );
-		$posts = $query->get_posts();
+		$posts = $this->get_cache_for_query_args( $query_args );
+
+		if( null === $posts ) {
+			$query = $this->wp_query_factory->create( $query_args );
+			$posts = $query->posts;
+			$this->set_cache_for_query_args( $query_args, $posts );
+		}
 
 		// Transform posts into Toolset_Field_Group
 		$all_groups = array();
@@ -462,5 +488,73 @@ abstract class Toolset_Field_Group_Factory {
 	 * @since Types 3.3
 	 */
 	abstract public function get_groups_for_element( IToolset_Element $element );
+
+
+	/**
+	 * Recursively sort a multidimensional associative array by its keys.
+	 *
+	 * @param array &$array_to_sort Array to be sorted.
+	 * @since Types 3.3
+	 */
+	private function recursive_ksort( & $array_to_sort ) {
+		foreach( $array_to_sort as $key => $value ) {
+			if( is_array( $value ) ) {
+				$this->recursive_ksort( $value );
+				$array_to_sort[ $key ] = $value;
+			}
+		}
+		ksort( $array_to_sort );
+	}
+
+
+	/**
+	 * Convert an array with query arguments to a cache key.
+	 *
+	 * @param array $query_args
+	 * @return string
+	 * @since Types 3.3
+	 */
+	private function query_args_to_cache_key( $query_args ) {
+		$this->recursive_ksort( $query_args );
+		return md5( json_encode( $query_args ) );
+	}
+
+
+	/**
+	 * @param array $query_args
+	 *
+	 * @return WP_Post[]|null
+	 * @since Types 3.3
+	 */
+	private function get_cache_for_query_args( $query_args ) {
+		$cache_key = $this->query_args_to_cache_key( $query_args );
+		if( ! array_key_exists( $cache_key, $this->group_query_cache ) ) {
+			return null;
+		}
+
+		return $this->group_query_cache[ $cache_key ];
+	}
+
+
+	/**
+	 * @param array $query_args
+	 * @param WP_Post[] $value
+	 * @since Types 3.3
+	 */
+	private function set_cache_for_query_args( $query_args, $value ) {
+		$cache_key = $this->query_args_to_cache_key( $query_args );
+		$this->group_query_cache[ $cache_key ] = $value;
+	}
+
+
+	/**
+	 * Clear the query cache. This must be called after every field group change that isn't immediately followed by a
+	 * page reload.
+	 *
+	 * @since Types 3.3
+	 */
+	public function reset_query_cache() {
+		$this->group_query_cache = array();
+	}
 
 }

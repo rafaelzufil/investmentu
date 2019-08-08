@@ -1022,9 +1022,9 @@ function wpcf_wpml_relationship_save_child( $child, $parent )
 /**
  * Checks if field is copied on post edit screen.
  *
- * @global type $sitepress
- * @param type $field
- * @param type $post
+ * @global $sitepress
+ * @param $field
+ * @param $post
  * @return boolean
  */
 function wpcf_wpml_field_is_copied( $field, $post = null ) {

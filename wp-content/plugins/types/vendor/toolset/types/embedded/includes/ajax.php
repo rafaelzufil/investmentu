@@ -39,59 +39,6 @@ function wpcf_ajax_embedded() {
             wpcf_fields_skype_meta_box_ajax();
             break;
 
-		/*
-        case 'editor_callback':
-			// @since m2m Probably DEPRECATED
-            if( ! current_user_can( 'edit_posts' ) ) {
-                die( 'Authentication failed' );
-            }
-
-            // Determine Field type and context
-            $views_meta = false;
-            $field_id = sanitize_text_field( $_GET['field_id'] );
-
-            // todo this could be written in like four lines
-            if ( isset( $_GET['field_type'] ) && $_GET['field_type'] == 'usermeta' ) {
-                // Group filter
-                wp_enqueue_script( 'suggest' );
-                $field = types_get_field( $field_id, 'usermeta' );
-                $meta_type = 'usermeta';
-            }
-            elseif ( isset( $_GET['field_type'] ) && $_GET['field_type'] == 'views-usermeta' ){
-                $field = types_get_field( $field_id, 'usermeta' );
-                $meta_type = 'usermeta';
-                $views_meta = true;
-			}
-			elseif ( isset( $_GET['field_type'] ) && $_GET['field_type'] == 'termmeta' ) {
-                // Group filter
-                wp_enqueue_script( 'suggest' );
-                $field = types_get_field( $field_id, 'termmeta' );
-                $meta_type = 'termmeta';
-            }
-            elseif ( isset( $_GET['field_type'] ) && $_GET['field_type'] == 'views-termmeta' ){
-                $field = types_get_field( $field_id, 'termmeta' );
-                $meta_type = 'termmeta';
-                $views_meta = true;
-            }else {
-                $field = types_get_field( $field_id );
-                $meta_type = 'postmeta';
-            }
-
-            $parent_post_id = isset( $_GET['post_id'] ) ? intval( $_GET['post_id'] ) : null;
-            $shortcode = isset( $_GET['shortcode'] ) ? urldecode( $_GET['shortcode'] ) : null;
-            $callback = isset( $_GET['callback'] ) ? sanitize_text_field( $_GET['callback'] ) : false;
-            $post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( $_GET['post_type'] ) : false;
-            if ( !empty( $field ) ) {
-                // Editor
-                WPCF_Loader::loadClass( 'editor' );
-                $editor = new WPCF_Editor();
-                $editor->frame( $field, $meta_type, $parent_post_id, $shortcode,
-                        $callback, $views_meta, $post_type );
-            }
-
-            break;
-		*/
-
         case 'dismiss_message':
             if( ! is_user_logged_in() ) {
                 die( 'Authentication failed' );
@@ -100,7 +47,7 @@ function wpcf_ajax_embedded() {
             if ( isset( $_GET['id'] ) ) {
                 $messages = get_option( 'wpcf_dismissed_messages', array() );
                 $messages[] = sanitize_text_field( $_GET['id'] );
-                update_option( 'wpcf_dismissed_messages', $messages );
+                update_option( 'wpcf_dismissed_messages', $messages, true );
             }
             break;
 
@@ -167,12 +114,12 @@ function wpcf_ajax_embedded() {
                 }
             }
             if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output . wpcf_form_render_js_validation( '#post', false ),
                     'child_id' => $id,
                 ) );
             } else {
-                echo json_encode( array(
+				wp_send_json( array(
                     'output' => $output,
                     'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
                     'child_id' => $id,
@@ -204,12 +151,12 @@ function wpcf_ajax_embedded() {
             wpcf_show_admin_messages('echo');
             $errors = ob_get_clean();
             if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
+				wp_send_json( array(
                     'output' => $output,
                     'errors' => $errors
                 ) );
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output,
                     'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
                     'errors' => $errors
@@ -249,12 +196,12 @@ function wpcf_ajax_embedded() {
             wpcf_show_admin_messages('echo');
             $errors = ob_get_clean();
             if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
+				wp_send_json( array(
                     'output' => $output,
                     'errors' => $errors
                 ) );
             } else {
-                echo json_encode( array(
+				wp_send_json( array(
                     'output' => $output,
                     'errors' => $errors,
                     'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
@@ -268,7 +215,7 @@ function wpcf_ajax_embedded() {
             if ( current_user_can( 'edit_posts' ) && isset( $_GET['post_id'] ) ) {
                 $output = wpcf_pr_admin_delete_child_item( intval( $_GET['post_id'] ) );
             }
-            echo json_encode( array(
+			wp_send_json( array(
                 'output' => $output,
             ) );
             break;
@@ -300,11 +247,11 @@ function wpcf_ajax_embedded() {
                 }
             }
             if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output,
                 ) );
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output,
                     'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
                 ) );
@@ -319,36 +266,17 @@ function wpcf_ajax_embedded() {
                 );
             }
             if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output,
                 ) );
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => $output,
                     'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
                 ) );
             }
             break;
 
-        // Not used anywhere
-        /*case 'pr_sort_parent':
-            $output = 'Passed wrong parameters';
-            if ( isset( $_GET['field'] ) && isset( $_GET['sort'] ) && isset( $_GET['post_id'] ) && isset( $_GET['post_type'] ) ) {
-                $output = $wpcf->relationship->child_meta_form(
-                        intval( $_GET['post_id'] ), strval( $_GET['post_type'] )
-                );
-            }
-            if ( !defined( 'WPTOOLSET_FORMS_VERSION' ) ) {
-                echo json_encode( array(
-                    'output' => $output,
-                ) );
-            } else {
-                echo json_encode( array(
-                    'output' => $output,
-                    'conditionals' => array('#post' => wptoolset_form_get_conditional_data( 'post' )),
-                ) );
-            }
-            break;*/
         /* Usermeta */
         case 'um_repetitive_add':
 
@@ -375,12 +303,12 @@ function wpcf_ajax_embedded() {
                 $wpcf->usermeta_repeater->meta = null;
                 $form = $wpcf->usermeta_repeater->get_field_form( null, true );
 
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => wpcf_form_simple( $form )
                     . wpcf_form_render_js_validation( '#your-profile', false ),
                 ) );
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }
@@ -409,16 +337,16 @@ function wpcf_ajax_embedded() {
                     $wpcf->usermeta_repeater->set( $user_id, $field );
                     $wpcf->usermeta_repeater->delete( $meta_id );
 
-                    echo json_encode( array(
+                    wp_send_json( array(
                         'output' => 'deleted',
                     ) );
                 } else {
-                    echo json_encode( array(
+                    wp_send_json( array(
                         'output' => 'field or post not found',
                     ) );
                 }
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }
@@ -452,12 +380,12 @@ function wpcf_ajax_embedded() {
                 $wpcf->repeater->meta = null;
                 $form = $wpcf->repeater->get_field_form( null, true );
 
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => wpcf_form_simple( $form )
                     . wpcf_form_render_js_validation( '#post', false ),
                 ) );
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }
@@ -481,16 +409,16 @@ function wpcf_ajax_embedded() {
                     $wpcf->repeater->set( $parent_post, $field );
                     $wpcf->repeater->delete( $meta_id );
 
-                    echo json_encode( array(
+                    wp_send_json( array(
                         'output' => 'deleted',
                     ) );
                 } else {
-                    echo json_encode( array(
+                    wp_send_json( array(
                         'output' => 'field or post not found',
                     ) );
                 }
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }
@@ -543,9 +471,9 @@ function wpcf_ajax_embedded() {
                 /* Restore original Post Data */
                 wp_reset_postdata();
 
-                echo json_encode($posts);
+                wp_send_json($posts);
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }
@@ -562,17 +490,17 @@ function wpcf_ajax_embedded() {
                                 $wpcf_post['ID']
                             );
                         }
-                    echo json_encode(
+                    wp_send_json(
                         array(
                             'ID' => $wpcf_post['ID'],
                             'post_title' => $wpcf_post['post_title'],
                         )
                     );
                 } else {
-                    echo json_encode( array( 'output' => 'params missing',));
+                    wp_send_json( array( 'output' => 'params missing',));
                 }
             } else {
-                echo json_encode( array(
+                wp_send_json( array(
                     'output' => 'params missing',
                 ) );
             }

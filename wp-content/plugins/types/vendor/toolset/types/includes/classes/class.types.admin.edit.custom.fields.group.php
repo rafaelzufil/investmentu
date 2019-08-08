@@ -1377,24 +1377,6 @@ var wpcfDefaultCss = ' . json_encode( base64_encode( $admin_styles_value ) ) . '
 		) );
 	}
 
-	/**
-	 * Summary.
-	 *
-	 * Description.
-	 *
-	 * @since x.x.x
-	 * @access (for functions: only use if private)
-	 *
-	 * @see Function/method/class relied on
-	 * @link URL
-	 * @global type $varname Description.
-	 * @global type $varname Description.
-	 *
-	 * @param type $var Description.
-	 * @param type $var Optional. Description.
-	 *
-	 * @return type Description.
-	 */
 	private function save_group_fields( $group_id ) {
 		$group_factory = Toolset_Field_Group_Factory::get_factory_by_domain( Toolset_Field_Utils::DOMAIN_POSTS );
 		$group = $group_factory->load_field_group( $group_id );
@@ -1505,21 +1487,30 @@ var wpcfDefaultCss = ' . json_encode( base64_encode( $admin_styles_value ) ) . '
 						// next loop item
 						continue 2;
 					case 'name':
-						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) continue; // should never happen and means the form html is broken
+						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) {
+							// should never happen and means the form html is broken
+							break;
+						}
 
 						$unfinished_rfgs['group-'.$rfg_post->ID]->post_title = sanitize_text_field( $field_value );
 
 						// next loop item
 						continue 2;
 					case 'slug':
-						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) continue; // should never happen and means the form html is broken
+						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) {
+							// should never happen and means the form html is broken
+							break;
+						}
 
 						$unfinished_rfgs['group-'.$rfg_post->ID]->post_name = sanitize_title( $field_value );
 
 						// next loop item
 						continue 2;
 					case 'end':
-						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) continue; // should never happen and means the form html is broken
+						if( ! isset( $unfinished_rfgs['group-'.$rfg_post->ID] ) ) {
+							// should never happen and means the form html is broken
+							break;
+						}
 
 						// update name and slug of repeatable group
 						wp_update_post( $unfinished_rfgs['group-'.$rfg_post->ID] );
@@ -1547,14 +1538,12 @@ var wpcfDefaultCss = ' . json_encode( base64_encode( $admin_styles_value ) ) . '
 				if( wpcf_types_cf_under_control( 'check_exists', sanitize_title( $field_value['name'] ) ) ) {
 					$this->triggerError();
 					wpcf_admin_message( sprintf( __( 'Field with name "%s" already exists', 'wpcf' ), $field_value['name'] ), 'error' );
-
-					return $form;
+					return;
 				}
 				if( isset( $field_value['slug'] ) && wpcf_types_cf_under_control( 'check_exists', sanitize_title( $field_value['slug'] ) ) ) {
 					$this->triggerError();
 					wpcf_admin_message( sprintf( __( 'Field with slug "%s" already exists', 'wpcf' ), $field_value['slug'] ), 'error' );
-
-					return $form;
+					return;
 				}
 			}
 			$field_value['submit-key'] = $key;

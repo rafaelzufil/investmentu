@@ -3,6 +3,10 @@
 /*
  * Autoloader
  */
+
+use OTGS\Toolset\Common\Auryn\Injector;
+use OTGS\Toolset\Types\Controller\Compatibility\Gutenberg;
+
 require_once( TYPES_ABSPATH . '/vendor/toolset/autoloader/autoloader.php' );
 
 $autoloader = Types_Autoloader::get_instance();
@@ -46,8 +50,12 @@ if ( file_exists( $installer ) ) {
 	// a class).
 	require_once TYPES_ABSPATH . '/vendor/jakeasmith/http_build_url/src/http_build_url.php';
 
+	// Will be overwritten.
+	$wp_installer_instance = null;
+
 	/** @noinspection PhpIncludeInspection */
 	include_once $installer;
+
 	if ( function_exists( 'WP_Installer_Setup' ) ) {
 		WP_Installer_Setup(
 			$wp_installer_instance,
@@ -57,14 +65,6 @@ if ( file_exists( $installer ) ) {
 			)
 		);
 	}
-
-	// This is a temporary workaround since Types removed Twig from its composer dependencies,
-    // until the Installer handles this dependency properly. Minor performance drawback, it should
-    // be removed as soon as possible.
-	add_action( 'init', function() {
-	    Toolset_Common_Bootstrap::get_instance()->register_gui_base();
-	    Toolset_Gui_Base::get_instance()->init();
-    }, 20 );
 }
 
 
@@ -134,25 +134,3 @@ add_action( 'init', function() {
 		$field_group_edit_page();
 	}
 } );
-
-/**
- * Gutenberg Compatiblity
- *
- * @since 3.2
- */
-function types_bootstrap_gutenberg_compatibility() {
-	// load DIC
-	$dic = apply_filters( 'toolset_dic', false );
-
-	/** @var \OTGS\Toolset\Types\Controller\Compatibility\Gutenberg $gutenberg */
-	$gutenberg = $dic->make( '\OTGS\Toolset\Types\Controller\Compatibility\Gutenberg' );
-	$gutenberg->initialize();
-
-	if ( $gutenberg->is_active_for_current_post_type() ) {
-		$dic->execute( array( $gutenberg, 'post_edit_screen' ) );
-	}
-}
-
-// load compatibililty on new post and edit post screen
-add_action( 'load-post.php', 'types_bootstrap_gutenberg_compatibility' );
-add_action( 'load-post-new.php', 'types_bootstrap_gutenberg_compatibility' );

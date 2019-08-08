@@ -2,9 +2,13 @@
 
 namespace OTGS\Toolset\Types\Controller\Compatibility;
 
+use function get_current_screen;
 use OTGS\Toolset\Common\Utils\Condition\Plugin\Gutenberg\IsUsedForPost;
 use OTGS\Toolset\Types\Compatibility\Gutenberg\View\PostEdit as GutenbergPostEdit;
 use OTGS\Toolset\Types\Page\Extension\EditPost\PerPostEditorMode;
+use Toolset_Element_Factory;
+use Toolset_Post_Type_Repository;
+use WP_User;
 
 /**
  * Class Gutenberg
@@ -16,11 +20,11 @@ use OTGS\Toolset\Types\Page\Extension\EditPost\PerPostEditorMode;
 class Gutenberg {
 
 
-	/** @var \Toolset_Post_Type_Repository */
+	/** @var Toolset_Post_Type_Repository */
 	private $post_type_repository;
 
 
-	/** @var \Toolset_Element_Factory */
+	/** @var Toolset_Element_Factory */
 	private $element_factory;
 
 
@@ -31,13 +35,13 @@ class Gutenberg {
 	/**
 	 * Gutenberg constructor.
 	 *
-	 * @param \Toolset_Post_Type_Repository $post_type_repository
-	 * @param \Toolset_Element_Factory $element_factory
+	 * @param Toolset_Post_Type_Repository $post_type_repository
+	 * @param Toolset_Element_Factory $element_factory
 	 * @param IsUsedForPost $is_used_for_post_condition
 	 */
 	public function __construct(
-		\Toolset_Post_Type_Repository $post_type_repository,
-		\Toolset_Element_Factory $element_factory,
+		Toolset_Post_Type_Repository $post_type_repository,
+		Toolset_Element_Factory $element_factory,
 		IsUsedForPost $is_used_for_post_condition
 	) {
 		$this->post_type_repository = $post_type_repository;
@@ -84,11 +88,48 @@ class Gutenberg {
 			}, 10, 2 );
 		}
 
-		// Note: needs to happen after the added filters, especially after the use_block_editor_for_post one.
-		global $pagenow;
-		if( 'post.php' === $pagenow && 'edit' === toolset_getget( 'action' ) && $this->is_active_for_current_post_type() ) {
-			$per_post_editor_mode = new PerPostEditorMode( $this->post_type_repository, $this->element_factory, $this->is_used_for_post_condition );
-			$per_post_editor_mode->on_edit_post();
+		/**
+		 * This is a workaround for https://github.com/WordPress/gutenberg/issues/15367.
+		 *
+		 * Please find complete information in the issue description.
+		 * Can be removed after the issue is fixed.
+		 *
+		 * @param WP_User $user
+		 *
+		 * @since 3.3
+		 */
+		add_filter( 'user_has_cap', function ( $allcaps, $caps, /** @noinspection PhpUnusedParameterInspection */ $args, $user ) {
+			// The condition clauses are ordered so that the most performance-intensive ones
+			// are evaluated in the least amount of cases possible.
+			if (
+				count( $caps ) === 1 && 'edit_others_posts' === reset( $caps )
+				&& toolset_getpost( 'post_author' ) === 'undefined'
+				&& toolset_getarr( $allcaps, 'edit_others_posts' ) !== true
+				&& $user instanceof WP_User
+				&& get_current_user_id() === $user->ID
+				&& (int) toolset_getpost( 'user_ID' ) === $user->ID
+				&& ! post_type_supports( toolset_getpost( 'post_type' ), 'author' )
+			) {
+				$allcaps['edit_others_posts'] = true;
+			}
+
+			return $allcaps;
+		}, 10, 4 );
+
+		add_action( 'load-post.php', [ $this, 'on_edit_page' ] );
+		add_action( 'load-post-new.php', [ $this, 'on_edit_page' ] );
+	}
+
+
+	/**
+	 * On post edit pages, check for Gutenberg and eventually apply
+	 * additional compatibility measures.
+	 *
+	 * @since 3.3.3
+	 */
+	public function on_edit_page() {
+		if ( $this->is_active_for_current_post_type() ) {
+			$this->post_edit_screen( new GutenbergPostEdit() );
 		}
 	}
 
@@ -97,6 +138,10 @@ class Gutenberg {
 	 * @return bool
 	 */
 	public function is_active_for_current_post_type() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+
 		if ( ! $current_screen = get_current_screen() ) {
 			// called to early
 			return false;
@@ -125,7 +170,8 @@ class Gutenberg {
 	/**
 	 * Load Gutenberg compatibility on post edit screen
 	 *
-	 * @hook load-post.php (Post Edit Page)
+	 * @hook load-post.php, load-post-new.php (Post Add/Edit Page), only when the block editor is active
+	 * for the current post type.
 	 *
 	 * @param GutenbergPostEdit $view
 	 */
@@ -135,6 +181,15 @@ class Gutenberg {
 			// gutenberg active for the current post type
 			$view->enqueueScripts();
 		}, 11 );
-	}
 
+		// Note: needs to happen after the added filters, especially after the use_block_editor_for_post one.
+		global $pagenow;
+		if ( 'post.php' === $pagenow
+			&& 'edit' === toolset_getget( 'action' )
+			&& $this->is_active_for_current_post_type()
+		) {
+			$per_post_editor_mode = new PerPostEditorMode( $this->post_type_repository, $this->element_factory, $this->is_used_for_post_condition );
+			$per_post_editor_mode->on_edit_post();
+		}
+	}
 }

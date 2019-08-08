@@ -49,8 +49,13 @@ class WPToolset_Field_Image extends WPToolset_Field_File
 	 * @since 3.3
 	 */
 	protected function get_select_label() {
-		return __( 'Select image', 'wpv-views' );
+		if ( $this->isRepetitive() ) {
+			return __( 'Select image(s)', 'wpv-views' );
+		} else {
+			return __( 'Select image', 'wpv-views' );
+		}
 	}
+
 
 	/**
 	 * Get the default label for the Media Manager button when editing a value.
@@ -60,6 +65,6 @@ class WPToolset_Field_Image extends WPToolset_Field_File
 	 * @since 3.3
 	 */
 	protected function get_edit_label() {
-		return __( 'Edit image', 'wpv-views' );
+		return __( 'Replace image', 'wpv-views' );
 	}
 }

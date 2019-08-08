@@ -1,5 +1,8 @@
 <?php
 
+use OTGS\Toolset\Common\Field\Group\FilterDisplayResult;
+use OTGS\Toolset\Common\Field\Group\GroupDisplayResult;
+
 /**
  * Factory for the Toolset_Field_Group_Post class.
  *
@@ -163,11 +166,6 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 	 * by thorough unit tests. We skip this for now for the sake of easier patching.
 	 */
 
-	// Possible output values of field group filters, see get_groups_for_element() for details.
-	const MATCH = 'match';
-	const FAIL = 'fail';
-	const INDIFFERENT = 'indifferent';
-
 	/**
 	 * Apply given filters on field groups based on their filter operator.
 	 *
@@ -180,18 +178,20 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 	 * @param callable[] $force_filters Filters that are applied on all groups (after applying the regular filters),
 	 *     disregarding their filter operator.
 	 *
-	 * @return Toolset_Field_Group_Post[] Selected groups.
+	 * @return GroupDisplayResult[] Results with all groups which have the is_selected() flag set.
 	 */
 	private function filter_groups( $all_groups, $filters, $force_filters ) {
 
 		// First, sort groups according to their filter operator.
+		/** @var GroupDisplayResult[] $groups_requiring_all_filters */
 		$groups_requiring_all_filters = array();
+		/** @var GroupDisplayResult[] $groups_requiring_any_filter */
 		$groups_requiring_any_filter = array();
 		foreach( $all_groups as $group ) {
 			if( 'all' === $group->get_filter_operator() ) {
-				$groups_requiring_all_filters[ $group->get_slug() ] = $group;
+				$groups_requiring_all_filters[ $group->get_slug() ] = new GroupDisplayResult( $group );
 			} else {
-				$groups_requiring_any_filter[ $group->get_slug() ] = $group;
+				$groups_requiring_any_filter[ $group->get_slug() ] = new GroupDisplayResult( $group );
 			}
 		}
 
@@ -200,31 +200,43 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		// That means, for a group to be selected, every filter must either return MATCH or INDIFFERENT.
 		// Any occurence of FAIL will disqualify the group.
 		foreach( $filters as $filter ) {
-			$groups_requiring_all_filters = array_filter(
-				$groups_requiring_all_filters,
-				function( Toolset_Field_Group_Post $group ) use( $filter ) {
-					return ( $filter( $group, true ) !== self::FAIL );
-				}
-			);
+			foreach( $groups_requiring_all_filters as $group_display ) {
+				/** @var FilterDisplayResult $filter_result */
+				$filter_result = $filter( $group_display->get_group(), true );
+				$group_display->add_filter_result( $filter_result );
+
+				// We always need to run the filter (to get additional information, like if a page refresh is needed
+				// to re-evaluate the group visibility), but we only apply the value if there have been no previous fails.
+				$group_display->is_selected(
+					$group_display->is_selected() !== false // null (= not set previously) or true are fine
+					&& ( $filter_result->get_value() !== FilterDisplayResult::FAIL )
+				);
+			}
 		}
 
-		$selected_groups = $groups_requiring_all_filters;
+		/** @var GroupDisplayResult[] $results */
+		$results = $groups_requiring_all_filters;
 
 		// Select groups that match any filter.
 		//
 		// That means, either at least one filter returns MATCH, or all filters are INDIFFERENT.
 		// Filters returning FAIL will be ignored as long as there's at least one MATCH.
-		foreach( $groups_requiring_any_filter as $group ) {
+		foreach( $groups_requiring_any_filter as $group_display ) {
 			$has_match = false;
 			$has_fail = false;
 
 			foreach( $filters as $filter ) {
-				switch( $filter( $group, false ) ) {
-					case self::MATCH:
+				/** @var FilterDisplayResult $filter_result */
+				$filter_result = $filter( $group_display->get_group(), false );
+				$group_display->add_filter_result( $filter_result );
+				switch( $filter_result->get_value() ) {
+					case FilterDisplayResult::MATCH:
 						$has_match = true;
-						// No point in trying other filters, we already decided to select the group.
-						break 2;
-					case self::FAIL:
+						// We already decided to select the group, but we have to run other filters to
+						// make sure additinonal information (like the need to refresh the page to reevaluate
+						// group visibility) is included.
+						break;
+					case FilterDisplayResult::FAIL:
 						// After this, the group can be still selected if there's a MATCH in another filter.
 						$has_fail = true;
 						break;
@@ -232,29 +244,34 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 			}
 
 			// Select the group if there has been a MATCH *or* we at least have no FAILs (all are INDIFFERENT).
-			if( $has_match || ! $has_fail ) {
-				$selected_groups[ $group->get_slug() ] = $group;
-			}
+			$group_display->is_selected( $has_match || ! $has_fail );
+
+			// Always include it in results, because we also need to pass on additional information,
+			// like if a page refresh is needed to re-evaluate group visibility.
+			$results[ $group_display->get_group()->get_slug() ] = $group_display;
 		}
 
 		// Process filters that apply on all groups.
 		//
 		// These filters just return a boolean.
 		foreach( $force_filters as $filter ) {
-			$selected_groups = array_filter( $selected_groups, $filter );
+			$results = array_filter( $results, $filter );
 		}
 
-		return $selected_groups;
+		return $results;
 	}
+
 
 	/**
 	 * Retrieve groups that should be displayed with a certain element, taking all possible conditions into account.
 	 *
 	 * @param IToolset_Element $element Element of the domain matching the field group.
-	 * @return Toolset_Field_Group_Post[]
-	 * @throws InvalidArgumentException
+	 * @param bool $return_group_display_results Set this to true to get an array of group display results instead of
+	 *     the field groups themselves.
+	 *
+	 * @return Toolset_Field_Group_Post[]|GroupDisplayResult[]
 	 */
-	public function get_groups_for_element( IToolset_Element $element ) {
+	public function get_groups_for_element( IToolset_Element $element, $return_group_display_results = false ) {
 		if( ! $element instanceof IToolset_Post ) {
 			throw new InvalidArgumentException( 'Wrong element domain.' );
 		}
@@ -266,14 +283,18 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		) use( $post_type ) {
 			if( ! $group->is_assigned_to_type( $post_type ) ) {
 				// The group explicitly doesn't belong to this post type.
-				return self::FAIL;
+				return new FilterDisplayResult( FilterDisplayResult::FAIL, false, false );
 			}
 
 			// If the field group is explicitly/strictly assigned to the given post type,
 			// we actively select it. Otherwise, it is meant for all post types by default, in which case
 			// we won't influence the final result.
 			$is_assigned_strictly = $group->is_assigned_to_type( $post_type, true );
-			return ( $is_assigned_strictly ? self::MATCH : self::INDIFFERENT );
+			return new FilterDisplayResult(
+				( $is_assigned_strictly ? FilterDisplayResult::MATCH : FilterDisplayResult::INDIFFERENT ),
+				false,
+				false
+			);
 		};
 
 		// Regular filter by post terms (term_taxonomy IDs)
@@ -286,18 +307,26 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 				//
 				// If the group needs all filters to pass in order to be selected, this one will not stand in the way.
 				// If it needs a single filter to pass, this will not be the one.
-				return self::INDIFFERENT;
+				return new FilterDisplayResult( FilterDisplayResult::INDIFFERENT, false, false );
 			}
 
 			if( $require_all ) {
 				// Get terms required by the field group but not present in the post.
 				$missing_terms = array_diff( $terms_for_group, $term_taxonomy_ids );
-				return ( count( $missing_terms ) === 0 ? self::MATCH : self::FAIL );
+				return new FilterDisplayResult(
+					count( $missing_terms ) === 0 ? FilterDisplayResult::MATCH : FilterDisplayResult::FAIL,
+					false,
+					true
+				);
 			}
 
 			// Require at least one match.
 			$intersection = array_intersect( $terms_for_group, $term_taxonomy_ids );
-			return ( count( $intersection ) > 0 ? self::MATCH : self::FAIL );
+			return new FilterDisplayResult(
+				count( $intersection ) > 0 ? FilterDisplayResult::MATCH : FilterDisplayResult::FAIL,
+				false,
+				true
+			);
 		};
 
 		// Regular filter by assigned post template(s).
@@ -311,14 +340,14 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 				//
 				// If the group needs all filters to pass in order to be selected, this one will not stand in the way.
 				// If it needs a single filter to pass, this will not be the one.
-				return self::INDIFFERENT;
+				return new FilterDisplayResult( FilterDisplayResult::INDIFFERENT, false, false );
 			}
 			foreach( $template_filters as $template_filter ) {
 				if( $template_filter->is_match_for_post( $element ) ) {
-					return self::MATCH;
+					return new FilterDisplayResult( FilterDisplayResult::MATCH, false, true );
 				}
 			}
-			return self::FAIL;
+			return new FilterDisplayResult( FilterDisplayResult::FAIL, false, true );
 		};
 
 		// Regular filter by data-dependent condition.
@@ -326,11 +355,11 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		$filter_by_data_dependent_condition = function( Toolset_Field_Group_Post $group ) {
 			if( $group->has_conditional_display_conditions() ) {
 				// We actively select the group, so that the condition can be evaluated dynamically in the browser.
-				return self::MATCH;
+				return new FilterDisplayResult( FilterDisplayResult::MATCH, true, false );
 			}
 
 			// The data-dependent one is not set, we're not going to influence the final result.
-			return self::INDIFFERENT;
+			return new FilterDisplayResult( FilterDisplayResult::INDIFFERENT, false, false );
 
 			// Note: There's no FAIL scenario, because if the condition is set but isn't fulfilled,
 			// the group will be removed dynamically in the browser.
@@ -340,8 +369,10 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		// with a RFG or a PRF only if its post type assignment matches.
 		$field_group_service = new Types_Field_Group_Repeatable_Service();
 		$force_post_type_filter_for_relationships = function(
-			Toolset_Field_Group_Post $group
+			GroupDisplayResult $group_display
 		) use( $field_group_service, $post_type ) {
+			/** @var Toolset_Field_Group_Post $group */
+			$group = $group_display->get_group();
 			if( 'all' === $group->get_filter_operator() ) {
 				// This filter handles only a special case when filtering by ANY condition
 				return true;
@@ -357,7 +388,10 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		};
 
 		// Forced filter that allows excluding selected groups.
-		$allow_disabling_group_by_wp_filter = function( Toolset_Field_Group_Post $group ) use( $element ) {
+		$allow_disabling_group_by_wp_filter = function( GroupDisplayResult $group_display ) use( $element ) {
+
+			/** @var Toolset_Field_Group_Post $group */
+			$group = $group_display->get_group();
 
 			/**
 			 * toolset_show_field_group_for_post
@@ -383,7 +417,7 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 		// Magic!
 		/** @var Toolset_Field_Group_Post[] $all_groups */
 		$all_groups = $this->query_groups( array( 'purpose' => '*', 'is_active' => true ) );
-		$selected_groups = $this->filter_groups(
+		$group_display_results = $this->filter_groups(
 			$all_groups,
 			array(
 				$filter_by_post_type,
@@ -397,7 +431,20 @@ class Toolset_Field_Group_Post_Factory extends Toolset_Field_Group_Factory {
 			)
 		);
 
-		return $selected_groups;
+		// Return all group display results, including the ones whose group was not selected.
+		if( $return_group_display_results ) {
+			return $group_display_results;
+		}
+
+		// By default, return only field groups which have been actually selected.
+		return array_map(
+			function( GroupDisplayResult $group_display ) {
+				return $group_display->get_group();
+			},
+			array_filter( $group_display_results, function( GroupDisplayResult $group_display ) {
+				return $group_display->is_selected();
+			} )
+		);
 	}
 
 }
