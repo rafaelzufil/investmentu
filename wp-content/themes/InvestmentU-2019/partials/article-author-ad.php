@@ -25,7 +25,7 @@ if ($terms && !is_front_page()) {
   }
 }
 
-if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
+if ($is_syndicated !== 'true')):
 
 ?>
   <div class="native-leadgen-signup">
