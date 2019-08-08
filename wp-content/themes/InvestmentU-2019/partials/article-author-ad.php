@@ -1,4 +1,4 @@
-<hr style="color:#bdbdbd" class="my-0"/>
+<hr style="color:#bdbdbd"/>
 <?php $authorDescription = get_the_author_meta('description');
 if ( ! empty ( $authorDescription ) ) {
 ?>

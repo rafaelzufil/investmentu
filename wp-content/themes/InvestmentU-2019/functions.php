@@ -121,6 +121,15 @@ function add_image_responsive_class($content) {
 }
 add_filter('the_content', 'add_image_responsive_class');
 
+//Apply class to every paragraph that hold image
+add_filter( 'the_content', 'img_p_class_content_filter' ,20);
+function img_p_class_content_filter($content) {
+    // assuming you have created a page/post entitled 'debug'
+    $content = preg_replace("/(<p)(>[^<]*<img[^>]+>[^<]*)(<\/p>)/i", "\$1 class='aligncenter'\$2\$3", $content);
+
+    return $content;
+} 
+
 // function custom_excerpt_length( $length ) {
 //     return 20;
 // }

@@ -499,6 +499,10 @@ a.readmore {
   top: -70px;
 }
 
+.aligncenter {
+  text-align: center;
+}
+
 @media screen and (min-width: 992px) {
   .first-post {
     height: 100% !important;
