@@ -52,12 +52,9 @@
     });
   </script>
   <script>
-      // $(document).ready(function() {
-      //     $('p').has('img.aligncenter').addClass('aligncenter');
-      // });
-      // $(document).ready(function() {
-      //     $('p:has(img.aligncenter)').addClass('aligncenter');
-      // });
+      $(document).ready(function() {
+          $('p:has(img.aligncenter)').addClass('aligncenter');
+      });
   </script>
   <?php if (is_home()) { ?> 
     <style>
