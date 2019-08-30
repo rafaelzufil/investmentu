@@ -33,7 +33,7 @@
         </a>
         <div class="small-featured-article-excerpt">
         <?php $category = get_the_category(); ?>
-        <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
+        <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
             <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
         </a>
         
