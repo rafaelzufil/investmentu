@@ -84,7 +84,7 @@ function iu_syndication_handler(WP_REST_Request $request) {
 	iu_syndication_update_meta($post_id, '_yoast_wpseo_canonical', $post_body['post_permalink']);
 	iu_syndication_update_meta($post_id, 'publication-source', $post_body['publisher_name']);
 
-	if ($post_body['post_thumbnail_url'] != '') {
+	if (isset($post_body['post_thumbnail_url']) && $post_body['post_thumbnail_url']) {
 		iu_syndication_insert_attachment_from_url($post_id, $post_body['post_thumbnail_url']);
 	}
 
@@ -132,7 +132,7 @@ function iu_syndication_insert_attachment_from_url($parent_post_id, $url) {
 
 	$http = new WP_Http();
 	$response = $http->request($url);
-
+// file_put_contents("/Users/georgezhao 1/Sites/oxfordclub/investmentu2/wp-content/plugins/iu-syndication-aggregator/results.txt", json_encode($response));
 	if ($response['response']['code'] != 200) {
 		return false;
 	}
