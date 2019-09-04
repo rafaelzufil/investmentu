@@ -17,6 +17,7 @@ wp-settings.php
 wp-signup.php
 wp-trackback.php
 xmlrpc.php
+iu-syndication-aggregator.php
 
 wp-content/uploads
 wp-content/cache
