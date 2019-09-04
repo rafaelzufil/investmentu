@@ -1,4 +1,6 @@
 @import url("https://use.typekit.net/zwo8nly.css");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap");
+@import url("https://use.typekit.net/jsh5erf.css");
 main {
   margin-top: 40px;
   width: 100%;
@@ -716,4 +718,117 @@ input.form-control.form-control-lg, select.form-control.form-control-lg, textare
 body#tinymce {
   margin: 12px !important;
 }
+
+.wealth.pf-widget, .wealth-lrg.pf-widget {
+  background-color: #181a2c;
+  color: #ffffff;
+  text-align: center;
+  font-family: quatro-slab, serif;
+}
+
+.wealth .pf-widget-headline {
+  font-family: quatro-slab, serif;
+  font-weight: 700;
+  font-size: 24px;
+  text-align: center !important;
+  color: #ffffff !important;
+}
+
+.wealth p.pf-widget-message {
+  text-align: center !important;
+  color: #d0e1ff;
+  font-family: quatro-slab, serif;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.wealth .pf-widget-message::after {
+  display: block;
+  content: '';
+  background-image: url("https://s3.amazonaws.com/assets.greatamericanwealthproject.com/img/bill-alex-confirm-page.png");
+  height: 140px;
+  margin: 1em 18px 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  -webkit-transform: translateY(20px);
+          transform: translateY(20px);
+}
+
+.wealth.pf-widget .pf-widget-btn.pf-widget-ok {
+  text-transform: uppercase;
+  color: #ffffff;
+  font-family: "Open Sans", sans-serif;
+  background-color: #b91919;
+  width: 90%;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wealth-lrg.pf-widget .pf-widget-btn.pf-widget-ok {
+  text-transform: uppercase;
+  color: #ffffff;
+  font-family: "Open Sans", sans-serif;
+  background-color: #b91919;
+  width: 90%;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wealth-lrg .pf-widget-message::before {
+  display: block;
+  content: '';
+  background-image: url("https://s3.amazonaws.com/assets.greatamericanwealthproject.com/img/bill-alex-confirm-page.png");
+  height: 249px;
+  margin: -24px -33px 13px -35px;
+  background-size: 25.4em;
+  background-repeat: no-repeat;
+  -webkit-transform: translateY(20px);
+          transform: translateY(20px);
+}
+
+.wealth-lrg.pf-widget .pf-widget-footer::after {
+  display: block;
+  content: '(Attendance is 100% free - but you must register in advance.)';
+  color: #ffffff;
+  text-align: center !important;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.2em;
+}
+
+.wealth-lrg .pf-widget-headline {
+  font-family: quatro-slab, serif;
+  font-weight: 500;
+  font-size: 27px !important;
+  text-align: center !important;
+  color: #ffffff !important;
+  font-family: quatro-slab, serif;
+  font-weight: 700;
+  font-size: 27px;
+  text-align: center !important;
+  color: #ffffff !important;
+}
+
+.wealth-lrg p.pf-widget-message {
+  text-align: center !important;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.wealth-lrg .pf-widget-headline::before {
+  font-family: quatro-slab, serif;
+  font-weight: 500;
+  display: block;
+  content: 'The Biggest Event in Oxford Club History...';
+  color: #ffffff;
+  text-align: center !important;
+  font-size: .65em;
+  margin-bottom: 1em;
+}
+
+/*::::Large Modal Styles:::: */
 /*# sourceMappingURL=main.css.map */
