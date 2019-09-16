@@ -88,7 +88,12 @@ class WPSEO_Redirect_Handler {
 	 * @return void
 	 */
 	public function do_410() {
-		$this->set_404();
+		$is_include_hook_set = $this->set_template_include_hook( '410' );
+
+		if ( ! $is_include_hook_set ) {
+			$this->set_404();
+		}
+
 		$this->status_header( 410 );
 	}
 
@@ -229,13 +234,15 @@ class WPSEO_Redirect_Handler {
 
 		// Suppress warning: a faulty redirect will give a warning and not an exception. So we can't catch it.
 		// See issue: https://github.com/Yoast/wordpress-seo-premium/issues/662.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		if ( 1 === @preg_match( "`{$regex}`", $this->request_url, $this->url_matches ) ) {
 
 			// Replace the $regex vars with URL matches.
-			$redirect_url = preg_replace_callback( '/\$[0-9]+/', array(
-				$this,
-				'format_regex_redirect_url',
-			), $redirect['url'] );
+			$redirect_url = preg_replace_callback(
+				'/\$[0-9]+/',
+				array( $this, 'format_regex_redirect_url' ),
+				$redirect['url']
+			);
 
 			$this->do_redirect( $redirect_url, $redirect['type'] );
 		}
@@ -661,7 +668,7 @@ class WPSEO_Redirect_Handler {
 			require_once ABSPATH . 'wp-includes/pluggable.php';
 		}
 
-		wp_redirect( $location, $status );
+		wp_redirect( $location, $status, 'Yoast SEO Premium' );
 		exit;
 	}
 

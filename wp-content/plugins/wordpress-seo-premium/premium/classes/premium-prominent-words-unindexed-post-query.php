@@ -11,6 +11,8 @@
 class WPSEO_Premium_Prominent_Words_Unindexed_Post_Query {
 
 	/**
+	 * List containing unindexed posts totals per post type.
+	 *
 	 * @var array
 	 */
 	protected $totals = array();
@@ -72,12 +74,13 @@ class WPSEO_Premium_Prominent_Words_Unindexed_Post_Query {
 
 		$replacements = array(
 			WPSEO_Premium_Prominent_Words_Versioning::POST_META_NAME,
-			WPSEO_Premium_Prominent_Words_Versioning::VERSION_NUMBER,
+			WPSEO_Premium_Prominent_Words_Versioning::determine_version_number(),
 		);
 		$replacements = array_merge( $replacements, $post_types );
 
 		$results = $wpdb->get_results(
-			$wpdb->prepare( '
+			$wpdb->prepare(
+				'
 				SELECT COUNT( ID ) as total, post_type
 				FROM ' . $wpdb->posts . '
 				WHERE ID NOT IN( SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE meta_key = %s AND meta_value = %s )
@@ -127,7 +130,7 @@ class WPSEO_Premium_Prominent_Words_Unindexed_Post_Query {
 	protected function get_post_types() {
 		$prominent_words_support = new WPSEO_Premium_Prominent_Words_Support();
 
-		return $prominent_words_support->get_supported_post_types();
+		return array_filter( $prominent_words_support->get_supported_post_types(), array( 'WPSEO_Post_Type', 'is_rest_enabled' ) );
 	}
 
 	/**
@@ -151,13 +154,14 @@ class WPSEO_Premium_Prominent_Words_Unindexed_Post_Query {
 
 		$replacements   = array(
 			WPSEO_Premium_Prominent_Words_Versioning::POST_META_NAME,
-			WPSEO_Premium_Prominent_Words_Versioning::VERSION_NUMBER,
+			WPSEO_Premium_Prominent_Words_Versioning::determine_version_number(),
 		);
 		$replacements   = array_merge( $replacements, $post_types );
 		$replacements[] = $limit;
 
 		$results = $wpdb->get_results(
-			$wpdb->prepare( '
+			$wpdb->prepare(
+				'
 				SELECT ID
 				FROM ' . $wpdb->posts . '
 				WHERE ID NOT IN( SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE meta_key = %s AND meta_value = %s )
@@ -176,82 +180,11 @@ class WPSEO_Premium_Prominent_Words_Unindexed_Post_Query {
 	}
 
 	/**
-	 * Returns an instance of WP Query.
+	 * Returns the array with supported post statuses.
 	 *
-	 * @deprecated 4.6.0
-	 *
-	 * @param string $post_type The posttype to limit the resultset for.
-	 * @param array  $args      The arguments to use in the WP_Query.
-	 *
-	 * @return WP_Query Instance of the WP Query.
+	 * @return array The supported post statuses.
 	 */
-	public function get_query( $post_type, array $args = array() ) {
-		_deprecated_function( __METHOD__, 'WPSEO 4.6.0' );
-
-		$args = wp_parse_args( $this->get_query_args( $post_type ), $args );
-		return new WP_Query( $args );
+	public static function get_supported_post_statuses() {
+		return array( 'future', 'draft', 'pending', 'private', 'publish' );
 	}
-
-	/**
-	 * Returns the query args.
-	 *
-	 * @deprecated 4.6.0
-	 *
-	 * @param string $post_type The posttype to limit the resultset for.
-	 *
-	 * @return array Array with the query args.
-	 */
-	public function get_query_args( $post_type ) {
-		_deprecated_function( __METHOD__, 'WPSEO 4.6.0' );
-
-		return array(
-			'post_type'   => $post_type,
-			'post_status' => array( 'future', 'draft', 'pending', 'private', 'publish' ),
-			'meta_query'  => array(
-				'relation' => 'OR',
-				array(
-					'key'     => WPSEO_Premium_Prominent_Words_Versioning::POST_META_NAME,
-					'value'   => WPSEO_Premium_Prominent_Words_Versioning::VERSION_NUMBER,
-					'compare' => '!=',
-				),
-				array(
-					'key'     => WPSEO_Premium_Prominent_Words_Versioning::POST_META_NAME,
-					'compare' => 'NOT EXISTS',
-				),
-			),
-		);
-	}
-
-	/**
-	 * Formats the post types for an IN-statement.
-	 *
-	 * @deprecated 5.8.0
-	 *
-	 * @param array $post_types The post types to format.
-	 *
-	 * @return string
-	 */
-	protected function format_post_types( array $post_types ) {
-		_deprecated_function( __METHOD__, 'WPSEO 5.8.0' );
-
-		$post_types = array_map( array( $this, 'format_post_type' ), $post_types );
-
-		return implode( ',', $post_types );
-	}
-
-	/**
-	 * Formats the post type for the IN-statement.
-	 *
-	 * @deprecated 5.8.0
-	 *
-	 * @param string $post_type The post type to format.
-	 *
-	 * @return string
-	 */
-	protected function format_post_type( $post_type ) {
-		_deprecated_function( __METHOD__, 'WPSEO 5.8.0' );
-
-		return '"' . esc_sql( $post_type ) . '"';
-	}
-
 }

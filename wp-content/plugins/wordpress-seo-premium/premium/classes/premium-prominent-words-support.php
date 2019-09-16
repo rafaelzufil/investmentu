@@ -27,6 +27,9 @@ class WPSEO_Premium_Prominent_Words_Support {
 			$prominent_words_post_types = array();
 		}
 
+		$prominent_words_post_types = WPSEO_Post_Type::filter_attachment_post_type( $prominent_words_post_types );
+		$prominent_words_post_types = array_filter( $prominent_words_post_types, array( 'WPSEO_Post_Type', 'has_metabox_enabled' ) );
+
 		return $prominent_words_post_types;
 	}
 

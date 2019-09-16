@@ -126,31 +126,4 @@ class WPSEO_Export_Keywords_Term_Query implements WPSEO_Export_Keywords_Query {
 			$this->selects[] = 'terms.name';
 		}
 	}
-
-	/**
-	 * Retrieves a list of taxonomies to be used in a query.
-	 *
-	 * @deprecated 5.8.0
-	 *
-	 * @return string List of escaped taxonomies to use in a query.
-	 */
-	protected function get_escaped_taxonomies() {
-		_deprecated_function( __METHOD__, 'WPSEO 5.8.0' );
-
-		static $escaped = null;
-
-		if ( $escaped === null ) {
-			$taxonomies = get_taxonomies(
-				array(
-					'public'  => true,
-					'show_ui' => true,
-				),
-				'names'
-			);
-
-			$escaped = implode( '", "', array_map( 'esc_sql', $taxonomies ) );
-		}
-
-		return $escaped;
-	}
 }

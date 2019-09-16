@@ -11,13 +11,20 @@
 class WPSEO_Redirect_Validator {
 
 	/**
+	 * List containing all possible validation rules.
+	 *
 	 * @var array
 	 */
 	protected $validation_rules = array(
+		'relative-origin' => array(
+			'validation_class' => 'WPSEO_Redirect_Relative_Origin_Validation',
+			'exclude_types'    => array(),
+			'exclude_format'   => array( WPSEO_Redirect_Formats::REGEX ),
+		),
 		'self-redirect' => array(
 			'validation_class' => 'WPSEO_Redirect_Self_Redirect_Validation',
 			'exclude_types'    => array(),
-			'exclude_format'   => array( WPSEO_Redirect::FORMAT_REGEX ),
+			'exclude_format'   => array( WPSEO_Redirect_Formats::REGEX ),
 		),
 		'uniqueness' => array(
 			'validation_class' => 'WPSEO_Redirect_Uniqueness_Validation',
@@ -36,17 +43,19 @@ class WPSEO_Redirect_Validator {
 		),
 		'accessible' => array(
 			'validation_class' => 'WPSEO_Redirect_Accessible_Validation',
-			'exclude_types'    => array( WPSEO_Redirect::DELETED, WPSEO_Redirect::UNAVAILABLE ),
-			'exclude_format'   => array( WPSEO_Redirect::FORMAT_REGEX ),
+			'exclude_types'    => array( WPSEO_Redirect_Types::DELETED, WPSEO_Redirect_Types::UNAVAILABLE ),
+			'exclude_format'   => array( WPSEO_Redirect_Formats::REGEX ),
 		),
 		'endpoint' => array(
 			'validation_class' => 'WPSEO_Redirect_Endpoint_Validation',
-			'exclude_types'    => array( WPSEO_Redirect::DELETED, WPSEO_Redirect::UNAVAILABLE ),
-			'exclude_format'   => array( WPSEO_Redirect::FORMAT_REGEX ),
+			'exclude_types'    => array( WPSEO_Redirect_Types::DELETED, WPSEO_Redirect_Types::UNAVAILABLE ),
+			'exclude_format'   => array( WPSEO_Redirect_Formats::REGEX ),
 		),
 	);
 
 	/**
+	 * A string holding a possible redirect validation error.
+	 *
 	 * @var bool|string The validation error.
 	 */
 	protected $validation_error = false;

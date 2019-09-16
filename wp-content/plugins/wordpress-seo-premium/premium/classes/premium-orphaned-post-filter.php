@@ -111,15 +111,8 @@ class WPSEO_Premium_Orphaned_Post_Filter extends WPSEO_Abstract_Post_Filter {
 			return 'AND 1 = 0';
 		}
 
-		$post_ids = WPSEO_Premium_Orphaned_Post_Query::get_orphaned_object_ids();
-		if ( empty( $post_ids ) ) {
-			return 'AND 1 = 0';
-		}
-
-		return $wpdb->prepare(
-			' AND ' . $wpdb->posts . '.ID IN ( ' . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ' ) ',
-			$post_ids
-		);
+		$subquery = WPSEO_Premium_Orphaned_Post_Query::get_orphaned_content_query();
+		return ' AND ' . $wpdb->posts . '.ID IN ( ' . $subquery . ' ) ';
 	}
 
 	/**
@@ -156,31 +149,30 @@ class WPSEO_Premium_Orphaned_Post_Filter extends WPSEO_Abstract_Post_Filter {
 	protected function get_post_total() {
 		global $wpdb;
 
+		static $count;
+
 		if ( WPSEO_Premium_Orphaned_Content_Utils::has_unprocessed_content() ) {
 			return '?';
 		}
 
-		$post_ids = WPSEO_Premium_Orphaned_Post_Query::get_orphaned_object_ids();
-		if ( empty( $post_ids ) ) {
-			return 0;
+		if ( $count === null ) {
+			$subquery = WPSEO_Premium_Orphaned_Post_Query::get_orphaned_content_query();
+			$count    = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(ID)
+						FROM `{$wpdb->posts}`
+						WHERE ID IN ( $subquery )
+							AND post_status = 'publish'
+							AND post_password = ''
+							AND post_type = %s",
+					$this->get_current_post_type()
+				)
+			);
+
+			$count = (int) $count;
 		}
 
-		$replacements   = $post_ids;
-		$replacements[] = $this->get_current_post_type();
-
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(ID)
-					FROM `{$wpdb->posts}`
-					WHERE ID IN ( " . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ' )
-					AND post_status = "publish"
-					AND post_password = ""
-					AND post_type = %s',
-				$replacements
-			)
-		);
-
-		return (int) $count;
+		return $count;
 	}
 
 	/**

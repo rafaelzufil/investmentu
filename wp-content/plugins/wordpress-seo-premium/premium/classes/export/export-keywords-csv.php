@@ -42,6 +42,7 @@ class WPSEO_Export_Keywords_CSV {
 	 * Echoes the CSV headers
 	 */
 	public function print_headers() {
+		// phpcs:ignore WordPress.Security.EscapeOutput -- Correctly escaped in get_headers() method below.
 		echo $this->get_headers();
 	}
 
@@ -66,8 +67,8 @@ class WPSEO_Export_Keywords_CSV {
 			'title'             => esc_html__( 'title', 'wordpress-seo-premium' ),
 			'url'               => esc_html__( 'url', 'wordpress-seo-premium' ),
 			'readability_score' => esc_html__( 'readability score', 'wordpress-seo-premium' ),
-			'keywords'          => esc_html__( 'keyword', 'wordpress-seo-premium' ),
-			'keywords_score'    => esc_html__( 'keyword score', 'wordpress-seo-premium' ),
+			'keywords'          => esc_html__( 'keyphrase', 'wordpress-seo-premium' ),
+			'keywords_score'    => esc_html__( 'keyphrase score', 'wordpress-seo-premium' ),
 			'seo_title'         => esc_html__( 'seo title', 'wordpress-seo-premium' ),
 			'meta_description'  => esc_html__( 'meta description', 'wordpress-seo-premium' ),
 		);
@@ -108,7 +109,7 @@ class WPSEO_Export_Keywords_CSV {
 
 		// Add at least one row plus additional ones if we have more keywords.
 		$keywords = max( 1, count( $result['keywords'] ) );
-		for ( $keywords_index = 0; $keywords_index < $keywords; $keywords_index ++ ) {
+		for ( $keywords_index = 0; $keywords_index < $keywords; $keywords_index++ ) {
 			// Add static columns.
 			$csv .= $this->sanitize_csv_column( $result['ID'] );
 			$csv .= ',' . $this->sanitize_csv_column( $result['type'] );
