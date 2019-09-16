@@ -16,6 +16,8 @@ class WPSEO_Premium_Link_Suggestions_Endpoint implements WPSEO_WordPress_Integra
 	const CAPABILITY_RETRIEVE = 'edit_posts';
 
 	/**
+	 * Instance of the WPSEO_Premium_Link_Suggestions_Service.
+	 *
 	 * @var WPSEO_Premium_Link_Suggestions_Service
 	 */
 	protected $service;
@@ -40,7 +42,7 @@ class WPSEO_Premium_Link_Suggestions_Endpoint implements WPSEO_WordPress_Integra
 	 * Register the REST endpoint to WordPress.
 	 */
 	public function register() {
-		register_rest_route( self::REST_NAMESPACE, self::ENDPOINT_QUERY, array(
+		$route_args = array(
 			'methods'             => 'GET',
 			'args'                => array(
 				'prominent_words' => array(
@@ -60,7 +62,8 @@ class WPSEO_Premium_Link_Suggestions_Endpoint implements WPSEO_WordPress_Integra
 				$this,
 				'can_retrieve_data',
 			),
-		) );
+		);
+		register_rest_route( self::REST_NAMESPACE, self::ENDPOINT_QUERY, $route_args );
 	}
 
 	/**

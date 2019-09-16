@@ -5,12 +5,12 @@
  * WPSEO Premium plugin file.
  *
  * @package   WPSEO\Main
- * @copyright Copyright (C) 2008-2018, Yoast BV - support@yoast.com
+ * @copyright Copyright (C) 2008-2019, Yoast BV - support@yoast.com
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 or higher
  *
  * @wordpress-plugin
  * Plugin Name: Yoast SEO Premium
- * Version:     7.9
+ * Version:     12.0.1
  * Plugin URI:  https://yoa.st/2jc
  * Description: The first true all-in-one SEO solution for WordPress, including on-page content analysis, XML sitemaps and much more.
  * Author:      Team Yoast
@@ -71,9 +71,20 @@ add_filter( 'wpseo_option_wpseo_defaults', 'wpseo_premium_add_general_option_def
 
 // Load the WordPress SEO plugin.
 require_once dirname( WPSEO_FILE ) . '/wp-seo-main.php';
-require_once $wpseo_premium_dir . 'premium.php';
 
-WPSEO_Premium::autoloader();
+$yoast_premium_autoload_file = plugin_dir_path( WPSEO_PREMIUM_PLUGIN_FILE ) . 'vendor/autoload_52.php';
+if ( WPSEO_NAMESPACES ) {
+	$yoast_premium_autoload_file = plugin_dir_path( WPSEO_PREMIUM_PLUGIN_FILE ) . 'vendor/autoload.php';
+}
+
+if ( is_readable( $yoast_premium_autoload_file ) ) {
+	require $yoast_premium_autoload_file;
+}
+elseif ( ! class_exists( 'WPSEO_Options' ) ) { // Still checking since might be site-level autoload R.
+	add_action( 'admin_init', 'yoast_wpseo_missing_autoload', 1 );
+
+	return;
+}
 
 $wpseo_premium_capabilities = new WPSEO_Premium_Register_Capabilities();
 $wpseo_premium_capabilities->register_hooks();

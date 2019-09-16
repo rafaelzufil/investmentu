@@ -23,30 +23,37 @@ if ( ! defined( 'WPSEO_PREMIUM_FILE' ) ) {
  */
 class WPSEO_Premium {
 
-	/** @var string */
+	/**
+	 * Option that stores the current version.
+	 *
+	 * @var string
+	 */
 	const OPTION_CURRENT_VERSION = 'wpseo_current_version';
 
-	/** @var string */
-	const PLUGIN_VERSION_NAME = '7.9';
-
-	/** @var string */
-	const PLUGIN_VERSION_CODE = '16';
-
-	/** @var string */
-	const PLUGIN_AUTHOR = 'Yoast';
-
-	/** @var string */
-	const EDD_STORE_URL = 'http://my.yoast.com';
-
-	/** @var string */
-	const EDD_PLUGIN_NAME = 'Yoast SEO Premium';
+	/**
+	 * Human readable version of the current version.
+	 *
+	 * @var string
+	 */
+	const PLUGIN_VERSION_NAME = '12.0.1';
 
 	/**
+	 * Machine readable version for determining whether an upgrade is needed.
+	 *
+	 * @var string
+	 */
+	const PLUGIN_VERSION_CODE = '16';
+
+	/**
+	 * Instance of the WPSEO_Redirect_Page class.
+	 *
 	 * @var WPSEO_Redirect_Page
 	 */
 	private $redirects;
 
 	/**
+	 * List of registered classes implementing the WPSEO_WordPress_Integration interface.
+	 *
 	 * @var WPSEO_WordPress_Integration[]
 	 */
 	private $integrations = array();
@@ -62,8 +69,6 @@ class WPSEO_Premium {
 		// Create the upload directory.
 		WPSEO_Redirect_File_Util::create_upload_dir();
 
-		WPSEO_Premium::activate_license();
-
 		// Make sure the notice will be given at install.
 		require_once WPSEO_PREMIUM_PATH . 'classes/premium-prominent-words-recalculation-notifier.php';
 		$recalculation_notifier = new WPSEO_Premium_Prominent_Words_Recalculation_Notifier();
@@ -73,16 +78,12 @@ class WPSEO_Premium {
 	/**
 	 * Creates instance of license manager if needed and returns the instance of it.
 	 *
-	 * @return Yoast_Plugin_License_Manager
+	 * @codeCoverageIgnore
+	 *
+	 * @deprecated 10.1
 	 */
 	public static function get_license_manager() {
-		static $license_manager;
-
-		if ( $license_manager === null ) {
-			$license_manager = new Yoast_Plugin_License_Manager( new WPSEO_Product_Premium() );
-		}
-
-		return $license_manager;
+		_deprecated_function( __FUNCTION__, '10.1' );
 	}
 
 	/**
@@ -95,6 +96,7 @@ class WPSEO_Premium {
 
 		$this->integrations = array(
 			'premium-metabox'                        => new WPSEO_Premium_Metabox(),
+			'premium-assets'                         => new WPSEO_Premium_Assets(),
 			'prominent-words-registration'           => new WPSEO_Premium_Prominent_Words_Registration(),
 			'prominent-words-endpoint'               => new WPSEO_Premium_Prominent_Words_Endpoint( new WPSEO_Premium_Prominent_Words_Service() ),
 			'prominent-words-recalculation'          => new WPSEO_Premium_Prominent_Words_Recalculation( $prominent_words_unindexed_query, $prominent_words_support ),
@@ -109,9 +111,24 @@ class WPSEO_Premium {
 			'redirect-export-manager'                => new WPSEO_Premium_Redirect_Export_Manager(),
 			'keyword-export-manager'                 => new WPSEO_Premium_Keyword_Export_Manager(),
 			'orphaned-post-filter'                   => new WPSEO_Premium_Orphaned_Post_Filter(),
-			'orphaned-post-notifier'                 => new WPSEO_Premium_Orphaned_Post_Notifier( array( 'post', 'page' ), Yoast_Notification_Center::get() ),
+			// Joost de Valk, April 6th 2019.
+			// Disabling this until we've found a better way to display this data that doesn't become annoying when you have a lot of post types.
+			// 'orphaned-post-notifier'              => new WPSEO_Premium_Orphaned_Post_Notifier( array( 'post', 'page' ), Yoast_Notification_Center::get() ), // Commented out.
 			'request-free-translations'              => new WPSEO_Premium_Free_Translations(),
+			'expose-javascript-shortlinks'           => new WPSEO_Premium_Expose_Shortlinks(),
+			'multi-keyword'                          => new WPSEO_Multi_Keyword(),
+			'post-data'                              => new WPSEO_Premium_Post_Data_Endpoint(
+				new WPSEO_Premium_Post_Data_Service(
+					new WPSEO_Replace_Vars(),
+					new WPSEO_Premium_Prominent_Words_Unindexed_Post_Query(),
+					new WPSEO_Premium_Prominent_Words_Support()
+				)
+			),
 		);
+
+		if ( WPSEO_Options::get( 'enable_cornerstone_content' ) ) {
+			$this->integrations['stale-cornerstone-content-filter'] = new WPSEO_Premium_Stale_Cornerstone_Content_Filter();
+		}
 
 		$this->setup();
 	}
@@ -124,7 +141,7 @@ class WPSEO_Premium {
 	 * @return array
 	 */
 	public function add_feature_toggles( array $feature_toggles ) {
-		$language = WPSEO_Utils::get_language( get_locale() );
+		$language = WPSEO_Language_Utils::get_language( get_locale() );
 
 		$language_support = new WPSEO_Premium_Prominent_Words_Language_Support();
 
@@ -152,15 +169,13 @@ class WPSEO_Premium {
 
 	/**
 	 * Sets up the Yoast SEO premium plugin.
+	 *
+	 * @return void
 	 */
 	private function setup() {
-
-		WPSEO_Premium::autoloader();
-
 		$this->load_textdomain();
 
 		$this->redirect_setup();
-		$this->export_setup();
 
 		if ( is_admin() ) {
 			// Make sure priority is below registration of other implementations of the beacon in News, Video, etc.
@@ -170,12 +185,6 @@ class WPSEO_Premium {
 			// Only register the yoast i18n when the page is a Yoast SEO page.
 			if ( $this->is_yoast_seo_premium_page( filter_input( INPUT_GET, 'page' ) ) ) {
 				$this->register_i18n_promo_class();
-			}
-
-			// Add custom fields plugin to post and page edit pages.
-			global $pagenow;
-			if ( in_array( $pagenow, array( 'post-new.php', 'post.php', 'edit.php' ), true ) ) {
-				new WPSEO_Custom_Fields_Plugin();
 			}
 
 			add_action( 'admin_init', array( $this, 'initialize_tracking' ), 1 );
@@ -188,62 +197,41 @@ class WPSEO_Premium {
 			add_filter( 'wpseo_submenu_pages', array( $this, 'add_submenu_pages' ), 9 );
 
 			// Add input fields to page meta post types.
-			add_action( 'wpseo_admin_page_meta_post_types', array(
-				$this,
-				'admin_page_meta_post_types_checkboxes',
-			), 10, 2 );
+			add_action(
+				'wpseo_admin_page_meta_post_types',
+				array(
+					$this,
+					'admin_page_meta_post_types_checkboxes',
+				),
+				10,
+				2
+			);
 
 			// Add page analysis fields to variable array key patterns.
-			add_filter( 'wpseo_option_titles_variable_array_key_patterns', array(
-				$this,
-				'add_variable_array_key_pattern',
-			) );
+			add_filter(
+				'wpseo_option_titles_variable_array_key_patterns',
+				array( $this, 'add_variable_array_key_pattern' )
+			);
 
 			// Settings.
 			add_action( 'admin_init', array( $this, 'register_settings' ) );
 
-			// Licensing part.
-			$license_manager = WPSEO_Premium::get_license_manager();
-
-			// Setup constant name.
-			$license_manager->set_license_constant_name( 'WPSEO_LICENSE' );
-
-			// Setup license hooks.
-			$license_manager->setup_hooks();
-
-			// Add this plugin to licensing form.
-			add_action( 'wpseo_licenses_forms', array( $license_manager, 'show_license_form' ) );
-
-			if ( $license_manager->license_is_valid() ) {
-				add_action( 'admin_head', array( $this, 'admin_css' ) );
-			}
-
 			// Add Premium imports.
-			new WPSEO_Premium_Import_Manager();
-
-			// Only activate post and term watcher if permalink structure is enabled.
-			if ( get_option( 'permalink_structure' ) ) {
-				add_action( 'admin_init', array( $this, 'init_watchers' ) );
-
-				// Check if we need to display an admin message.
-				$redirect_created = filter_input( INPUT_GET, 'yoast-redirect-created' );
-				if ( isset( $redirect_created ) && $redirect_created !== false ) {
-
-					// Message object.
-					$message = new WPSEO_Message_Redirect_Created( $redirect_created );
-					add_action( 'all_admin_notices', array( $message, 'display' ) );
-				}
-			}
+			$this->integrations[] = new WPSEO_Premium_Import_Manager();
 		}
-		else {
+
+		// Only activate post and term watcher if permalink structure is enabled.
+		if ( get_option( 'permalink_structure' ) ) {
+			add_action( 'admin_init', array( $this, 'init_watchers' ) );
+			add_action( 'rest_api_init', array( $this, 'init_watchers' ) );
+		}
+
+		if ( ! is_admin() ) {
 			// Add 404 redirect link to WordPress toolbar.
 			add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu' ), 96 );
 
 			add_filter( 'redirect_canonical', array( $this, 'redirect_canonical_fix' ), 1, 2 );
 		}
-
-		add_action( 'admin_init', array( $this, 'enqueue_multi_keyword' ) );
-		add_action( 'admin_init', array( $this, 'enqueue_social_previews' ) );
 
 		add_action( 'wpseo_premium_indicator_classes', array( $this, 'change_premium_indicator' ) );
 		add_action( 'wpseo_premium_indicator_text', array( $this, 'change_premium_indicator_text' ) );
@@ -292,34 +280,14 @@ class WPSEO_Premium {
 
 	/**
 	 * Sets the autoloader for the redirects and instantiates the redirect page object.
+	 *
+	 * @return void
 	 */
 	private function redirect_setup() {
-		// Set the autoloader for redirects.
-		new WPSEO_Premium_Autoloader( 'WPSEO_Redirect', 'redirect/', 'WPSEO_' );
-
 		$this->redirects = new WPSEO_Redirect_Page();
 
 		// Adds integration that filters redirected entries from the sitemap.
-		$this->integrations['redirect-sitemap-filter'] = new WPSEO_Redirect_Sitemap_Filter(
-			home_url(),
-			new WPSEO_Redirect_Option()
-		);
-	}
-
-	/**
-	 * Sets the autoloader for the exports.
-	 */
-	private function export_setup() {
-		// Set the autoloader for redirects.
-		new WPSEO_Premium_Autoloader( 'WPSEO_Export', 'export/', 'WPSEO_' );
-	}
-
-	/**
-	 * We might want to reactivate the license.
-	 */
-	private static function activate_license() {
-		$license_manager = self::get_license_manager();
-		$license_manager->activate_license();
+		$this->integrations['redirect-sitemap-filter'] = new WPSEO_Redirect_Sitemap_Filter( home_url() );
 	}
 
 	/**
@@ -327,34 +295,12 @@ class WPSEO_Premium {
 	 */
 	public function init_watchers() {
 		// The Post Watcher.
-		new WPSEO_Post_Watcher();
+		$post_watcher = new WPSEO_Post_Watcher();
+		$post_watcher->register_hooks();
 
 		// The Term Watcher.
-		new WPSEO_Term_Watcher();
-	}
-
-	/**
-	 * Adds multi keyword functionality if we are on the correct pages
-	 */
-	public function enqueue_multi_keyword() {
-		global $pagenow;
-
-		if ( WPSEO_Metabox::is_post_edit( $pagenow ) ) {
-			new WPSEO_Multi_Keyword();
-		}
-	}
-
-	/**
-	 * Adds multi keyword functionality if we are on the correct pages
-	 */
-	public function enqueue_social_previews() {
-		global $pagenow;
-
-		$social_previews = new WPSEO_Social_Previews();
-		if ( WPSEO_Metabox::is_post_edit( $pagenow ) || WPSEO_Taxonomy::is_term_edit( $pagenow ) ) {
-			$social_previews->set_hooks();
-		}
-		$social_previews->set_ajax_hooks();
+		$term_watcher = new WPSEO_Term_Watcher();
+		$term_watcher->register_hooks();
 	}
 
 	/**
@@ -378,7 +324,7 @@ class WPSEO_Premium {
 			$redirect_url = home_url( $redirect_url );
 		}
 
-		wp_redirect( $redirect_url, $redirect->get_type() );
+		wp_redirect( $redirect_url, $redirect->get_type(), 'Yoast SEO Premium' );
 		exit;
 	}
 
@@ -395,7 +341,8 @@ class WPSEO_Premium {
 	 * Add 'Create Redirect' option to admin bar menu on 404 pages
 	 */
 	public function admin_bar_menu() {
-		if ( ! is_404() ) {
+		// Prevent function from running if the page is not a 404 page or the user has not the right capabilities to create redirects.
+		if ( ! is_404() || ! WPSEO_Capability_Utils::current_user_can( 'wpseo_manage_options' ) ) {
 			return;
 		}
 
@@ -403,7 +350,7 @@ class WPSEO_Premium {
 
 		$parsed_url = wp_parse_url( home_url( $wp->request ) );
 
-		if ( ! is_array( $parsed_url ) ) {
+		if ( ! is_array( $parsed_url ) || empty( $parsed_url['path'] ) ) {
 			return;
 		}
 
@@ -415,11 +362,12 @@ class WPSEO_Premium {
 
 		$old_url = rawurlencode( $old_url );
 
-		$wp_admin_bar->add_menu( array(
+		$node = array(
 			'id'    => 'wpseo-premium-create-redirect',
 			'title' => __( 'Create Redirect', 'wordpress-seo-premium' ),
 			'href'  => admin_url( 'admin.php?page=wpseo_redirects&old_url=' . $old_url ),
-		) );
+		);
+		$wp_admin_bar->add_menu( $node );
 	}
 
 	/**
@@ -467,7 +415,7 @@ class WPSEO_Premium {
 			'wpseo_dashboard',
 			'',
 			__( 'Redirects', 'wordpress-seo-premium' ),
-			apply_filters_deprecated( 'wpseo_premium_manage_redirects_role', array( 'wpseo_manage_redirects' ), 'WPSEO 5.5', false, 'Use the introduced wpseo_manage_redirects capability instead.' ),
+			'wpseo_manage_redirects',
 			'wpseo_redirects',
 			array( $this->redirects, 'display' ),
 		);
@@ -479,6 +427,7 @@ class WPSEO_Premium {
 	 * Change premium indicator to green when premium is enabled
 	 *
 	 * @param string[] $classes The current classes for the indicator.
+	 *
 	 * @returns string[] The new classes for the indicator.
 	 */
 	public function change_premium_indicator( $classes ) {
@@ -497,6 +446,7 @@ class WPSEO_Premium {
 	 * Replaces the screen reader text for the premium indicator.
 	 *
 	 * @param string $text The original text.
+	 *
 	 * @return string The new text.
 	 */
 	public function change_premium_indicator_text( $text ) {
@@ -522,18 +472,6 @@ class WPSEO_Premium {
 	 */
 	private function load_textdomain() {
 		load_plugin_textdomain( 'wordpress-seo-premium', false, dirname( plugin_basename( WPSEO_FILE ) ) . '/premium/languages/' );
-	}
-
-	/**
-	 * Loads the autoloader
-	 */
-	public static function autoloader() {
-
-		if ( ! class_exists( 'WPSEO_Premium_Autoloader', false ) ) {
-			// Setup autoloader.
-			require_once WPSEO_PREMIUM_PATH . 'classes/premium-autoloader.php';
-			$autoloader = new WPSEO_Premium_Autoloader( 'WPSEO_', '' );
-		}
 	}
 
 	/**
@@ -580,10 +518,7 @@ class WPSEO_Premium {
 	 * Add the Yoast contact support assets
 	 */
 	public function enqueue_contact_support() {
-		$asset_manager = new WPSEO_Admin_Asset_Manager();
-		$version       = $asset_manager->flatten_version( WPSEO_VERSION );
-
-		wp_enqueue_script( 'yoast-contact-support', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/js/dist/wpseo-premium-contact-support-' . $version . WPSEO_CSSJS_SUFFIX . '.js', array( 'jquery' ), WPSEO_VERSION );
+		wp_enqueue_script( 'yoast-contact-support' );
 	}
 
 	/**
@@ -608,7 +543,41 @@ class WPSEO_Premium {
 			return;
 		}
 
-		$tracker = new WPSEO_Tracking( 'https://search-yoast-poc-gdaxpa7udbwtvpgxqaufa3dejm.eu-central-1.es.amazonaws.com/yoast/tracking', ( WEEK_IN_SECONDS * 2 ) );
-		$tracker->send();
+		// $tracker = new WPSEO_Tracking( 'https://search-yoast-poc-gdaxpa7udbwtvpgxqaufa3dejm.eu-central-1.es.amazonaws.com/yoast/tracking', ( WEEK_IN_SECONDS * 2 ) );
+		// $tracker->send();
+	}
+
+	/**
+	 * Adds multi keyword functionality if we are on the correct pages.
+	 *
+	 * @deprecated 8.4
+	 * @codeCoverageIgnore
+	 */
+	public function enqueue_multi_keyword() {
+		_deprecated_function( 'WPSEO_Premium::enqueue_multi_keyword', '8.4' );
+	}
+
+	/**
+	 * Loads the autoloader
+	 *
+	 * @deprecated 9.4
+	 * @codeCoverageIgnore
+	 *
+	 * @return void
+	 */
+	public static function autoloader() {
+		_deprecated_function( __METHOD__, '9.4' );
+	}
+
+	/**
+	 * Adds multi keyword functionality if we are on the correct pages
+	 *
+	 * @deprecated 9.4
+	 * @codeCoverageIgnore
+	 *
+	 * @return void
+	 */
+	public function enqueue_social_previews() {
+		_deprecated_function( 'WPSEO_Premium::enqueue_social_previews', '9.4' );
 	}
 }

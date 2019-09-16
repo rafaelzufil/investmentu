@@ -11,7 +11,9 @@
 class WPSEO_Premium_Javascript_Strings {
 
 	/**
-	 * @var null
+	 * List containing the localized JavaScript translations.
+	 *
+	 * @var array|null
 	 */
 	private static $strings = null;
 

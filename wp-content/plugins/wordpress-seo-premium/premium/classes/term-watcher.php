@@ -8,7 +8,7 @@
 /**
  * Class WPSEO_Term_Watcher.
  */
-class WPSEO_Term_Watcher extends WPSEO_Watcher {
+class WPSEO_Term_Watcher extends WPSEO_Watcher implements WPSEO_WordPress_Integration {
 
 	/**
 	 * Type of watcher.
@@ -28,31 +28,60 @@ class WPSEO_Term_Watcher extends WPSEO_Watcher {
 
 	/**
 	 * Constructing the object.
-	 */
-	public function __construct() {
-		$this->set_hooks();
-	}
-
-	/**
-	 * Load needed js file.
 	 *
-	 * @param string $current_page The page that is opened at the moment.
+	 * @codeCoverageIgnore Method relies on dependencies.
+	 *
+	 * @return void
 	 */
-	public function page_scripts( $current_page ) {
-		if ( ! ( $this->term_redirect_can_be_made( $current_page ) ) ) {
+	public function register_hooks() {
+		global $pagenow;
+
+		// Only set the hooks for the page where they are needed.
+		if ( ! $this->term_redirect_can_be_made( $pagenow ) ) {
 			return;
 		}
 
-		$asset_manager = new WPSEO_Admin_Asset_Manager();
-		$version       = $asset_manager->flatten_version( WPSEO_VERSION );
+		add_action( 'admin_enqueue_scripts', array( $this, 'page_scripts' ) );
+
+		// Get all taxonomies.
+		$taxonomies = get_taxonomies();
+
+		// Loop through all taxonomies.
+		if ( count( $taxonomies ) > 0 ) {
+			foreach ( $taxonomies as $taxonomy ) {
+				// Add old URL field to term edit screen.
+				add_action( $taxonomy . '_edit_form_fields', array( $this, 'old_url_field' ), 10, 2 );
+			}
+		}
+
+		add_action( 'wp_ajax_inline-save-tax', array( $this, 'set_old_url_quick_edit' ), 1 );
+
+		// Detect the term slug change.
+		add_action( 'edited_term', array( $this, 'detect_slug_change' ), 10, 3 );
+
+		// Detect a term delete.
+		add_action( 'delete_term_taxonomy', array( $this, 'detect_term_delete' ) );
+	}
+
+	/**
+	 * Registers the page scripts.
+	 *
+	 * @param string $current_page The page that is opened at the moment.
+	 *
+	 * @return void
+	 */
+	public function page_scripts( $current_page ) {
+		if ( ! $this->term_redirect_can_be_made( $current_page ) ) {
+			return;
+		}
+
+		parent::page_scripts( $current_page );
 
 		if ( $current_page === 'edit-tags.php' ) {
-			wp_enqueue_script( 'wp-seo-premium-quickedit-notification', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/js/dist/wp-seo-premium-quickedit-notification-' . $version . WPSEO_CSSJS_SUFFIX . '.js', array( 'jquery' ), WPSEO_VERSION );
-			wp_localize_script( 'wp-seo-premium-quickedit-notification', 'wpseoPremiumStrings', WPSEO_Premium_Javascript_Strings::strings() );
+			wp_enqueue_script( 'wp-seo-premium-quickedit-notification' );
 		}
 		if ( $current_page === 'term.php' ) {
-			wp_enqueue_script( 'wp-seo-premium-redirect-notifications', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/js/dist/wp-seo-premium-redirect-notifications-' . $version . WPSEO_CSSJS_SUFFIX . '.js', array( 'jquery' ), WPSEO_VERSION );
-			wp_localize_script( 'wp-seo-premium-redirect-notifications', 'wpseoPremiumStrings', WPSEO_Premium_Javascript_Strings::strings() );
+			wp_enqueue_script( 'wp-seo-premium-redirect-notifications' );
 		}
 	}
 
@@ -65,6 +94,7 @@ class WPSEO_Term_Watcher extends WPSEO_Watcher {
 	public function old_url_field( $tag, $taxonomy ) {
 		$url = $this->get_target_url( $tag, $taxonomy );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput -- Correctly escaped in parse_url_field() method.
 		echo $this->parse_url_field( $url, 'term' );
 	}
 
@@ -96,6 +126,16 @@ class WPSEO_Term_Watcher extends WPSEO_Watcher {
 		 */
 		if ( apply_filters( 'wpseo_premium_term_redirect_slug_change', false ) === true ) {
 			return true;
+		}
+
+		/**
+		 * Certain plugins use multisite context switching when saving terms. This can lead to incorrect redirects being
+		 * created.
+		 *
+		 * See https://github.com/Yoast/bugreports/issues/437.
+		 */
+		if ( is_multisite() && ms_is_switched() ) {
+			return false;
 		}
 
 		$old_url = $this->get_old_url();
@@ -135,6 +175,20 @@ class WPSEO_Term_Watcher extends WPSEO_Watcher {
 
 			$this->set_delete_notification( $url );
 		}
+	}
+
+	/**
+	 * Parses the hidden field with the old URL to show in the form.
+	 *
+	 * @param string $url  The old URL.
+	 * @param string $type The type of the URL.
+	 *
+	 * @return string The parsed hidden input field.
+	 */
+	protected function parse_url_field( $url, $type ) {
+
+		// Output the hidden field.
+		return '<input type="hidden" name="' . esc_attr( 'wpseo_old_' . $type . '_url' ) . '" value="' . esc_attr( $url ) . '"/>';
 	}
 
 	/**
@@ -183,47 +237,14 @@ class WPSEO_Term_Watcher extends WPSEO_Watcher {
 	}
 
 	/**
-	 * Setting the hooks for the term watcher.
-	 */
-	protected function set_hooks() {
-		global $pagenow;
-
-		// Only set the hooks for the page where they are needed.
-		if ( ! ( $this->term_redirect_can_be_made( $pagenow ) ) ) {
-			return;
-		}
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'page_scripts' ) );
-
-		// Get all taxonomies.
-		$taxonomies = get_taxonomies();
-
-		// Loop through all taxonomies.
-		if ( count( $taxonomies ) > 0 ) {
-			foreach ( $taxonomies as $taxonomy ) {
-				// Add old URL field to term edit screen.
-				add_action( $taxonomy . '_edit_form_fields', array( $this, 'old_url_field' ), 10, 2 );
-			}
-		}
-
-		add_action( 'wp_ajax_inline-save-tax', array( $this, 'set_old_url_quick_edit' ), 1 );
-
-		// Detect the term slug change.
-		add_action( 'edited_term', array( $this, 'detect_slug_change' ), 10, 3 );
-
-		// Detect a term delete.
-		add_action( 'delete_term_taxonomy', array( $this, 'detect_term_delete' ) );
-	}
-
-	/**
 	 * Returns the undo message for the term.
 	 *
 	 * @return string
 	 */
 	protected function get_undo_slug_notification() {
-		/* translators: %1$s: Yoast SEO Premium, %2$s and %3$s expand to a link to the admin page, %4$s: Old slug of the term, %5$s: New slug of the term, the text surrounded by %6$s and %7$s is placed in a button that can undo the created redirect */
+		/* translators: %1$s: Yoast SEO Premium, %2$s and %3$s expand to a link to the admin page. */
 		return __(
-			'%1$s created a %2$sredirect%3$s from the old term URL to the new term URL. %6$sClick here to undo this%7$s  <br> Old URL: %4$s <br> New URL: %5$s',
+			'%1$s created a %2$sredirect%3$s from the old term URL to the new term URL.',
 			'wordpress-seo-premium'
 		);
 	}

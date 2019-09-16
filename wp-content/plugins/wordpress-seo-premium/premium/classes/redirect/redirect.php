@@ -10,36 +10,86 @@
  */
 class WPSEO_Redirect implements ArrayAccess {
 
-	const PERMANENT   = 301;
-	const FOUND       = 302;
-	const TEMPORARY   = 307;
-	const DELETED     = 410;
-	const UNAVAILABLE = 451;
-
-	const FORMAT_PLAIN = 'plain';
-	const FORMAT_REGEX = 'regex';
+	/**
+	 * Permanent redirect HTTP status code.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Types::PERMANENT instead.
+	 */
+	const PERMANENT = WPSEO_Redirect_Types::PERMANENT;
 
 	/**
+	 * Redirect found HTTP status code.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Types::FOUND instead.
+	 */
+	const FOUND = WPSEO_Redirect_Types::FOUND;
+
+	/**
+	 * Temporary redirect HTTP status code.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Types::TEMPORARY instead.
+	 */
+	const TEMPORARY = WPSEO_Redirect_Types::TEMPORARY;
+
+	/**
+	 * Content deleted HTTP status code.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Types::DELETED instead.
+	 */
+	const DELETED = WPSEO_Redirect_Types::DELETED;
+
+	/**
+	 * Content unavailable HTTP status code.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Types::UNAVAILABLE instead.
+	 */
+	const UNAVAILABLE = WPSEO_Redirect_Types::UNAVAILABLE;
+
+	/**
+	 * Plain redirect format.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Formats::PLAIN instead.
+	 */
+	const FORMAT_PLAIN = WPSEO_Redirect_Formats::PLAIN;
+
+	/**
+	 * Regex redirect format.
+	 *
+	 * @deprecated 9.4 - Use WPSEO_Redirect_Formats::REGEX instead.
+	 */
+	const FORMAT_REGEX = WPSEO_Redirect_Formats::REGEX;
+
+	/**
+	 * Redirect origin.
+	 *
 	 * @var string
 	 */
 	protected $origin;
 
 	/**
+	 * Redirect target.
+	 *
 	 * @var string
 	 */
 	protected $target = '';
 
 	/**
+	 * A HTTP code determining the redirect type.
+	 *
 	 * @var int
 	 */
 	protected $type;
 
 	/**
+	 * A string determining the redirect format (plain or regex).
+	 *
 	 * @var string
 	 */
 	protected $format;
 
 	/**
+	 * A string holding a possible redirect validation error.
+	 *
 	 * @var string
 	 */
 	protected $validation_error;
@@ -52,8 +102,8 @@ class WPSEO_Redirect implements ArrayAccess {
 	 * @param int    $type   The type of the redirect.
 	 * @param string $format The format of the redirect.
 	 */
-	public function __construct( $origin, $target = '', $type = self::PERMANENT, $format = self::FORMAT_PLAIN ) {
-		$this->origin = ( $format === self::FORMAT_PLAIN ) ? $this->sanitize_origin_url( $origin ) : $origin;
+	public function __construct( $origin, $target = '', $type = WPSEO_Redirect_Types::PERMANENT, $format = WPSEO_Redirect_Formats::PLAIN ) {
+		$this->origin = ( $format === WPSEO_Redirect_Formats::PLAIN ) ? $this->sanitize_origin_url( $origin ) : $origin;
 		$this->target = $this->sanitize_target_url( $target );
 		$this->format = $format;
 		$this->type   = (int) $type;
@@ -167,7 +217,6 @@ class WPSEO_Redirect implements ArrayAccess {
 	 * @return void
 	 */
 	public function offsetUnset( $offset ) {
-
 	}
 
 	/**
@@ -179,7 +228,7 @@ class WPSEO_Redirect implements ArrayAccess {
 	 */
 	public function origin_is( $url ) {
 		// Sanitize the slash in case of plain redirect.
-		if ( $this->format === self::FORMAT_PLAIN ) {
+		if ( $this->format === WPSEO_Redirect_Formats::PLAIN ) {
 			$url = $this->sanitize_slash( $url );
 		}
 
@@ -227,10 +276,9 @@ class WPSEO_Redirect implements ArrayAccess {
 		$url_pieces      = wp_parse_url( $url );
 
 		if ( $this->match_home_url( $home_url_pieces, $url_pieces ) ) {
-			$url = str_replace(
-				$this->strip_scheme_from_url( $home_url_pieces['scheme'], $home_url ),
-				'',
-				$this->strip_scheme_from_url( $url_pieces['scheme'], $url )
+			$url = substr(
+				$this->strip_scheme_from_url( $url_pieces['scheme'], $url ),
+				strlen( $this->strip_scheme_from_url( $home_url_pieces['scheme'], $home_url ) )
 			);
 		}
 
@@ -250,10 +298,9 @@ class WPSEO_Redirect implements ArrayAccess {
 		$url_pieces      = wp_parse_url( $url );
 
 		if ( $this->match_home_url( $home_url_pieces, $url_pieces ) ) {
-			$url = str_replace(
-				$home_url_pieces['host'],
-				'',
-				$this->strip_scheme_from_url( $url_pieces['scheme'], $url )
+			$url = substr(
+				$this->strip_scheme_from_url( $url_pieces['scheme'], $url ),
+				strlen( $home_url_pieces['host'] )
 			);
 		}
 
@@ -261,15 +308,55 @@ class WPSEO_Redirect implements ArrayAccess {
 	}
 
 	/**
-	 * Checks if the URL matches the home URL by comparing their host.
+	 * Checks if the URL matches the home URL.
 	 *
 	 * @param array $home_url_pieces The pieces (wp_parse_url) from the home_url.
 	 * @param array $url_pieces      The pieces (wp_parse_url) from the url to match.
 	 *
-	 * @return bool True when both hosts are equal.
+	 * @return bool True when the URL matches the home URL.
 	 */
 	private function match_home_url( $home_url_pieces, $url_pieces ) {
-		return ( isset( $url_pieces['scheme'], $url_pieces['host'] ) && $url_pieces['host'] === $home_url_pieces['host'] );
+		if ( ! isset( $url_pieces['scheme'] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $url_pieces['host'] ) || ! $this->match_home_url_host( $home_url_pieces['host'], $url_pieces['host'] ) ) {
+			return false;
+		}
+
+		if ( ! isset( $home_url_pieces['path'] ) ) {
+			return true;
+		}
+
+		return isset( $url_pieces['path'] ) && $this->match_home_url_path( $home_url_pieces['path'], $url_pieces['path'] );
 	}
 
+	/**
+	 * Checks if the URL matches the home URL by comparing their host.
+	 *
+	 * @param string $home_url_host The home URL host.
+	 * @param string $url_host      The URL host.
+	 *
+	 * @return bool True when both hosts are equal.
+	 */
+	private function match_home_url_host( $home_url_host, $url_host ) {
+		return $url_host === $home_url_host;
+	}
+
+	/**
+	 * Checks if the URL matches the home URL by comparing their path.
+	 *
+	 * @param string $home_url_path The home URL path.
+	 * @param string $url_path      The URL path.
+	 *
+	 * @return bool True when the home URL path is empty or when the URL path begins with the home URL path.
+	 */
+	private function match_home_url_path( $home_url_path, $url_path ) {
+		$home_url_path = trim( $home_url_path, '/' );
+		if ( empty( $home_url_path ) ) {
+			return true;
+		}
+
+		return strpos( trim( $url_path, '/' ), $home_url_path ) === 0;
+	}
 }

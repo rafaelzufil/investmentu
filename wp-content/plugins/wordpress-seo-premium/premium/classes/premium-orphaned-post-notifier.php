@@ -11,6 +11,8 @@
 class WPSEO_Premium_Orphaned_Post_Notifier implements WPSEO_WordPress_Integration {
 
 	/**
+	 * Instance of the Yoast_Notification_Center class.
+	 *
 	 * @var Yoast_Notification_Center
 	 */
 	protected $notification_center;
@@ -31,6 +33,10 @@ class WPSEO_Premium_Orphaned_Post_Notifier implements WPSEO_WordPress_Integratio
 	 * @return void
 	 */
 	public function register_hooks() {
+		// Joost de Valk, April 6th 2019.
+		// Disabling this until we've found a better way to display this data that doesn't become annoying when you have a lot of post types.
+		return;
+
 		if ( filter_input( INPUT_GET, 'page' ) === 'wpseo_dashboard' ) {
 			add_action( 'admin_init', array( $this, 'notify' ) );
 		}
@@ -48,6 +54,10 @@ class WPSEO_Premium_Orphaned_Post_Notifier implements WPSEO_WordPress_Integratio
 	 * @return void
 	 */
 	public function notify() {
+		// Joost de Valk, April 6th 2019.
+		// Disabling this until we've found a better way to display this data that doesn't become annoying when you have a lot of post types.
+		return;
+
 		// Force re-check if it is not accessible.
 		if ( ! WPSEO_Link_Table_Accessible::is_accessible() ) {
 			WPSEO_Link_Table_Accessible::cleanup();
@@ -64,7 +74,6 @@ class WPSEO_Premium_Orphaned_Post_Notifier implements WPSEO_WordPress_Integratio
 		// Walks over the posts types and handle the notification.
 		array_walk( $post_types, array( $this, 'notify_for_post_type' ) );
 	}
-
 
 	/**
 	 * Returns the post types to which this filter should be added.

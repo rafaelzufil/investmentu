@@ -28,8 +28,10 @@ class WPSEO_Redirect_Page {
 	 * Display the presenter.
 	 */
 	public function display() {
-		$redirect_presenter = new WPSEO_Redirect_Presenter();
-		$redirect_presenter->display( $this->get_current_tab() );
+		$display_args = array( 'current_tab' => $this->get_current_tab() );
+
+		$redirect_presenter = new WPSEO_Redirect_Page_Presenter();
+		$redirect_presenter->display( $display_args );
 	}
 
 	/**
@@ -110,25 +112,36 @@ class WPSEO_Redirect_Page {
 		$asset_manager = new WPSEO_Admin_Asset_Manager();
 		$version       = $asset_manager->flatten_version( WPSEO_VERSION );
 
+		$dependencies = array(
+			'jquery',
+			'jquery-ui-dialog',
+			'wp-util',
+			'underscore',
+			'yoast-seo-premium-commons',
+			'wp-api',
+			'wp-api-fetch',
+		);
+
 		wp_enqueue_script(
 			'wp-seo-premium-admin-redirects',
 			plugin_dir_url( WPSEO_PREMIUM_FILE ) .
 			'assets/js/dist/wp-seo-premium-admin-redirects-' . $version . WPSEO_CSSJS_SUFFIX . '.js',
-			array( 'jquery', 'jquery-ui-dialog', 'wp-util', 'underscore' ),
+			$dependencies,
 			WPSEO_VERSION
 		);
 		wp_localize_script( 'wp-seo-premium-admin-redirects', 'wpseoPremiumStrings', WPSEO_Premium_Javascript_Strings::strings() );
-		wp_localize_script( 'wp-seo-premium-admin-redirects', 'wpseoSelect2Locale', substr( WPSEO_Utils::get_user_locale(), 0, 2 ) );
+		wp_localize_script( 'wp-seo-premium-admin-redirects', 'wpseoSelect2Locale', substr( WPSEO_Language_Utils::get_user_locale(), 0, 2 ) );
 
 		wp_enqueue_style( 'wpseo-premium-redirects', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/css/dist/premium-redirects-' . $version . WPSEO_CSSJS_SUFFIX . '.css', array(), WPSEO_VERSION );
 
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 
-		add_screen_option( 'per_page', array(
+		$screen_option_args = array(
 			'label'   => __( 'Redirects per page', 'wordpress-seo-premium' ),
 			'default' => 25,
 			'option'  => 'redirects_per_page',
-		) );
+		);
+		add_screen_option( 'per_page', $screen_option_args );
 	}
 
 	/**
@@ -208,7 +221,6 @@ class WPSEO_Redirect_Page {
 			// Remove the nginx redirect entries.
 			$this->clear_nginx_redirects();
 		}
-
 	}
 
 	/**
@@ -260,10 +272,10 @@ class WPSEO_Redirect_Page {
 	 */
 	private function initialize_ajax() {
 		// Normal Redirect AJAX.
-		new WPSEO_Redirect_Ajax( WPSEO_Redirect::FORMAT_PLAIN );
+		new WPSEO_Redirect_Ajax( WPSEO_Redirect_Formats::PLAIN );
 
 		// Regex Redirect AJAX.
-		new WPSEO_Redirect_Ajax( WPSEO_Redirect::FORMAT_REGEX );
+		new WPSEO_Redirect_Ajax( WPSEO_Redirect_Formats::REGEX );
 	}
 
 	/**
@@ -281,8 +293,8 @@ class WPSEO_Redirect_Page {
 				FILTER_VALIDATE_REGEXP,
 				array(
 					'options' => array(
-						'default' => 'plain',
-						'regexp'  => '/^(plain|regex|settings)$/',
+						'default' => WPSEO_Redirect_Formats::PLAIN,
+						'regexp'  => '/^(' . WPSEO_Redirect_Formats::PLAIN . '|' . WPSEO_Redirect_Formats::REGEX . '|settings)$/',
 					),
 				)
 			);
@@ -300,9 +312,9 @@ class WPSEO_Redirect_Page {
 		static $redirect_manager;
 
 		if ( $redirect_manager === null ) {
-			$redirects_format = WPSEO_Redirect::FORMAT_PLAIN;
-			if ( $this->get_current_tab() === WPSEO_Redirect::FORMAT_REGEX ) {
-				$redirects_format = WPSEO_Redirect::FORMAT_REGEX;
+			$redirects_format = WPSEO_Redirect_Formats::PLAIN;
+			if ( $this->get_current_tab() === WPSEO_Redirect_Formats::REGEX ) {
+				$redirects_format = WPSEO_Redirect_Formats::REGEX;
 			}
 
 			$redirect_manager = new WPSEO_Redirect_Manager( $redirects_format );

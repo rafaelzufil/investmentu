@@ -21,21 +21,29 @@ class WPSEO_Redirect_Option {
 	const OLD_OPTION_REGEX = 'wpseo-premium-redirects-regex';
 
 	/**
+	 * The option which contains the redirects base.
+	 *
 	 * @since 3.1
 	 */
 	const OPTION = 'wpseo-premium-redirects-base';
 
 	/**
+	 * The option which contains the  plain redirects.
+	 *
 	 * @since 3.1
 	 */
 	const OPTION_PLAIN = 'wpseo-premium-redirects-export-plain';
 
 	/**
+	 * The option which contains the regex redirects.
+	 *
 	 * @since 3.1
 	 */
 	const OPTION_REGEX = 'wpseo-premium-redirects-export-regex';
 
 	/**
+	 * List of redirects.
+	 *
 	 * @var WPSEO_Redirect[]
 	 */
 	private $redirects = array();

@@ -25,6 +25,8 @@ class WPSEO_Redirect_Manager {
 	protected $redirect_format;
 
 	/**
+	 * List of redirect exporters.
+	 *
 	 * @var WPSEO_Redirect_Exporter[]
 	 */
 	protected $exporters;
@@ -55,12 +57,12 @@ class WPSEO_Redirect_Manager {
 	 * @param WPSEO_Redirect_Exporter[] $exporters       The exporters used to save redirects in files.
 	 * @param WPSEO_Redirect_Option     $option          Model object to handle the redirects.
 	 */
-	public function __construct( $redirect_format = WPSEO_Redirect::FORMAT_PLAIN, $exporters = null, WPSEO_Redirect_Option $option = null ) {
+	public function __construct( $redirect_format = WPSEO_Redirect_Formats::PLAIN, $exporters = null, WPSEO_Redirect_Option $option = null ) {
 		if ( null === $option ) {
 			$option = new WPSEO_Redirect_Option();
 		}
-		$this->redirect_option = $option;
 
+		$this->redirect_option = $option;
 		$this->redirect_format = $redirect_format;
 		$this->exporters       = ( $exporters ) ? $exporters : self::default_exporters();
 	}

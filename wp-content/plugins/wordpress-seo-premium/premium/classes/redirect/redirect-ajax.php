@@ -11,6 +11,8 @@
 class WPSEO_Redirect_Ajax {
 
 	/**
+	 * Instance of the WPSEO_Redirect_Manager instance.
+	 *
 	 * @var WPSEO_Redirect_Manager
 	 */
 	private $redirect_manager;
@@ -104,26 +106,6 @@ class WPSEO_Redirect_Ajax {
 	}
 
 	/**
-	 * Function that handles the AJAX 'wpseo_delete_redirect' action.
-	 */
-	public function ajax_delete_redirect() {
-
-		$this->valid_ajax_check();
-
-		$response = array();
-
-		$current_redirect = $this->get_redirect_from_post( 'redirect' );
-
-		// Delete the redirect.
-		if ( ! empty( $current_redirect ) ) {
-			$this->redirect_manager->delete_redirects( array( $current_redirect ) );
-		}
-
-		// Response.
-		wp_die( wp_json_encode( $response ) );
-	}
-
-	/**
 	 * Run the validation.
 	 *
 	 * @param WPSEO_Redirect      $redirect         The redirect to save.
@@ -158,9 +140,6 @@ class WPSEO_Redirect_Ajax {
 
 		// Update an existing redirect.
 		add_action( 'wp_ajax_wpseo_update_redirect_' . $hook_suffix, array( $this, 'ajax_update_redirect' ) );
-
-		// Delete an existing redirect.
-		add_action( 'wp_ajax_wpseo_delete_redirect_' . $hook_suffix, array( $this, 'ajax_delete_redirect' ) );
 
 		// Add URL response code check AJAX.
 		if ( ! has_action( 'wp_ajax_wpseo_check_url' ) ) {
@@ -214,5 +193,20 @@ class WPSEO_Redirect_Ajax {
 	 */
 	private function sanitize_url( $url ) {
 		return trim( htmlspecialchars_decode( rawurldecode( $url ) ) );
+	}
+
+	/**
+	 * Function that handles the AJAX 'wpseo_delete_redirect' action.
+	 *
+	 * @deprecated 9.2
+	 * @codeCoverageIgnore
+	 *
+	 * @return void
+	 */
+	public function ajax_delete_redirect() {
+		_deprecated_function( __FUNCTION__, 'WPSEO 9.2.0', 'Replaced by the REST API.' );
+
+		// Response.
+		wp_die( 'Replaced by the REST API.' );
 	}
 }

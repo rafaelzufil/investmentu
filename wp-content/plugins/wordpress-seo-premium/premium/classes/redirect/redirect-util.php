@@ -11,6 +11,8 @@
 class WPSEO_Redirect_Util {
 
 	/**
+	 * Whether or not the permalink contains a trailing slash.
+	 *
 	 * @var bool
 	 */
 	public static $has_permalink_trailing_slash = null;

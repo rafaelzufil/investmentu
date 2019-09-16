@@ -5,8 +5,12 @@
  * @package WPSEO\Premium\Classes
  */
 
+_deprecated_file( __FILE__, 'WPSEO 9.4' );
+
 /**
  * Class WPSEO_Premium_Autoloader.
+ *
+ * @deprecated 9.4
  */
 class WPSEO_Premium_Autoloader {
 
@@ -18,6 +22,8 @@ class WPSEO_Premium_Autoloader {
 	private $search_pattern;
 
 	/**
+	 * The directory where the classes are located.
+	 *
 	 * @var string
 	 */
 	private $directory;
@@ -30,16 +36,37 @@ class WPSEO_Premium_Autoloader {
 	private $file_replace;
 
 	/**
+	 * Additional sub-patterns of $suffix_pattern => $subdirectory pairs.
+	 *
+	 * @var array
+	 */
+	private $suffix_patterns;
+
+	/**
+	 * Regular expression for matching a class name against sub-patterns.
+	 *
+	 * @var string
+	 */
+	private $suffix_patterns_regex = '';
+
+	/**
 	 * Setting up the class.
 	 *
-	 * @param string $search_pattern The pattern to match for the redirect.
-	 * @param string $directory      The directory where the classes could be found.
-	 * @param string $file_replace   The replacement for the file.
+	 * @param string $search_pattern  The pattern to match for the redirect.
+	 * @param string $directory       The directory where the classes could be found.
+	 * @param string $file_replace    Optional. The replacement for the file. Default empty string.
+	 * @param array  $suffix_patterns Optional. Sub-patterns that determine a more specific location for classes
+	 *                                ending in the respective suffix. The associative array hould contain
+	 *                                $suffix_pattern => $subdirectory pairs. Default empty array.
 	 */
-	public function __construct( $search_pattern, $directory, $file_replace = '' ) {
-		$this->search_pattern = $search_pattern;
-		$this->directory      = $directory;
-		$this->file_replace   = ( $file_replace === '' ) ? $search_pattern : $file_replace;
+	public function __construct( $search_pattern, $directory, $file_replace = '', $suffix_patterns = array() ) {
+		_deprecated_constructor( 'WPSEO_Premium_Autoloader', 'WPSEO 9.4' );
+
+		$this->search_pattern        = $search_pattern;
+		$this->directory             = $directory;
+		$this->file_replace          = ( $file_replace === '' ) ? $search_pattern : $file_replace;
+		$this->suffix_patterns       = $suffix_patterns;
+		$this->suffix_patterns_regex = $this->generate_suffix_patterns_regex( $this->suffix_patterns );
 
 		spl_autoload_register( array( $this, 'load' ) );
 	}
@@ -78,17 +105,21 @@ class WPSEO_Premium_Autoloader {
 	 * @return bool|string
 	 */
 	private function find_file( $class ) {
-		// String to lower.
-		$class = strtolower( $class );
-
 		// Format file name.
-		$file_name = $this->get_file_name( $class );
+		$file_name = $this->get_file_name( strtolower( $class ) );
 
 		// Full file path.
-		$class_path = dirname( __FILE__ ) . '/';
+		$class_path = dirname( __FILE__ ) . '/' . $this->directory;
+
+		// Match against suffix patterns, if any are present.
+		if ( ! empty( $this->suffix_patterns_regex ) && preg_match( $this->suffix_patterns_regex, $class, $matches ) ) {
+			if ( isset( $this->suffix_patterns[ $matches[1] ] ) ) {
+				$class_path .= trim( $this->suffix_patterns[ $matches[1] ], '/' ) . '/';
+			}
+		}
 
 		// Append file name to class path.
-		$full_path = $class_path . $this->directory . $file_name;
+		$full_path = $class_path . $file_name;
 
 		// Check & load file.
 		if ( file_exists( $full_path ) ) {
@@ -102,7 +133,6 @@ class WPSEO_Premium_Autoloader {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -114,5 +144,26 @@ class WPSEO_Premium_Autoloader {
 	 */
 	private function get_file_name( $class ) {
 		return str_ireplace( '_', '-', str_ireplace( $this->file_replace, '', $class ) ) . '.php';
+	}
+
+	/**
+	 * Generates the regular expression to check for suffix patterns in a class name.
+	 *
+	 * @param array $suffix_patterns Sub-patterns as $suffix_pattern => $subdirectory pairs.
+	 *
+	 * @return string Regular expression, or empty string if no suffix patterns provided.
+	 */
+	private function generate_suffix_patterns_regex( $suffix_patterns ) {
+		if ( empty( $suffix_patterns ) ) {
+			return '';
+		}
+
+		$suffixes = array_map(
+			'preg_quote',
+			array_keys( $suffix_patterns ),
+			array_fill( 0, count( $suffix_patterns ), '/' )
+		);
+
+		return '/(' . implode( '|', $suffixes ) . ')$/';
 	}
 }

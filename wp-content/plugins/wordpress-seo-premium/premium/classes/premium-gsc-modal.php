@@ -11,6 +11,8 @@
 class WPSEO_Premium_GSC_Modal {
 
 	/**
+	 * Instance of the WPSEO_Redirect_Manager.
+	 *
 	 * @var WPSEO_Redirect_Manager
 	 */
 	protected $redirect_manager;
@@ -22,6 +24,9 @@ class WPSEO_Premium_GSC_Modal {
 	 * Constructor, sets the redirect manager instance.
 	 */
 	public function __construct() {
+		// Adding the thickbox.
+		add_thickbox();
+
 		$this->redirect_manager = new WPSEO_Redirect_Manager();
 	}
 

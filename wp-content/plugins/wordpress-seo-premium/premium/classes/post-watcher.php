@@ -8,7 +8,7 @@
 /**
  * Class WPSEO_Post_Watcher.
  */
-class WPSEO_Post_Watcher extends WPSEO_Watcher {
+class WPSEO_Post_Watcher extends WPSEO_Watcher implements WPSEO_WordPress_Integration {
 
 	/**
 	 * Type of watcher, will be used for the filters.
@@ -17,7 +17,11 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	 */
 	protected $watch_type = 'post';
 
-	/** @var WPSEO_Redirect_Manager Redirect Manager */
+	/**
+	 * Instance of the WPSEO_Redirect_Manager class.
+	 *
+	 * @var WPSEO_Redirect_Manager
+	 */
 	private $redirect_manager;
 
 	/**
@@ -31,45 +35,70 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 		}
 
 		$this->redirect_manager = $redirect_manager;
-
-		$this->set_hooks();
 	}
 
 	/**
-	 * Load needed js file.
+	 * Registers the hooks.
+	 *
+	 * @codeCoverageIgnore Method used WordPress functions.
+	 *
+	 * @return void
 	 */
-	public function page_scripts() {
+	public function register_hooks() {
 		global $pagenow;
 
-		if ( ! $this->post_redirect_can_be_made( $pagenow ) ) {
+		add_action( 'admin_enqueue_scripts', array( $this, 'page_scripts' ) );
+
+		// Only set the hooks for the page where they are needed.
+		if ( ! $this->is_rest_request() && ! $this->post_redirect_can_be_made( $pagenow ) ) {
 			return;
 		}
 
-		$asset_manager = new WPSEO_Admin_Asset_Manager();
-		$version       = $asset_manager->flatten_version( WPSEO_VERSION );
+		// Detect a post slug change.
+		add_action( 'post_updated', array( $this, 'detect_slug_change' ), 12, 3 );
 
-		if ( $pagenow === 'edit.php' || $this->is_nested_pages( $pagenow ) ) {
-			wp_enqueue_script( 'wp-seo-premium-quickedit-notification', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/js/dist/wp-seo-premium-quickedit-notification-' . $version . WPSEO_CSSJS_SUFFIX . '.js', array( 'jquery' ), WPSEO_VERSION );
-			wp_localize_script( 'wp-seo-premium-quickedit-notification', 'wpseoPremiumStrings', WPSEO_Premium_Javascript_Strings::strings() );
-		}
+		// Detect a post trash.
+		add_action( 'wp_trash_post', array( $this, 'detect_post_trash' ) );
 
-		if ( $pagenow === 'post.php' ) {
-			wp_enqueue_script( 'wp-seo-premium-redirect-notifications', plugin_dir_url( WPSEO_PREMIUM_FILE ) . 'assets/js/dist/wp-seo-premium-redirect-notifications-' . $version . WPSEO_CSSJS_SUFFIX . '.js', array( 'jquery' ), WPSEO_VERSION );
-			wp_localize_script( 'wp-seo-premium-redirect-notifications', 'wpseoPremiumStrings', WPSEO_Premium_Javascript_Strings::strings() );
-		}
+		// Detect a post untrash.
+		add_action( 'untrashed_post', array( $this, 'detect_post_untrash' ) );
+
+		// Detect a post delete.
+		add_action( 'before_delete_post', array( $this, 'detect_post_delete' ) );
 	}
 
 	/**
-	 * Add an extra field to post edit screen so we know the old URL in the 'post_updated' hook.
+	 * Registers the page scripts.
 	 *
-	 * @param WP_Post $post The post object to get the ID from.
+	 * @codeCoverageIgnore Method used WordPress functions.
+	 *
+	 * @param string $current_page The page that is opened at the moment.
+	 *
+	 * @return void
 	 */
-	public function old_url_field( $post ) {
-		// $post must be set.
-		if ( null !== $post ) {
-			$url = $this->get_target_url( $post->ID );
+	public function page_scripts( $current_page ) {
+		// Register the scripts.
+		parent::page_scripts( $current_page );
 
-			echo $this->parse_url_field( $url, 'post' );
+		/**
+		 * If in Gutenberg, always load these scripts.
+		 */
+		if ( WPSEO_Metabox::is_post_edit( $current_page ) && wp_script_is( 'wp-editor', 'enqueued' ) ) {
+			wp_enqueue_script( 'wp-seo-premium-redirect-notifications' );
+			wp_enqueue_script( 'wp-seo-premium-redirect-notifications-gutenberg' );
+			return;
+		}
+
+		if ( ! $this->post_redirect_can_be_made( $current_page ) ) {
+			return;
+		}
+
+		if ( WPSEO_Metabox::is_post_overview( $current_page ) ) {
+			wp_enqueue_script( 'wp-seo-premium-quickedit-notification' );
+		}
+
+		if ( WPSEO_Metabox::is_post_edit( $current_page ) ) {
+			wp_enqueue_script( 'wp-seo-premium-redirect-notifications' );
 		}
 	}
 
@@ -93,19 +122,22 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 		/**
 		 * Filter: 'wpseo_premium_post_redirect_slug_change' - Check if a redirect should be created on post slug change.
 		 *
-		 * @api bool unsigned
+		 * @api bool    Determines if a redirect should be created for this post slug change.
+		 * @api integer The ID of the post.
+		 * @api WP_Post The current post object.
+		 * @api WP_Post The previous post object.
 		 */
-		if ( apply_filters( 'wpseo_premium_post_redirect_slug_change', false ) === true ) {
+		if ( apply_filters( 'wpseo_premium_post_redirect_slug_change', false, $post_id, $post, $post_before ) === true ) {
 			return true;
 		}
 
-		$old_url = $this->get_old_url( $post, $post_before );
+		$old_url = $this->get_target_url( $post_before );
 		if ( ! $old_url ) {
 			return false;
 		}
 
 		// If the post URL wasn't public before, or isn't public now, don't even check if we have to redirect.
-		if ( ! $this->check_public_post_status( $post_before ) || ! $this->check_public_post_status( $post ) ) {
+		if ( ! $this->check_public_post_status( $post_before->ID ) || ! $this->check_public_post_status( $post->ID ) ) {
 			return false;
 		}
 
@@ -146,6 +178,19 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	 * @return bool True if a redirect might be relevant.
 	 */
 	protected function is_redirect_relevant( $post, $post_before ) {
+		// Check if the post type is enabled for redirects.
+		$post_type = get_post_type( $post );
+		/**
+		 * Filter: 'wpseo_premium_redirect_post_type' - Check if a redirect should be created on post slug change for specified post type.
+		 *
+		 * @api bool   Determines if a redirect should be created for this post type.
+		 * @api string The post type that is being checked for.
+		 */
+		$post_type_accessible = apply_filters( 'wpseo_premium_redirect_post_type', WPSEO_Post_Type::is_post_type_accessible( $post_type ), $post_type );
+		if ( ! $post_type_accessible ) {
+			return false;
+		}
+
 		// If post is a revision do not create redirect.
 		if ( wp_is_post_revision( $post_before ) !== false && wp_is_post_revision( $post ) !== false ) {
 			return false;
@@ -209,7 +254,6 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 
 			$this->create_notification( $message, 'trash' );
 		}
-
 	}
 
 	/**
@@ -236,7 +280,6 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 
 			$this->create_notification( $message, 'untrash' );
 		}
-
 	}
 
 	/**
@@ -285,11 +328,21 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	 * @param integer $post_id      The current post ID.
 	 * @param bool    $should_exist Boolean to determine if the URL should be exist as a redirect.
 	 *
-	 * @return WPSEO_Redirect|string|void
+	 * @return WPSEO_Redirect|string|bool
 	 */
 	protected function check_if_redirect_needed( $post_id, $should_exist = false ) {
+		// If the post type is not public, don't redirect.
+		$post_type = get_post_type_object( get_post_type( $post_id ) );
 
-		// No revisions please.
+		if ( ! $post_type ) {
+			return false;
+		}
+
+		if ( ! in_array( $post_type->name, $this->get_included_automatic_redirection_post_types(), true ) ) {
+			return false;
+		}
+
+		// The post types should be a public one.
 		if ( $this->check_public_post_status( $post_id ) ) {
 			// Get the right URL.
 			$url = $this->get_target_url( $post_id );
@@ -308,6 +361,29 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 				}
 			}
 		}
+		return false;
+	}
+
+	/**
+	 * Retrieves the post types to create automatic redirects for.
+	 *
+	 * @return array Post types to include to create automatic redirects for.
+	 */
+	protected function get_included_automatic_redirection_post_types() {
+		$post_types = WPSEO_Post_Type::get_accessible_post_types();
+
+		/**
+		 * Filter: 'wpseo_premium_include_automatic_redirection_post_types' - Post types to create automatic redirects for.
+		 *
+		 * @api array $included_post_types Array with the post type names to include to automatic redirection.
+		 */
+		$included_post_types = apply_filters( 'wpseo_premium_include_automatic_redirection_post_types', $post_types );
+
+		if ( ! is_array( $included_post_types ) ) {
+			$included_post_types = array();
+		}
+
+		return $included_post_types;
 	}
 
 	/**
@@ -354,33 +430,12 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	}
 
 	/**
-	 * Setting the hooks for the post watcher.
+	 * Determines whether we're dealing with a REST request or not.
+	 *
+	 * @return bool Whether or not the current request is a REST request.
 	 */
-	protected function set_hooks() {
-		global $pagenow;
-
-		// Only set the hooks for the page where they are needed.
-		if ( ! ( $this->post_redirect_can_be_made( $pagenow ) ) ) {
-			return;
-		}
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'page_scripts' ) );
-
-		// Add old URL field to post edit screen.
-		add_action( 'edit_form_advanced', array( $this, 'old_url_field' ), 10, 1 );
-		add_action( 'edit_page_form', array( $this, 'old_url_field' ), 10, 1 );
-
-		// Detect a post slug change.
-		add_action( 'post_updated', array( $this, 'detect_slug_change' ), 12, 3 );
-
-		// Detect a post trash.
-		add_action( 'wp_trash_post', array( $this, 'detect_post_trash' ) );
-
-		// Detect a post untrash.
-		add_action( 'untrashed_post', array( $this, 'detect_post_untrash' ) );
-
-		// Detect a post delete.
-		add_action( 'before_delete_post', array( $this, 'detect_post_delete' ) );
+	private function is_rest_request() {
+		return defined( 'REST_REQUEST' ) && REST_REQUEST === true;
 	}
 
 	/**
@@ -389,9 +444,9 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	 * @return string
 	 */
 	protected function get_undo_slug_notification() {
-		/* translators: %1$s: Yoast SEO Premium, %2$s and %3$s expand to a link to the admin page, %4$s: Old slug of the post, %5$s: New slug of the post, the text surrounded by %6$s and %7$s is placed in a button that can undo the created redirect */
+		/* translators: %1$s: Yoast SEO Premium, %2$s and %3$s expand to a link to the admin page. */
 		return __(
-			'%1$s created a %2$sredirect%3$s from the old post URL to the new post URL. %6$sClick here to undo this%7$s <br> Old URL: %4$s <br> New URL: %5$s',
+			'%1$s created a %2$sredirect%3$s from the old post URL to the new post URL.',
 			'wordpress-seo-premium'
 		);
 	}
@@ -467,5 +522,35 @@ class WPSEO_Post_Watcher extends WPSEO_Watcher {
 	 */
 	protected function get_post_action() {
 		return filter_input( INPUT_POST, 'action' );
+	}
+
+	/**
+	 * Display the undo redirect notification
+	 *
+	 * @param WPSEO_Redirect $redirect The old URL to the post.
+	 */
+	protected function set_undo_slug_notification( WPSEO_Redirect $redirect ) {
+
+		if ( ! $this->is_rest_request() ) {
+			parent::set_undo_slug_notification( $redirect );
+
+			return;
+		}
+
+		header( 'X-Yoast-Redirect-Created: 1; origin=' . $redirect->get_origin() . '; target=' . $redirect->get_target() . '; type=' . $redirect->get_type() );
+	}
+
+	/**
+	 * Add an extra field to post edit screen so we know the old URL in the 'post_updated' hook.
+	 *
+	 * @deprecated 9.1
+	 * @codeCoverageIgnore
+	 *
+	 * @param WP_Post $post The post object to get the ID from.
+	 *
+	 * @return void
+	 */
+	public function old_url_field( $post ) {
+		_deprecated_function( 'WPSEO_Post_Watcher::old_url_field', '9.1' );
 	}
 }
