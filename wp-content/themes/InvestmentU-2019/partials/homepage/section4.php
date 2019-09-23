@@ -6,23 +6,23 @@
                 <?php
                     $count = 0;
                     $the_query = new WP_Query(array(
-                        'post_type'=>'post', 
-                        'post_status'=>'publish', 
+                        'post_type'=>'post',
+                        'post_status'=>'publish',
                         'posts_per_page'=>3,
                         'category_name' => 'video',
                         'meta_key' => '_custom_post_order',
                         'orderby' => 'meta_value_num',
                         'order' => 'DESC'
-                    )); 
+                    ));
                     if( $the_query->have_posts() ):
-                    while ( $the_query->have_posts() ) : $the_query->the_post(); 
+                    while ( $the_query->have_posts() ) : $the_query->the_post();
                     if($count == 0) {
                 ?>
                 <div class="col-12 col-lg-6">
                     <div class="video-container">
-                        <?php 
+                        <?php
                             $wistia = get_field('video_wistia_code');
-                            $youtube = get_field('youtube_link'); 
+                            $youtube = get_field('youtube_link');
                         ?>
                         <?php if(!empty($wistia)) { ?>
                             <!-- Wistia Video -->
@@ -50,7 +50,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <a href="<?php the_permalink(); ?>">
                     <?php if ( has_post_thumbnail() ) { ?>
-                        <img src="<?php the_post_thumbnail_url(); ?>" class="featured-article-image img-fluid">
+                        <img src="<?php the_post_thumbnail_url('medium'); ?>" class="featured-article-image img-fluid">
                     <?php } else { ?>
                         <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="featured-article-image img-fluid" alt="<?php the_title(); ?>" />
                     <?php } ?>
@@ -67,7 +67,7 @@
                         <span><a href="<?php the_permalink(); ?>" class="readmore">Watch Now &raquo;</a></span>
                     </div>
                 </div>
-                
+
                 <?php }
 	    endwhile; endif; ?>
             </div>
