@@ -17,7 +17,7 @@
                 </a>
                 <a href="<?php the_permalink(); ?>">
                 <?php if ( has_post_thumbnail() ) { ?>
-                    <img src="<?php the_post_thumbnail_url('thumbnail'); ?>" class="featured-article-image img-fluid">
+                    <img src="<?php the_post_thumbnail_url('medium'); ?>" class="featured-article-image img-fluid">
                 <?php } else { ?>
                     <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="featured-article-image img-fluid" alt="<?php the_title(); ?>" />
                 <?php } ?>
