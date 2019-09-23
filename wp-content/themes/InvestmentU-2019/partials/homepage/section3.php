@@ -1,13 +1,13 @@
 <!-- lower article previews section -->
 <?php
     $the_query = new WP_Query(array(
-        'post_type'=>'post', 
-        'post_status'=>'publish', 
+        'post_type'=>'post',
+        'post_status'=>'publish',
         'posts_per_page'=>3,
         'offset' => 4,
         'category__not_in' => array( 7228 ),
-    )); 
-    
+    ));
+
 ?>
 <div class="container" id="section03">
     <div class="row my-4 row-eq-height">
@@ -17,7 +17,7 @@
                 </a>
                 <a href="<?php the_permalink(); ?>">
                 <?php if ( has_post_thumbnail() ) { ?>
-                    <img src="<?php the_post_thumbnail_url(); ?>" class="featured-article-image img-fluid">
+                    <img src="<?php the_post_thumbnail_url('thumbnail'); ?>" class="featured-article-image img-fluid">
                 <?php } else { ?>
                     <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="featured-article-image img-fluid" alt="<?php the_title(); ?>" />
                 <?php } ?>
@@ -26,7 +26,7 @@
                     <?php $category = get_the_category(); ?>
                     <?php if (in_category(array('dividend-stocks', 'marijuana-stocks', 'financial-freedom', 'financial-literacy', 'investment-opportunities', 'tech-stocks' ))) { ?>
                     <a href="<?= esc_url(home_url('/')); ?>/<?php echo $category[0]->slug; ?>/">
-                    <?php } else { ?> 
+                    <?php } else { ?>
                     <a href="<?= esc_url(home_url('/')); ?>/category/<?php echo $category[0]->slug; ?>/">
                     <?php } ?>
                         <span class="category-tag generic-color cat-<?php echo $category[0]->slug; ?>"><?php echo $category[0]->cat_name; ?></span>
@@ -39,8 +39,8 @@
                     <span><a href="<?php the_permalink(); ?>" class="readmore">Read More &raquo;</a></span>
                 </div>
             </div>
-        <?php endwhile; endif; ?>	
-        
+        <?php endwhile; endif; ?>
+
         <?php get_template_part('partials/homepage/homepage-sidead'); ?>
     </div>
 </div>

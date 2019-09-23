@@ -13,7 +13,7 @@
                                 <?php $date = get_the_date(); ?>
                                 <a href="<?php the_permalink(); ?>">
                                     <?php if ( has_post_thumbnail() ) { ?>
-                                        <img src="<?php the_post_thumbnail_url(); ?>" class="img-fluid">
+                                        <img src="<?php the_post_thumbnail_url('thumbnail'); ?>" class="img-fluid">
                                     <?php } else { ?>
                                         <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="img-fluid" alt="<?php the_title(); ?>" />
                                     <?php } ?>
