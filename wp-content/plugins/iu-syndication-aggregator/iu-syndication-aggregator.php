@@ -5,7 +5,7 @@ Plugin URI: https://investmentu.com/
 Description: Aggregate articles from syndication publishers 
 Author: George Zhao
 Author URI: https://oxfordclub.com/
-Version: 0.1
+Version: 0.1.3
 */
 
 // no direcct access
@@ -97,9 +97,26 @@ function iu_syndication_handler(WP_REST_Request $request) {
 		iu_syndication_update_meta($post_id, $yoast_meta_key, $yoast_meta_value);
 	}
 
+	// video
+	iu_syndication_handle_video_data($post_id, json_decode($post_body['video_data']));
+
 	echo $post_id;
 }
 
+
+/**
+ * handle video data
+ *
+ * @param [type] $post_id
+ * @param array $video_data
+ * @return void
+ */
+function iu_syndication_handle_video_data($post_id, $video_data=array()) {
+	if ($video_data['video_host'] == 'wistia' && $video_data['video_id'] != '') {
+		iu_syndication_update_meta($post_id, 'video_wistia_code', $video_data['video_id']);
+		iu_syndication_update_meta($post_id, '_video_wistia_code', 'field_5d13b09b2c0f0');
+	}
+}
 
 /**
  * update post meta values
