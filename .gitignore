@@ -19,6 +19,7 @@ wp-trackback.php
 xmlrpc.php
 iu-syndication-aggregator.php
 iu-syndication-configs.php
+
 wp-content/index.php
 wp-content/plugins/akismet/
 wp-content/plugins/hello.php
@@ -26,7 +27,7 @@ wp-content/plugins/index.php
 wp-content/themes/index.php
 wp-content/themes/twentyseventeen/
 wp-content/themes/twentysixteen/
-#wp-content/themes/twentynineteen/
+wp-content/themes/twentynineteen/
 
 wp-content/uploads
 wp-content/cache
