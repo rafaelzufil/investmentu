@@ -7,6 +7,7 @@
 
   <!-- IU Stylesheet -->
   <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
+  <script>try{Typekit.load({async:true});}catch(e){}</script>
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
