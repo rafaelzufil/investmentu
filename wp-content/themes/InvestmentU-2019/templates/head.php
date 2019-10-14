@@ -10,14 +10,11 @@
   <script>try{Typekit.load({async:true});}catch(e){}</script>
 
     <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
-  <!-- jQuery -->
-<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>-->
-
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/957989842b.js"></script>
+    <!-- jQuery -->
+    <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>-->
 
     <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
-<!--  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
+    <!--  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
 
   <style type="text/css">
    .search-form-wrapper {

@@ -19,7 +19,7 @@
             <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
                 <a href="<?php the_permalink(); ?>">
                 <?php if ( has_post_thumbnail() ) { ?>
-                    <img src="<?php the_post_thumbnail_url('medium_large'); ?>" class="big-featured-article-image img-fluid first-post">
+                    <img src="<?php the_post_thumbnail_url('medium'); ?>" class="big-featured-article-image img-fluid first-post">
                 <?php } else { ?>
                     <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="big-featured-article-image img-fluid first-post" alt="<?php the_title(); ?>" />
                 <?php } ?>

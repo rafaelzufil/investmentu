@@ -79,9 +79,12 @@
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+<?php // moved it here from the head.php file ?>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/957989842b.js"></script>
+
 <script>
 // Homepage Author Carousel
-
 <?php
 // more details about how to properly add jQuery code in WP templates here: https://digwp.com/2011/09/using-instead-of-jquery-in-wordpress/
 ?>
