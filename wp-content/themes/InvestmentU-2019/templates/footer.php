@@ -82,26 +82,30 @@
 <script>
 // Homepage Author Carousel
 
+<?php
+// more details about how to properly add jQuery code in WP templates here: https://digwp.com/2011/09/using-instead-of-jquery-in-wordpress/
+?>
+(function($) {
 //    $('#myCarousel').carousel({
 //   interval: 10000
 // })
 
-$('.carousel .carousel-item').each(function(){
-    var minPerSlide = 3;
-    var next = $(this).next();
-    if (!next.length) {
-    next = $(this).siblings(':first');
-    }
-    next.children(':first-child').clone().appendTo($(this));
-    
-    for (var i=0;i<minPerSlide;i++) {
-        next=next.next();
+    $('.carousel .carousel-item').each(function(){
+        var minPerSlide = 3;
+        var next = $(this).next();
         if (!next.length) {
-        	next = $(this).siblings(':first');
-      	}
-        
+            next = $(this).siblings(':first');
+        }
         next.children(':first-child').clone().appendTo($(this));
-      }
-});
 
-   </script>
+        for (var i=0;i<minPerSlide;i++) {
+            next=next.next();
+            if (!next.length) {
+                next = $(this).siblings(':first');
+            }
+
+            next.children(':first-child').clone().appendTo($(this));
+        }
+    });
+}) (jQuery);
+</script>

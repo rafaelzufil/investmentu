@@ -215,12 +215,3 @@ function revive_zone($location) {
 
   return $zone;
 }
-
-
-///**
-// * De-register on the frontend the default WordPress jQuery library
-// */
-//if ( !is_admin() ) {
-//    wp_dequeue_script('jquery');
-//    wp_deregister_script('jquery');
-//}

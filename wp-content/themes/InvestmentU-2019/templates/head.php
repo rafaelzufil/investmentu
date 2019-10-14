@@ -9,12 +9,14 @@
   <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
   <script>try{Typekit.load({async:true});}catch(e){}</script>
 
+    <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
   <!-- jQuery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>-->
 
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/957989842b.js"></script>
 
+    <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
 <!--  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
 
   <style type="text/css">
@@ -30,33 +32,7 @@
       display: block;
   }
   </style>
-  <script type="text/javascript">
-    $( document ).ready(function() {
-      $('[data-toggle=search-form]').click(function() {
-          $('.navbar').toggleClass('mb-5');
-          $('.search-form-wrapper').toggleClass('open');
-          $('.search-form-wrapper .search').focus();
-          $('html').toggleClass('search-form-open');
-        });
-        $('[data-toggle=search-form-close]').click(function() {
-          $('.search-form-wrapper').removeClass('open');
-          $('html').removeClass('search-form-open');
-        });
-      $('.search-form-wrapper .search').keypress(function( event ) {
-        if($(this).val() == "Search") $(this).val("");
-      });
 
-      $('.search-close').click(function(event) {
-        $('.search-form-wrapper').removeClass('open');
-        $('html').removeClass('search-form-open');
-      });
-    });
-  </script>
-  <script>
-      $(document).ready(function() {
-          $('p:has(img.aligncenter)').addClass('aligncenter');
-      });
-  </script>
   <?php if (is_home()) { ?>
     <style>
         .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
@@ -74,4 +50,36 @@
   <!-- End Google Tag Manager -->
 
   <?php wp_head(); ?>
+
+    <?php
+    // moved it here to make sure that this appears after the jQuery library is loaded!!!
+    // more details here: https://digwp.com/2011/09/using-instead-of-jquery-in-wordpress/
+    ?>
+    <script type="text/javascript">
+        jQuery( document ).ready(function( $ ) {
+            $('[data-toggle=search-form]').click(function() {
+                $('.navbar').toggleClass('mb-5');
+                $('.search-form-wrapper').toggleClass('open');
+                $('.search-form-wrapper .search').focus();
+                $('html').toggleClass('search-form-open');
+            });
+            $('[data-toggle=search-form-close]').click(function() {
+                $('.search-form-wrapper').removeClass('open');
+                $('html').removeClass('search-form-open');
+            });
+            $('.search-form-wrapper .search').keypress(function( event ) {
+                if($(this).val() == "Search") $(this).val("");
+            });
+
+            $('.search-close').click(function(event) {
+                $('.search-form-wrapper').removeClass('open');
+                $('html').removeClass('search-form-open');
+            });
+        });
+    </script>
+    <script>
+        jQuery(document).ready(function( $ ) {
+            $('p:has(img.aligncenter)').addClass('aligncenter');
+        });
+    </script>
 </head>
