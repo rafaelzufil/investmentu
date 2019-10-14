@@ -217,10 +217,10 @@ function revive_zone($location) {
 }
 
 
-/**
- * De-register on the frontend the default WordPress jQuery library
- */
-if ( !is_admin() ) {
-    wp_dequeue_script('jquery');
-    wp_deregister_script('jquery');
-}
+///**
+// * De-register on the frontend the default WordPress jQuery library
+// */
+//if ( !is_admin() ) {
+//    wp_dequeue_script('jquery');
+//    wp_deregister_script('jquery');
+//}
