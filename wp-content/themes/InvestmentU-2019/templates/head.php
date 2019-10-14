@@ -2,7 +2,7 @@
  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
   <!-- IU Stylesheet -->
@@ -15,7 +15,7 @@
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/957989842b.js"></script>
 
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!--  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
 
   <style type="text/css">
    .search-form-wrapper {
@@ -57,14 +57,14 @@
           $('p:has(img.aligncenter)').addClass('aligncenter');
       });
   </script>
-  <?php if (is_home()) { ?> 
+  <?php if (is_home()) { ?>
     <style>
         .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
             display: none;
         }
     </style>
   <?php } ?>
-  
+
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
