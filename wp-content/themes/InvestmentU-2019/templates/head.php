@@ -63,7 +63,7 @@
     </script>
 
     <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/957989842b.js"></script>
+    <!-- <script src="https://kit.fontawesome.com/957989842b.js"></script> -->
 
     <?php
     // moved it here to make sure that this appears after the jQuery library is loaded!!!

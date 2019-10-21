@@ -9,7 +9,7 @@
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
 
           <div class="navbar-form navbar-right">
-              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
+              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><img src="/wp-content/uploads/2019/10/002-magnifying-glass.svg" class="search-icon" alt="Search" aria-hidden="true"></a>
           </div>
 
     </div>
@@ -33,7 +33,7 @@
       ?>
       <ul class="nav nav-social d-sm-none d-lg-flex">
         <li class="nav-item">
-          <a class="nav-link" href="https://www.facebook.com/investmentu/"><i class="fab fa-facebook-square"></i></a>
+          <a class="nav-link" href="https://www.facebook.com/investmentu/"><img src="/wp-content/uploads/2019/10/001-facebook.svg" class="facebook-icon" alt="Facebook"></a>
         </li>
         <!-- <li class="nav-item">
           <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
@@ -41,7 +41,7 @@
         <li class="nav-item d-none d-lg-inline-block">
           <div id="navbar" class="navbar-collapse collapse">
             <div class="hidden-xs navbar-form navbar-right">
-                <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><i class="fa fa-search" aria-hidden="true"></i></a>
+                <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><img src="/wp-content/uploads/2019/10/002-magnifying-glass.svg" class="search-icon" alt="Search" aria-hidden="true"></a>
             </div>
           </div>
         </li>
