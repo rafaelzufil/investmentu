@@ -215,3 +215,12 @@ function revive_zone($location) {
 
   return $zone;
 }
+
+
+/**
+ * Disable AddToAny share script on certain pages
+ */
+
+if (is_page_template(array('home.php', 'template-category.php'))) {
+    add_filter( 'addtoany_script_disabled', '__return_true' );
+}
