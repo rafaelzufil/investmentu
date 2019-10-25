@@ -93,3 +93,8 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 <?php else: ?>
   <hr style="color:#bdbdbd" class="my-0"/>
 <?php endif; ?>
+
+
+<?php if (is_page_template(array('home.php', 'template-category.php'))): ?>
+    <h1>Disable AddToThis!!!</h1>
+<?php endif; ?>

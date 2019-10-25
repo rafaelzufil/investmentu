@@ -220,9 +220,9 @@ function revive_zone($location) {
 /**
  * Disable AddToAny share script on certain pages
  */
-add_filter( 'addtoany_script_disabled', disableAddToAnySccripts );
+add_filter( 'addtoany_script_disabled', disableAddToAnyScripts, 999);
 
-function disableAddToAnySccripts() {
+function disableAddToAnyScripts() {
     if (is_page_template(array('home.php', 'template-category.php'))) {
         return true;
     }
