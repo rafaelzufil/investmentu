@@ -96,9 +96,9 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 <?php $page_template_slug = get_page_template_slug( get_queried_object_id() ); ?>
 <?php $page_template = get_page_template(); ?>
-<?php $is_front_page = $is_front_page(); ?>
+<?php $is_front_page = is_front_page(); ?>
 <?php $is_single = is_single(); ?>
 <h1>Page Template: <?php echo $page_template; ?></h1>
 <h1>Page Template Slug: <?php echo $page_template_slug; ?></h1>
-<h1>Is Front Page: <?php echo $is_front_page; ?></h1>
-<h1>Is Single: <?php echo $is_single; ?></h1>
+<h1>Is Front Page: <?php echo ($is_front_page ? 'YES' : 'NO'); ?></h1>
+<h1>Is Single: <?php echo ($is_single ? 'YES' : 'NO'); ?></h1>
