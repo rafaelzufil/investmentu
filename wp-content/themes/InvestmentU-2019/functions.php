@@ -223,7 +223,7 @@ function revive_zone($location) {
 add_filter( 'addtoany_script_disabled', disableAddToAnyScripts, 999);
 
 function disableAddToAnyScripts() {
-    if (is_page_template(array('home.php', 'template-category.php'))) {
+    if (is_page_template(array('home.php', 'page.php', 'template-category.php'))) {
         return true;
     }
 }
