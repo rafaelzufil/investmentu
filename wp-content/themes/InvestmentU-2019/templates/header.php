@@ -97,4 +97,6 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 <?php if (is_page_template(array('home.php', 'template-category.php'))): ?>
     <h1>Disable AddToThis!!!</h1>
+<?php else: ?>
+    <h1>AddToThis not diabled!!!</h1>
 <?php endif; ?>
