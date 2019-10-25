@@ -9,7 +9,9 @@
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
 
           <div class="navbar-form navbar-right">
-              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><img src="/wp-content/uploads/2019/10/002-magnifying-glass.svg" class="search-icon" alt="Search" aria-hidden="true"></a>
+              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
+                  <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-search.svg" class="search-icon" alt="Search" aria-hidden="true" style="max-width: 25px;">
+              </a>
           </div>
 
     </div>
@@ -33,15 +35,21 @@
       ?>
       <ul class="nav nav-social d-sm-none d-lg-flex">
         <li class="nav-item">
-          <a class="nav-link" href="https://www.facebook.com/investmentu/"><img src="/wp-content/uploads/2019/10/001-facebook.svg" class="facebook-icon" alt="Facebook"></a>
+          <a class="nav-link" href="https://www.facebook.com/investmentu/" aria-label="Facebook">
+              <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-facebook.svg" class="facebook-icon" alt="Facebook" style="max-width: 25px;">
+          </a>
         </li>
         <!-- <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
+          <a class="nav-link" href="#" aria-label="Twitter">
+            <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-twitter.svg" class="twitter-icon" alt="Twitter" style="max-width: 25px;">
+          </a>
         </li> -->
         <li class="nav-item d-none d-lg-inline-block">
           <div id="navbar" class="navbar-collapse collapse">
             <div class="hidden-xs navbar-form navbar-right">
-                <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form"><img src="/wp-content/uploads/2019/10/002-magnifying-glass.svg" class="search-icon" alt="Search" aria-hidden="true"></a>
+                <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
+                    <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-search.svg" class="search-icon" alt="Search"  style="max-width: 25px;">
+                </a>
             </div>
           </div>
         </li>
