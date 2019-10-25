@@ -94,9 +94,9 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
   <hr style="color:#bdbdbd" class="my-0"/>
 <?php endif; ?>
 
-
+<h1><?php echo get_page_template(); ?></h1>
 <?php if (is_page_template(array('home.php', 'template-category.php'))): ?>
     <h1>Disable AddToThis!!!</h1>
 <?php else: ?>
-    <h1>AddToThis not diabled!!!</h1>
+    <h1>AddToThis not disabled!!!</h1>
 <?php endif; ?>
