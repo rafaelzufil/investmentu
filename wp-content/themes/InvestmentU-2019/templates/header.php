@@ -94,5 +94,7 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
   <hr style="color:#bdbdbd" class="my-0"/>
 <?php endif; ?>
 
-<?php $page_template = get_page_template_slug( get_queried_object_id() ); ?>
-<h1><?php echo $page_template; ?></h1>
+<?php $page_template_slug = get_page_template_slug( get_queried_object_id() ); ?>
+<?php $page_template = get_page_template(); ?>
+<h1>Page Template: <?php echo $page_template; ?></h1>
+<h1>Page Template Slug: <?php echo $page_template_slug; ?></h1>
