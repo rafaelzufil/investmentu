@@ -93,3 +93,6 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 <?php else: ?>
   <hr style="color:#bdbdbd" class="my-0"/>
 <?php endif; ?>
+
+<?php $page_template = get_page_template_slug( get_queried_object_id() ); ?>
+<h1><?php echo $page_template; ?></h1>
