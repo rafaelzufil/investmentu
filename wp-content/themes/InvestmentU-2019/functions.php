@@ -220,7 +220,10 @@ function revive_zone($location) {
 /**
  * Disable AddToAny share script on certain pages
  */
+add_filter( 'addtoany_script_disabled', disableAddToAnySccripts );
 
-if (is_page_template(array('home.php', 'template-category.php'))) {
-    add_filter( 'addtoany_script_disabled', '__return_true' );
+function disableAddToAnySccripts() {
+    if (is_page_template(array('home.php', 'template-category.php'))) {
+        return true;
+    }
 }
