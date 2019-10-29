@@ -227,3 +227,9 @@ function disableAddToAnyScripts() {
         return true;
     }
 }
+
+/**
+ * Custom image sizes
+ */
+
+add_image_size('related-posts-thumbnail', 600, 9999);
