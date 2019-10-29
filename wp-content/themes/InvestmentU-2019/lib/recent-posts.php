@@ -90,7 +90,7 @@ function IU_top_posts_shortcode($atts, $content = null) {
 	foreach($posts as $post) {
 
     if ( has_post_thumbnail() ) {
-        $img_url = get_the_post_thumbnail_url();
+        $img_url = get_the_post_thumbnail_url(null, 'related-posts-thumbnail');
     } else {
         $img_url = 'https://s3.amazonaws.com/assets.investmentu.com/images/iu-default-image.jpg';
     }
