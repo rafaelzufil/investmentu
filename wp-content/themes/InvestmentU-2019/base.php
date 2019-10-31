@@ -15,12 +15,7 @@ use Roots\Sage\Wrapper;
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <style type="text/css">
-      .container ins center a img {
-        width: 100%
-      }
-    </style>
-
+    
     <!--[if IE]>
       <div class="alert alert-warning">
         <?php _e('You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.', 'sage'); ?>
