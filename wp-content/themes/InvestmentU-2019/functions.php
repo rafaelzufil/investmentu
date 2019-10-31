@@ -238,3 +238,11 @@ add_image_size('related-posts-thumbnail', 600, 9999);
 if( function_exists('acf_add_options_page') ) {
 	acf_add_options_page();
 }
+
+function is_gtm_enabled() {
+  return get_field('gtm_enabled', 'option');
+}
+
+function get_gtm_code() {
+  return get_field('gtm_code', 'option');
+}
