@@ -913,7 +913,7 @@ function cfsnip_dialog() {
 <html>
 	<head>
 		<title><?php _e('Select Snippet', 'cfsp'); ?></title>
-		<script type="text/javascript" src="<?php echo includes_url('js/jquery/jquery.js'); ?>"></script>
+		<!-- <script type="text/javascript" src="<?php #echo includes_url('js/jquery/jquery.js'); ?>"></script> -->
 		<script type="text/javascript" src="<?php echo includes_url('js/tinymce/tiny_mce_popup.js'); ?>"></script>
 		<script type='text/javascript' src='<?php echo includes_url('js/quicktags.js'); ?>'></script>
 		<script type="text/javascript">

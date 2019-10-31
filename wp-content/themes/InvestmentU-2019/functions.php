@@ -66,11 +66,11 @@ function get_related_author_posts() {
     $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
      if ( !empty($thumb) ) {
         $thumb = get_the_post_thumbnail_url($authors_post->ID, 'post-thumbnail');
-     } else { 
+     } else {
         $thumb = 'https://s3.amazonaws.com/assets.investmentu.com/iu-default-image.jpg';
-     } 
+     }
 
-    // $postdate = 
+    // $postdate =
     $output .= '<div class="col-12 col-sm-6 col-lg-3">
     <a href="'. get_permalink( $authors_post->ID ) .'#">
     <img src="'. $thumb .'" class="small-featured-article-image img-fluid">
@@ -216,7 +216,26 @@ function revive_zone($location) {
   return $zone;
 }
 
-// Enable options page
+/**
+ * Disable AddToAny share script on certain pages
+ */
+add_filter( 'addtoany_script_disabled', disableAddToAnyScripts, 999);
+
+function disableAddToAnyScripts() {
+    if (!is_single()) {
+        return true;
+    }
+}
+
+/**
+ * Custom image sizes
+ */
+
+add_image_size('related-posts-thumbnail', 600, 9999);
+
+/**
+ * Enable ACF options page
+ */
 if( function_exists('acf_add_options_page') ) {
 	acf_add_options_page();
 }

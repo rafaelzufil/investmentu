@@ -1,4 +1,5 @@
 .DS_Store
+.idea/*
 */.DS_Store
 ./index.php
 wp-activate.php
