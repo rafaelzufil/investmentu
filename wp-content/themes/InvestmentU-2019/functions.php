@@ -240,7 +240,7 @@ if( function_exists('acf_add_options_page') ) {
 }
 
 function is_gtm_enabled() {
-  return get_field('gtm_enabled', 'option');
+  return get_field('gtm_enabled', 'option') && !isset($_GET['disable_gtm']);
 }
 
 function get_gtm_code() {
