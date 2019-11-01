@@ -13,7 +13,7 @@
         <?php
 
           $zone = revive_zone('sidebar');
-          revive_display( $zone );
+          iu_revive_display( $zone );
 
          ?>
 

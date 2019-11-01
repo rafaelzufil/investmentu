@@ -246,3 +246,15 @@ function is_gtm_enabled() {
 function get_gtm_code() {
   return get_field('gtm_code', 'option');
 }
+
+function iu_revive_display( $id ) {
+  if (!function_exists('revive_display')) {
+    return;
+  }
+
+  if (isset($_GET['disable_revive'])) {
+    return;
+  }
+
+  revive_display( $id );
+}

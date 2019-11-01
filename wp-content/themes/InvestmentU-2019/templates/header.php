@@ -85,7 +85,7 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
   <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
     <div class="row">
       <div class="container">
-        <?php revive_display( 1 ); ?>
+        <?php iu_revive_display( 1 ); ?>
       </div>
     </div>
   </div>
