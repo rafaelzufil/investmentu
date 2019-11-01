@@ -23,7 +23,7 @@
                                     <div class="col-lg-2">
                                         <div class="headshot-wrapper">
                                             <a href="<?php the_sub_field('expert_page_link'); ?>" title="<?php the_sub_field('expert_name'); ?>" class="thumb">
-                                            <img class="img-fluid headshot" src="<?php the_sub_field('expert_headshot'); ?>" alt="<?php the_sub_field('expert_name'); ?>">
+                                            <img class="img-fluid headshot" src="<?php the_sub_field('expert_headshot'); ?>" alt="<?php the_sub_field('expert_name'); ?>" data-ignore>
                                             </a>
                                         </div>
                                         <div class="title-wrapper"><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></a></p>
@@ -32,7 +32,7 @@
                                 </div>
                             <?php $count++; ?>
                             <?php endwhile; ?>
-                        <?php endif; ?>      
+                        <?php endif; ?>
                 </div>
             <?php endwhile; endif; ?>
             <a class="carousel-control-prev w-auto" href="#expertCarousel" role="button" data-slide="prev">
