@@ -14,8 +14,6 @@
         <?php if( $the_query->have_posts() ): while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
             <div class="col-12 col-md-4 col-lg-3">
                 <a href="<?php the_permalink(); ?>" class="featured-article-image">
-                </a>
-                <a href="<?php the_permalink(); ?>">
                 <?php if ( has_post_thumbnail() ) { ?>
                     <img src="<?php the_post_thumbnail_url('related-posts-thumbnail'); ?>" class="featured-article-image img-fluid">
                 <?php } else { ?>
