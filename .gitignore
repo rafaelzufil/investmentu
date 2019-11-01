@@ -44,6 +44,10 @@ wp-content/advanced-cache.php
 # wp-content/plugins/oc-support
 # wp-content/plugins/w3-total-cache
 
+wp-content/plugins/shins-pageload-magic/vendor/shinsenter/defer.php/cache/
+wp-content/webp-express/
+wp-content/wphb-cache/
+
 **/.sass-cache
 **/.sass-cache/*
 
