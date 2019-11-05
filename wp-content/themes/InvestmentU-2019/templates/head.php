@@ -11,59 +11,34 @@
     <?php // TypeKit fonts (should be ok for AMP based pages as well as these custom fonts are whitelisted in AMP) ?>
     <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
-    <?php // TODO: AMP: probably better to create a custom.css with all the duplicate CSS below and inlude using PHP include in both if / else branches ?>
-    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-        <!-- AMP custom styles - includes AMP Bootstrap & main.css -->
-        <style amp-custom>
-            <?php
-                // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
-                include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
+    <?php // TODO: AMP: revise these styles ?>
+    <style type="text/css">
+        <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
+            // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
+            include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
 
-                // Main stylesheets
-                include '../assets/styles/main.css';
-            ?>
+            // Main stylesheets
+            include '../assets/styles/main.css';
+        endif; ?>
 
+        .search-form-wrapper {
+            display: none;
+            position: absolute;
+            left: 0; right: 0;
+            padding: 20px 15px;
+            margin-top: 50px;
+        }
 
+        .search-form-wrapper.open {
+            display: block;
+        }
 
-            .search-form-wrapper {
-                display: none;
-                position: absolute;
-                left: 0; right: 0;
-                padding: 20px 15px;
-                margin-top: 50px;
-            }
-
-            .search-form-wrapper.open {
-                display: block;
-            }
-
-            <?php if (is_home()) { ?>
-            .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
-                display: none;
-            }
-            <?php } ?>
-        </style>
-    <?php else: ?>
-        <style type="text/css">
-            .search-form-wrapper {
-                display: none;
-                position: absolute;
-                left: 0; right: 0;
-                padding: 20px 15px;
-                margin-top: 50px;
-            }
-
-            .search-form-wrapper.open {
-                display: block;
-            }
-
-            <?php if (is_home()) { ?>
-            .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
-                display: none;
-            }
-            <?php } ?>
-        </style>
-    <?php endif; ?>
+        <?php if (is_home()) { ?>
+        .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
+            display: none;
+        }
+        <?php } ?>
+    </style>
 
     <?php if (is_gtm_enabled()): ?>
         <!-- Google Tag Manager -->
