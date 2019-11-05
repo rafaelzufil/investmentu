@@ -51,4 +51,20 @@
     <?php endif ?>
 
     <?php wp_head(); ?>
+
+    <!--
+    >>>>> TEST <<<<<
+
+        <?php echo $_SERVER['DOCUMENT_ROOT']; ?>
+
+    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
+        // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
+        include $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/amp-bootstrap/css/bootstrap-amp.min.css';
+        //echo $bootstrap_css;
+
+        // Main stylesheets
+        include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/styles/main.css';
+        //echo $main_css;
+    endif; ?>
+    -->
 </head>
