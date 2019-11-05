@@ -13,14 +13,6 @@
 
     <?php // TODO: AMP: revise these styles ?>
     <style type="text/css">
-        <?php //if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
-            // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
-            //include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
-
-            // Main stylesheets
-            //include '../assets/styles/main.css';
-        //endif; ?>
-
         .search-form-wrapper {
             display: none;
             position: absolute;
@@ -59,16 +51,4 @@
     <?php endif ?>
 
     <?php wp_head(); ?>
-
-    <!--
-    >>>>> TEST <<<<<
-
-    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
-    // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
-    include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
-
-    // Main stylesheets
-    include '../assets/styles/main.css';
-    endif; ?>
-    -->
 </head>
