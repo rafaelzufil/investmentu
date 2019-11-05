@@ -1,1 +1,0 @@
-For the full AMP Bootstrap project go here: https://github.com/jupeter/bootstrap

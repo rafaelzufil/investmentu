@@ -265,3 +265,10 @@ function iu_revive_display( $id ) {
 
   revive_display( $id );
 }
+
+function iu_site_url() {
+    $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ||
+        $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $domainName = $_SERVER['HTTP_HOST'];
+    return $protocol.$domainName;
+}

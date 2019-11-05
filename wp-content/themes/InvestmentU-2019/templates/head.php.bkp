@@ -34,10 +34,6 @@
             display: block;
         }
 
-        .container ins center a img {
-            width: 100%
-        }
-
         <?php if (is_home()) { ?>
         .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
             display: none;
@@ -64,8 +60,4 @@
     <?php endif ?>
 
     <?php wp_head(); ?>
-
-    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-        <script async custom-element="amp-script" src="https://cdn.ampproject.org/v0/amp-script-0.1.js"></script>
-    <?php endif; ?>
 </head>
