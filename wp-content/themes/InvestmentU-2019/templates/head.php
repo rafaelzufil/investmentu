@@ -22,6 +22,10 @@
             include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/styles/main.css';
         endif; ?>
 
+        .container ins center a img {
+            width: 100%
+        }
+
         .search-form-wrapper {
             display: none;
             position: absolute;
@@ -32,10 +36,6 @@
 
         .search-form-wrapper.open {
             display: block;
-        }
-
-        .container ins center a img {
-            width: 100%
         }
 
         <?php if (is_home()) { ?>

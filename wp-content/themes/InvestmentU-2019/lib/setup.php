@@ -104,9 +104,9 @@ function display_sidebar() {
 function assets() {
     if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()) {
         // TODO: AMP: revise these - disabled jQuery for AMP pages
-        // TODO: AMP: jQuery for AMP pages is now included in iu-amp.js (which is loaded in base.php)
 
-        // custom styles / JS are handled elsewhere for AMP pages (look in base.php, head.php and iu-amp.js)
+        // custom styles / JS are loaded elsewhere for AMP pages
+        // (look in base.php, head.php and look for any <amp-script> tags in the templates)
 
         // de-register jQuery
         wp_dequeue_script('jquery');
