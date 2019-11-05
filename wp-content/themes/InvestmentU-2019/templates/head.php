@@ -16,14 +16,14 @@
         <!-- AMP custom styles - includes AMP Bootstrap & main.css -->
         <style amp-custom>
             <?php
-//                // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
-//                $bootstrap_css = include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
-//                echo $bootstrap_css;
-//
-//                // Main stylesheets
-//                $main_css = include '../assets/styles/main.css';
-//                echo $main_css;
+                // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
+                include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
+
+                // Main stylesheets
+                include '../assets/styles/main.css';
             ?>
+
+
 
             .search-form-wrapper {
                 display: none;
