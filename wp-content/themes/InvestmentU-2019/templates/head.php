@@ -13,10 +13,13 @@
     <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
     <style type="text/css">
-        <?php // TODO: AMP: use a dumbed down version of this - rebuild Bootstrap CSS / JS from source files (disable what's not needed) ?>
-        <?php // Bootstrap 4.1.3 for AMP pages (same version as the one for non-AMP pages, but loaded from the server ?>
         <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
-        include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/bootstrap-4.1.3/css/bootstrap.min.css';
+            // TODO: AMP: use a dumbed down version of this - rebuild Bootstrap CSS / JS from source files (disable what's not needed)
+            // Bootstrap 4.1.3 for AMP pages (same version as the one for non-AMP pages, but loaded from the server
+            include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/bootstrap-4.1.3/css/bootstrap.min.css';
+
+            // main stylesheet
+            include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/styles/main.css';
         endif; ?>
 
         .search-form-wrapper {
