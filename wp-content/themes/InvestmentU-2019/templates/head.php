@@ -8,7 +8,7 @@
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <?php endif; ?>
 
-    <?php // TypeKit fonts (should be ok for AMP based pages as well as these custom fonts are whitelistes in AMP) ?>
+    <?php // TypeKit fonts (should be ok for AMP based pages as well as these custom fonts are whitelisted in AMP) ?>
     <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
     <?php // TODO: AMP: probably better to create a custom.css with all the duplicate CSS below and inlude using PHP include in both if / else branches ?>
@@ -43,7 +43,7 @@
             }
             <?php } ?>
         </style>
-    <? else: ?>
+    <?php else: ?>
         <style type="text/css">
             .search-form-wrapper {
                 display: none;
