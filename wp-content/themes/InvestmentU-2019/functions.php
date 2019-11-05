@@ -32,11 +32,18 @@ foreach ($sage_includes as $file) {
 unset($file, $filepath);
 
 function roots_scripts() {
-  //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
-  wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
+    if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()) {
+        // TODO: AMP: need to handle email validation (like on the else bracnh below for AMP pages, probably somewhere else
+        // TODO: AMP: either by using Vanila JS cor email validation inside <amp-script>
+        // TODO: AMP: or by combining all JS inside a single script (jQuery too) and include that inside an <amp-script> in head.php
+    } else {
+        //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
+        wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
+    }
 
-  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
-  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick.css', false, '1');
+    // NOTE: commented out these - not used on the site probably
+//  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
+//  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick.css', false, '1');
 }
 add_action('wp_enqueue_scripts', 'roots_scripts', 100);
 

@@ -3,38 +3,65 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet preconnect" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <?php if (!(function_exists( 'is_amp_endpoint' ) && is_amp_endpoint())): ?>
+        <link rel="stylesheet preconnect" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <?php endif; ?>
 
-    <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
-    <!-- jQuery -->
-    <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>-->
+    <?php // TypeKit fonts (should be ok for AMP based pages as well as these custom fonts are whitelistes in AMP) ?>
+    <link rel="stylesheet" href="https://use.typekit.net/svc8hdj.css">
 
-    <?php // commented out this instance of jQuery since the default WordPress jQuery is also loaded ?>
-    <!--  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>-->
+    <?php // TODO: AMP: probably better to create a custom.css with all the duplicate CSS below and inlude using PHP include in both if / else branches ?>
+    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
+        <!-- AMP custom styles - includes AMP Bootstrap & main.css -->
+        <style amp-custom>
+            <?php
+                // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
+                include get_template_directory_uri() . '/assets/amp-bootstrap/css/bootstrap-amp.min.css';
 
-    <style type="text/css">
-        .search-form-wrapper {
-            display: none;
-            position: absolute;
-            left: 0;
-            right: 0;
-            padding: 20px 15px;
-            margin-top: 50px;
-        }
+                // Main stylesheets
+                include get_template_directory_uri() . '/assets/styles/main.css';
+            ?>
 
-        .search-form-wrapper.open {
-            display: block;
-        }
-    </style>
+            .search-form-wrapper {
+                display: none;
+                position: absolute;
+                left: 0; right: 0;
+                padding: 20px 15px;
+                margin-top: 50px;
+            }
 
-    <?php if (is_home()) { ?>
-        <style>
+            .search-form-wrapper.open {
+                display: block;
+            }
+
+            <?php if (is_home()) { ?>
             .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
                 display: none;
             }
+            <?php } ?>
         </style>
-    <?php } ?>
+    <? else: ?>
+        <style type="text/css">
+            .search-form-wrapper {
+                display: none;
+                position: absolute;
+                left: 0; right: 0;
+                padding: 20px 15px;
+                margin-top: 50px;
+            }
+
+            .search-form-wrapper.open {
+                display: block;
+            }
+
+            <?php if (is_home()) { ?>
+            .a2a_kit.a2a_kit_size_32.a2a_floating_style.a2a_default_style {
+                display: none;
+            }
+            <?php } ?>
+        </style>
+    <?php endif; ?>
 
     <?php if (is_gtm_enabled()): ?>
         <!-- Google Tag Manager -->
@@ -55,47 +82,4 @@
     <?php endif ?>
 
     <?php wp_head(); ?>
-
-    <!-- TypeKit Fonts-->
-    <link rel="stylesheet preconnect" href="https://use.typekit.net/svc8hdj.css">
-    <script>
-        try {
-            Typekit.load({async: true});
-        } catch (e) {}
-    </script>
-
-    <!-- Font Awesome -->
-    <!-- <script src="https://kit.fontawesome.com/957989842b.js"></script> -->
-
-    <?php
-    // moved it here to make sure that this appears after the jQuery library is loaded!!!
-    // more details here: https://digwp.com/2011/09/using-instead-of-jquery-in-wordpress/
-    ?>
-    <script type="text/javascript">
-        jQuery(document).ready(function ($) {
-            $('[data-toggle=search-form]').click(function () {
-                $('.navbar').toggleClass('mb-5');
-                $('.search-form-wrapper').toggleClass('open');
-                $('.search-form-wrapper .search').focus();
-                $('html').toggleClass('search-form-open');
-            });
-            $('[data-toggle=search-form-close]').click(function () {
-                $('.search-form-wrapper').removeClass('open');
-                $('html').removeClass('search-form-open');
-            });
-            $('.search-form-wrapper .search').keypress(function (event) {
-                if ($(this).val() == "Search") $(this).val("");
-            });
-
-            $('.search-close').click(function (event) {
-                $('.search-form-wrapper').removeClass('open');
-                $('html').removeClass('search-form-open');
-            });
-        });
-    </script>
-    <script>
-        jQuery(document).ready(function ($) {
-            $('p:has(img.aligncenter)').addClass('aligncenter');
-        });
-    </script>
 </head>
