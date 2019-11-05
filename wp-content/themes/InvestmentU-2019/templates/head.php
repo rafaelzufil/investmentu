@@ -17,10 +17,12 @@
         <style amp-custom>
             <?php
                 // AMP Bootstrap - Dumbed-down version of Bootstrap for AMP pages
-                include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
+                $bootstrap_css = include '../assets/amp-bootstrap/css/bootstrap-amp.min.css';
+                echo $bootstrap_css;
 
                 // Main stylesheets
-                include '../assets/styles/main.css';
+                $main_css = include '../assets/styles/main.css';
+                echo $main_css;
             ?>
 
             .search-form-wrapper {
