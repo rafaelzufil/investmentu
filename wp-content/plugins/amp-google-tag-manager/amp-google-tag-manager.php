@@ -28,27 +28,25 @@ function print_component() {
 		esc_attr( $GTM_CONTAINER_ID )
 	);
 }
-if (is_gtm_enabled()) {
-    add_action(
-        'wp_footer',
-        function () {
-            if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) {
-                print_component();
-            }
+add_action(
+    'wp_footer',
+    function () {
+        if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() && is_gtm_enabled() ) {
+            print_component();
         }
-    );
-    // Classic mode.
-    add_filter(
-        'amp_post_template_data',
-        function( $data ) {
-            $data['amp_component_scripts'] = array_merge(
-                $data['amp_component_scripts'],
-                array(
-                    'amp-analytics' => true,
-                )
-            );
-            return $data;
-        }
-    );
-    add_action( 'amp_post_template_footer', __NAMESPACE__ . '\print_component' );
-}
+    }
+);
+// Classic mode.
+add_filter(
+    'amp_post_template_data',
+    function( $data ) {
+        $data['amp_component_scripts'] = array_merge(
+            $data['amp_component_scripts'],
+            array(
+                'amp-analytics' => true,
+            )
+        );
+        return $data;
+    }
+);
+add_action( 'amp_post_template_footer', __NAMESPACE__ . '\print_component' );
