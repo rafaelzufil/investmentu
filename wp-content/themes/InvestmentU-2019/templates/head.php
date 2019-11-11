@@ -49,7 +49,7 @@
 
     <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
         <script async custom-element="amp-script" src="https://cdn.ampproject.org/v0/amp-script-0.1.js"></script>
-    <php elseif (is_gtm_enabled()): ?>
+    <?php elseif (is_gtm_enabled()): ?>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
                 w[l] = w[l] || [];
