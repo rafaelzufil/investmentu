@@ -1,7 +1,10 @@
 
 
 <!-- main nav -->
-<!-- main nav -->
+<?php // TODO: AMP: using <amp-script> to implement search form toggling behavior on AMP based pages ?>
+<?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
+<amp-script layout="container" src="<?php echo iu_site_url();?>/wp-content/themes/InvestmentU-2019/assets/scripts-amp/amp-search-form.js">
+<?php endif; ?>
 <nav class="navbar navbar-expand-lg navbar-light nav-fill">
     <a class="navbar-brand" href="<?= esc_url(home_url('/')); ?>">
       <img src="<?php bloginfo('template_directory');?>/assets/images/logo.png" alt="Investment U" class="mx-auto my-3 img-fluid" id="logo">
@@ -56,18 +59,13 @@
       </ul>
     </div>
 
-    <?php // TODO: AMP: using <amp-script> to implement search form toggling behavior on AMP based pages ?>
-    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-    <amp-script layout="container" src="<?php echo iu_site_url();?>/wp-content/themes/InvestmentU-2019/assets/scripts-amp/amp-search-form.js">
-    <?php endif; ?>
     <div class="search-form-wrapper col-lg-12">
       <?php get_search_form(); ?>
     </div>
-    <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-    </amp-script>
-    <?php endif; ?>
   </nav>
-
+<?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
+</amp-script>
+<?php endif; ?>
 
 <?php
 
