@@ -11,6 +11,12 @@ use Roots\Sage\Wrapper;
 <body <?php body_class(); ?>>
 
 <?php if (!(function_exists( 'is_amp_endpoint' ) && is_amp_endpoint())): ?>
+  <?php if (is_gtm_enabled()): ?>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<?php echo get_gtm_code() ?>"
+                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+  <?php endif ?>
     <?php // TODO: AMP: Conditional HTML comments are not allowed in AMP so this will only work on non-AMP pages ?>
     <!--[if IE]>
     <div class="alert alert-warning">
