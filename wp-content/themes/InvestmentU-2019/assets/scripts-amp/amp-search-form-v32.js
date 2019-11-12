@@ -30,6 +30,7 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 
 /* Custom jQuery("like") code */
 $(document).ready(function() {
+    // Search button
     $('.search-form-trigger').on('click', function () {
         if ($('.search-form-wrapper').css('display') == 'block') {
             $('.search-form-wrapper').css('display', 'none');
@@ -38,6 +39,15 @@ $(document).ready(function() {
         else {
             $('.search-form-wrapper').css('display', 'block');
             $('.navbar').css('margin-botom', '3rem');
+        }
+    });
+    // Navbar mobile button
+    $('.navbar-toggler').on('click', function () {
+        if ($('#collapse-nav').css('display') == 'block') {
+            $('#collapse-nav').css('display', 'none');
+        }
+        else {
+            $('#collapse-nav').css('display', 'block');
         }
     });
 });
