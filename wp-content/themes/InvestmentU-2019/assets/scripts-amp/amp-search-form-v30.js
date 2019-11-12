@@ -34,11 +34,17 @@ $(document).ready(function() {
         $('.search-form-wrapper').each(function () {
             if ($(this).css('display') == 'block') {
                 $(this).css('display', 'none');
-                $('.navbar').css('margin-botom', '');
             }
             else {
                 $(this).css('display', 'block');
-                $('.navbar').css('margin-botom', '3rem');
+            }
+        });
+        $('.navbar').each(function () {
+            if ($(this).css('margin-botom') == '3rem') {
+                $(this).css('margin-botom', '');
+            }
+            else {
+                $(this).css('margin-botom', '3rem');
             }
         });
     });
