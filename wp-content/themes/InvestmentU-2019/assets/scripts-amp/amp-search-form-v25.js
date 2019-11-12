@@ -11,19 +11,19 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 
 var searchFormTriggers = document.getElementsByClassName('search-form-trigger');
 for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
-    searchFormTriggers[i].addEventListener('click', function (e) {
+    searchFormTriggers[i].addEventListener('click', function (event) {
         var search = document.getElementsByClassName('search-form-wrapper'),
             navbar = document.getElementsByClassName('navbar');
         if (search[0].style.display == 'block') {
             search[0].style.display = 'none';
             navbar[0].style.marginBottom = '';
-        }
-        else {
+        } else {
             search[0].style.display = 'block';
             navbar[0].style.marginBottom = '3rem';
         }
 
-        e.preventDefault();
+        event.preventDefault();
+        return false;
     });
 }
 
