@@ -4,25 +4,23 @@
 console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<<<<<<<<<<<<<<<<<<<<<');
 
 /* Custom jQuery("like") code */
-$(document).ready(function() {
-    $('[data-toggle=search-form]').on('click', function () {
-        $('.navbar').toggleClass('mb-5');
-        $('.search-form-wrapper').toggleClass('open');
-        $('.search-form-wrapper .search').trigger('focus');
-        $('html').toggleClass('search-form-open');
-    });
+$('[data-toggle=search-form]').on('click', function () {
+    $('.navbar').toggleClass('mb-5');
+    $('.search-form-wrapper').toggleClass('open');
+    $('.search-form-wrapper .search').trigger('focus');
+    $('html').toggleClass('search-form-open');
+});
 
-    $('[data-toggle=search-form-close]').on('click', function () {
-        $('.search-form-wrapper').removeClass('open');
-        $('html').removeClass('search-form-open');
-    });
+$('[data-toggle=search-form-close]').on('click', function () {
+    $('.search-form-wrapper').removeClass('open');
+    $('html').removeClass('search-form-open');
+});
 
-    $('.search-form-wrapper .search').on('keypress', function (event) {
-        if ($(this).val() == "Search") $(this).val("");
-    });
+$('.search-form-wrapper .search').on('keypress', function (event) {
+    if ($(this).val() == "Search") $(this).val("");
+});
 
-    $('.search-close').on('click', function () {
-        $('.search-form-wrapper').removeClass('open');
-        $('html').removeClass('search-form-open');
-    });
+$('.search-close').on('click', function () {
+    $('.search-form-wrapper').removeClass('open');
+    $('html').removeClass('search-form-open');
 });
