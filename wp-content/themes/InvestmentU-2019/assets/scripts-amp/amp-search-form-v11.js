@@ -1,4 +1,4 @@
-var window = DedicatedWorkerGlobalScope.self; // added this because Web Workers don't have a window object
+var window = WorkerGlobalScope.self; // added this because Web Workers don't have a window object
 // more about the stuff above here: https://stackoverflow.com/questions/11219775/global-variable-in-web-worker
 // and here: https://developer.mozilla.org/en-US/docs/Web/API/DedicatedWorkerGlobalScope
 
