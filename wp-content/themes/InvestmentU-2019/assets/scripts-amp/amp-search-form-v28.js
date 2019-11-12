@@ -31,13 +31,15 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 /* Custom jQuery("like") code */
 $(document).ready(function() {
     $('.search-form-trigger').on('click', function () {
-        if ($('.search-form-wrapper').css('display') == 'block') {
-            $('.search-form-wrapper').css('display', 'none');
-            $('.navbar').css('margin-botom', '');
-        }
-        else {
-            $('.search-form-wrapper').css('display', 'block');
-            $('.navbar').css('margin-botom', '3rem');
-        }
+        $('.search-form-wrapper').each(function () {
+            if ($(this).css('display') == 'block') {
+                $(this).css('display', 'none');
+                $('.navbar').css('margin-botom', '');
+            }
+            else {
+                $(this).css('display', 'block');
+                $('.navbar').css('margin-botom', '3rem');
+            }
+        });
     });
 });
