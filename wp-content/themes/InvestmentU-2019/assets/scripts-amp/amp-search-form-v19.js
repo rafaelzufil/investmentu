@@ -14,7 +14,7 @@ document.getElementById('navbar').addEventListener('click', function () {
     if (search[0].style.display == 'block') {
         search[0].style.display = 'none';
     }
-    else if (search[0].style.display == 'none') {
+    else {
         search[0].style.display = 'block';
     }
 });
