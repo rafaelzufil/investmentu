@@ -11,7 +11,7 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 
 var searchFormTriggers = document.getElementsByClassName('search-form-trigger');
 for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
-    searchFormTriggers[i].addEventListener('click', function () {
+    searchFormTriggers[i].addEventListener('click', function (e) {
         var search = document.getElementsByClassName('search-form-wrapper'),
             navbar = document.getElementsByClassName('navbar');
         if (search[0].style.display == 'block') {
@@ -22,6 +22,8 @@ for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
             search[0].style.display = 'block';
             navbar[0].style.marginBottom = '3rem';
         }
+
+        e.preventDefault();
     });
 }
 
