@@ -1,1 +1,0 @@
-console.log('Testing: amp-search-form-v1.js');
