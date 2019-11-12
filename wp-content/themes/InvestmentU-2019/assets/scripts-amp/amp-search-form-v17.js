@@ -9,30 +9,34 @@ console.log(window);
 
 console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<<<<<<<<<<<<<<<<<<<<<');
 
-
-/* Just a simply test to check if ZebraJS works at all */
-$('amp-img#logo').remove();
-
-/* Custom jQuery("like") code */
-$(document).ready(function() {
-    $('.search-form-trigger').on('click', function () {
-        $('.navbar').toggleClass('mb-5');
-        $('.search-form-wrapper').toggleClass('open');
-        $('.search-form-wrapper .search').trigger('focus');
-        $('html').toggleClass('search-form-open');
-    });
-
-// $('[data-toggle=search-form-close]').on('click', function () {
-//     $('.search-form-wrapper').removeClass('open');
-//     $('html').removeClass('search-form-open');
-// });
-
-    $('.search-form-wrapper .search').on('keypress', function (event) {
-        if ($(this).val() == "Search") $(this).val("");
-    });
-
-    $('.search-close').on('click', function () {
-        $('.search-form-wrapper').removeClass('open');
-        $('html').removeClass('search-form-open');
-    });
+document.getElementById('navbar').addEventListener('click', function () {
+    var search = document.getElementsByClassName('search-form-wrapper');
+    search[0].style.display = 'block';
 });
+
+// /* Just a simply test to check if ZebraJS works at all */
+// $('amp-img#logo').remove();
+
+// /* Custom jQuery("like") code */
+// $(document).ready(function() {
+//     $('.search-form-trigger').on('click', function () {
+//         $('.navbar').toggleClass('mb-5');
+//         $('.search-form-wrapper').toggleClass('open');
+//         $('.search-form-wrapper .search').trigger('focus');
+//         $('html').toggleClass('search-form-open');
+//     });
+
+// // $('[data-toggle=search-form-close]').on('click', function () {
+// //     $('.search-form-wrapper').removeClass('open');
+// //     $('html').removeClass('search-form-open');
+// // });
+
+//     $('.search-form-wrapper .search').on('keypress', function (event) {
+//         if ($(this).val() == "Search") $(this).val("");
+//     });
+
+//     $('.search-close').on('click', function () {
+//         $('.search-form-wrapper').removeClass('open');
+//         $('html').removeClass('search-form-open');
+//     });
+// });
