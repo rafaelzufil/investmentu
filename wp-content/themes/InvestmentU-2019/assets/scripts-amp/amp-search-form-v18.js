@@ -11,7 +11,12 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 
 document.getElementById('navbar').addEventListener('click', function () {
     var search = document.getElementsByClassName('search-form-wrapper');
-    search[0].style.display = 'block';
+    if (search[0].style.display == 'block') {
+        search[0].style.display = 'none';
+    }
+    else if (search[0].style.display == 'none') {
+        search[0].style.display = 'block';
+    }
 });
 
 // /* Just a simply test to check if ZebraJS works at all */
