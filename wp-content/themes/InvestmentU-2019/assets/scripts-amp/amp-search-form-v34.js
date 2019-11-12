@@ -31,7 +31,7 @@ console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<
 /* Custom jQuery("like") code */
 $(document).ready(function() {
     // Search button
-    $('.search-form-trigger').on('click', function () {
+    $('.search-form-trigger').on('click', function (event) {
         if ($('.search-form-wrapper').css('display') == 'block') {
             $('.search-form-wrapper').css('display', 'none');
             $('.navbar').css('margin-bottom', '');
@@ -40,14 +40,18 @@ $(document).ready(function() {
             $('.search-form-wrapper').css('display', 'block');
             $('.navbar').css('margin-bottom', '3rem');
         }
+        event.preventDefault();
+        event.stopPropagation();
     });
     // Navbar mobile button
-    $('.navbar-toggler').on('click', function () {
+    $('.navbar-toggler').on('click', function (event) {
         if ($('#collapse-nav').css('display') == 'block') {
             $('#collapse-nav').css('display', 'none');
         }
         else {
             $('#collapse-nav').css('display', 'block');
         }
+        event.preventDefault();
+        event.stopPropagation();
     });
 });
