@@ -9,7 +9,7 @@ console.log(window);
 
 console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<<<<<<<<<<<<<<<<<<<<<');
 
-document.getElementById('navbar').addEventListener('click', function () {
+document.getElementsByClassName('search-form-trigger').addEventListener('click', function () {
     var search = document.getElementsByClassName('search-form-wrapper'),
         navbar = document.getElementsByClassName('navbar');
     if (search[0].style.display == 'block') {
