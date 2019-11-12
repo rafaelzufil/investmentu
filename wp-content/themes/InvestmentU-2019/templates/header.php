@@ -3,7 +3,7 @@
 <!-- main nav -->
 <?php // TODO: AMP: using <amp-script> to implement search form toggling behavior on AMP based pages ?>
 <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-<amp-script layout="container" src="<?php echo iu_site_url();?>/wp-content/themes/InvestmentU-2019/assets/scripts-amp/amp-search-form-v4.js">
+<amp-script layout="container" src="<?php echo iu_site_url();?>/wp-content/themes/InvestmentU-2019/assets/scripts-amp/amp-search-form-v5.js">
 <?php endif; ?>
 <nav class="navbar navbar-expand-lg navbar-light nav-fill">
     <a class="navbar-brand" href="<?= esc_url(home_url('/')); ?>">
@@ -12,7 +12,7 @@
     <div class="d-lg-none nav-search nav-item" style="text-align: right; margin-right: 1rem; font-size: 1.55rem; ">
 
           <div class="navbar-form navbar-right">
-              <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
+              <a href="#search" class="search-form-trigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
                   <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-search.svg" class="search-icon" alt="Search" aria-hidden="true" style="max-width: 25px;">
               </a>
           </div>
@@ -50,7 +50,7 @@
         <li class="nav-item d-none d-lg-inline-block">
           <div id="navbar" class="navbar-collapse collapse">
             <div class="hidden-xs navbar-form navbar-right">
-                <a href="#search" class="search-form-tigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
+                <a href="#search" class="search-form-trigger nav-link"  data-toggle="search-form" aria-label="Toggle search form">
                     <img src="/wp-content/themes/InvestmentU-2019/assets/images/icon-search.svg" class="search-icon" alt="Search"  style="max-width: 25px;">
                 </a>
             </div>
