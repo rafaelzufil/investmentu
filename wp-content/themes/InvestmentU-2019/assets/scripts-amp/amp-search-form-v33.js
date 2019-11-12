@@ -34,11 +34,11 @@ $(document).ready(function() {
     $('.search-form-trigger').on('click', function () {
         if ($('.search-form-wrapper').css('display') == 'block') {
             $('.search-form-wrapper').css('display', 'none');
-            $('.navbar').css('margin-botom', '');
+            $('.navbar').css('margin-bottom', '');
         }
         else {
             $('.search-form-wrapper').css('display', 'block');
-            $('.navbar').css('margin-botom', '3rem');
+            $('.navbar').css('margin-bottom', '3rem');
         }
     });
     // Navbar mobile button
