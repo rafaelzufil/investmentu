@@ -9,18 +9,21 @@ console.log(window);
 
 console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<<<<<<<<<<<<<<<<<<<<<');
 
-document.getElementsByClassName('search-form-trigger').addEventListener('click', function () {
-    var search = document.getElementsByClassName('search-form-wrapper'),
-        navbar = document.getElementsByClassName('navbar');
-    if (search[0].style.display == 'block') {
-        search[0].style.display = 'none';
-        navbar[0].style.marginBottom = '';
-    }
-    else {
-        search[0].style.display = 'block';
-        navbar[0].style.marginBottom = '3rem';
-    }
-});
+var searchFormTriggers = document.getElementsByClassName('search-form-trigger');
+for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
+    searchFormTriggers[i].addEventListener('click', function () {
+        var search = document.getElementsByClassName('search-form-wrapper'),
+            navbar = document.getElementsByClassName('navbar');
+        if (search[0].style.display == 'block') {
+            search[0].style.display = 'none';
+            navbar[0].style.marginBottom = '';
+        }
+        else {
+            search[0].style.display = 'block';
+            navbar[0].style.marginBottom = '3rem';
+        }
+    });
+}
 
 // /* Just a simply test to check if ZebraJS works at all */
 // $('amp-img#logo').remove();
