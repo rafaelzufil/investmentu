@@ -14,6 +14,7 @@ for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
     searchFormTriggers[i].addEventListener('click', function (event) {
         var search = document.getElementsByClassName('search-form-wrapper'),
             navbar = document.getElementsByClassName('navbar');
+
         if (search[0].style.display == 'block') {
             search[0].style.display = 'none';
             navbar[0].style.marginBottom = '';
@@ -23,7 +24,7 @@ for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
         }
 
         event.preventDefault();
-        return false;
+        event.stopPropagation();
     });
 }
 
