@@ -18,13 +18,13 @@
                     <amp-carousel
                       layout="fixed-height"
                       type="carousel"
-                      height="400"
+                      height="300"
                       autoplay
                       delay="2000">
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
                                 <?php while(have_rows('experts')) : the_row(); ?>
-                                    <div class="slide" style="height: 400px">
+                                    <div class="slide" style="height: 300px; width: 150px">
                                         <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
                                             width="150"
                                             height="150"
