@@ -16,7 +16,7 @@
             <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
                 <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
                     <amp-carousel class="carousel1"
-                      layout="responsive"
+                      layout="fixed-height"
                       height="260"
                       width="150"
                       type="slides">
