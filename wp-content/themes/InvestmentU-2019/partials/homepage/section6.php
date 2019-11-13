@@ -15,11 +15,11 @@
         <div class="row mx-auto my-auto">
             <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
                 <div id="expertCarousel" class="carousel slide w-25" data-ride="carousel">
-                    <amp-carousel class="carousel1"
-                      layout="responsive"
-                      height="260"
-                      width="150"
-                      type="slides">
+                    <amp-carousel height="260"
+                      type="carousel"
+                      layout="fixed-height"
+                      autoplay
+                      delay="2000">
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
                                 <?php while(have_rows('experts')) : the_row(); ?>
