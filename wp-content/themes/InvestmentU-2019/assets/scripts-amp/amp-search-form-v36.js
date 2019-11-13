@@ -36,7 +36,7 @@ $(document).ready(function() {
     $('.search-form-trigger').on('click', function (event) {
         if ($('.search-form-wrapper').css('display') == 'block') {
             $('.search-form-wrapper').css('display', 'none');
-            $('.navbar').css('marginBottom', '');
+            $('.navbar').css('marginBottom', false);
         }
         else {
             $('.search-form-wrapper').css('display', 'block');
