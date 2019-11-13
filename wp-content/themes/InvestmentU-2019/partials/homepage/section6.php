@@ -30,7 +30,8 @@
                                             height="150"
                                             alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
                                         <amp-fit-text width="100"
-                                            height="100">
+                                            height="100"
+                                            layout="responsive">
                                             <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
                                                 <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
                                             </a>
