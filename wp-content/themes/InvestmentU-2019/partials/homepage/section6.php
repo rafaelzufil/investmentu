@@ -18,7 +18,7 @@
                     <amp-carousel class="carousel1"
                       layout="responsive"
                       height="260"
-                      width="1100"
+                      width="150"
                       type="slides">
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
