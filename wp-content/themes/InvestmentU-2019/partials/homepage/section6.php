@@ -14,35 +14,37 @@
     <div class="container text-center my-3">
         <div class="row mx-auto my-auto">
             <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-                <amp-carousel class="carousel1"
-                  layout="responsive"
-                  height="260"
-                  width="1100"
-                  type="slides">
-                    <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
-                        <?php  if( have_rows('experts') ): ?>
-                            <?php while(have_rows('experts')) : the_row(); ?>
-                                <div class="slide">
-                                    <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
-                                        layout="responsive"
-                                        width="150"
-                                        height="150"
-                                        alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
-                                    <amp-fit-text layout="responsive"
-                                        width="150"
-                                        height="100">
-                                        <div class="title-wrapper">
-                                            <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
-                                                <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong>
-                                            </a>
-                                            <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
-                                        </div>
-                                    </amp-fit-text>
-                                </div>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                    <?php endwhile; endif; ?>
-                </amp-carousel>
+                <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
+                    <amp-carousel class="carousel1"
+                      layout="responsive"
+                      height="260"
+                      width="1100"
+                      type="slides">
+                        <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
+                            <?php  if( have_rows('experts') ): ?>
+                                <?php while(have_rows('experts')) : the_row(); ?>
+                                    <div class="slide">
+                                        <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
+                                            layout="responsive"
+                                            width="150"
+                                            height="150"
+                                            alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
+                                        <amp-fit-text layout="responsive"
+                                            width="150"
+                                            height="100">
+                                            <div class="title-wrapper">
+                                                <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
+                                                    <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
+                                                </a>
+                                                <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
+                                            </div>
+                                        </amp-fit-text>
+                                    </div>
+                                <?php endwhile; ?>
+                            <?php endif; ?>
+                        <?php endwhile; endif; ?>
+                    </amp-carousel>
+                </div>
             <?php else: ?>
                 <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
                     <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
