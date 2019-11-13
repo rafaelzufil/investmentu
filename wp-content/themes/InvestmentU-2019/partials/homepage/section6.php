@@ -24,7 +24,7 @@
                                 <?php while(have_rows('experts')) : the_row(); ?>
                                     <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
                                         width="150"
-                                        height="150"
+                                        height="100"
                                         alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
                                     <amp-fit-text width="150"
                                         height="100">
