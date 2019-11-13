@@ -22,7 +22,7 @@
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
                                 <?php while(have_rows('experts')) : the_row(); ?>
-                                    <div class="slide h-300">
+                                    <div class="slide h-100">
                                         <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
                                             width="150"
                                             height="150"
