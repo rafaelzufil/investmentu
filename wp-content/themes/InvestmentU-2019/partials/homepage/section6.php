@@ -18,8 +18,8 @@
                     <amp-carousel
                       layout="fixed-height"
                       type="carousel"
-                      height="300"
-                      width="200"
+                      height="400"
+                      width="150"
                       type="slides">
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
