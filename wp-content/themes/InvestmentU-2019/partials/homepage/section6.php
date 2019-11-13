@@ -14,7 +14,7 @@
     <div class="container text-center my-3">
         <div class="row mx-auto my-auto">
             <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-                <div id="expertCarousel" class="carousel slide w-25" data-ride="carousel">
+                <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
                     <amp-carousel height="260"
                       type="carousel"
                       layout="fixed-height"
