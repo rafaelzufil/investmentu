@@ -18,25 +18,21 @@
                     <amp-carousel
                       layout="fixed-height"
                       type="carousel"
-                      height="400"
-                      width="150"
-                      type="slides">
+                      height="400">
                         <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
                             <?php  if( have_rows('experts') ): ?>
                                 <?php while(have_rows('experts')) : the_row(); ?>
-                                    <div class="slide">
-                                        <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
-                                            width="150"
-                                            height="150"
-                                            alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
-                                        <amp-fit-text width="150"
-                                            height="100">
-                                            <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
-                                                <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
-                                            </a>
-                                            <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
-                                        </amp-fit-text>
-                                    </div>
+                                    <amp-img src="<?php the_sub_field('expert_headshot'); ?>"
+                                        width="150"
+                                        height="150"
+                                        alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
+                                    <amp-fit-text width="150"
+                                        height="100">
+                                        <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
+                                            <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
+                                        </a>
+                                        <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
+                                    </amp-fit-text>
                                 <?php endwhile; ?>
                             <?php endif; ?>
                         <?php endwhile; endif; ?>
