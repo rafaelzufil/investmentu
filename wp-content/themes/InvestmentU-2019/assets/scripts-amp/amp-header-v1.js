@@ -11,49 +11,51 @@ console.log(window);
 
 console.log('>>>>>>>>>>>>>>>>>> amp-search-form Javascript file loaded!!! <<<<<<<<<<<<<<<<<<<<<<<<<<');
 
-// var searchFormTriggers = document.getElementsByClassName('search-form-trigger');
-// for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
-//     searchFormTriggers[i].addEventListener('click', function (event) {
-//         var search = document.getElementsByClassName('search-form-wrapper'),
-//             navbar = document.getElementsByClassName('navbar');
+var searchFormTriggers = document.getElementsByClassName('search-form-trigger');
+for (var i=0, len=searchFormTriggers.length|0; i<len; i=i+1|0) {
+    searchFormTriggers[i].addEventListener('click', function (event) {
+        var search = document.getElementsByClassName('search-form-wrapper'),
+            navbar = document.getElementsByClassName('navbar');
 
-//         if (search[0].style.display == 'block') {
-//             search[0].style.display = 'none';
-//             navbar[0].style.marginBottom = '';
-//         } else {
-//             search[0].style.display = 'block';
-//             navbar[0].style.marginBottom = '3rem';
-//         }
-
-//         event.preventDefault();
-//         event.stopPropagation();
-//     });
-// }
-
-/* Custom jQuery("like") code */
-$(document).ready(function() {
-    // Search button
-    $('.search-form-trigger').on('click', function (event) {
-        if ($('.search-form-wrapper').css('display') == 'block') {
-            $('.search-form-wrapper').css('display', 'none');
-            $('.navbar').css('marginBottom', false);
+        if (search[0].style.display == 'block') {
+            search[0].style.display = 'none';
+            navbar[0].style.marginBottom = '';
+        } else {
+            search[0].style.display = 'block';
+            navbar[0].style.marginBottom = '3rem';
         }
-        else {
-            $('.search-form-wrapper').css('display', 'block');
-            $('.navbar').css('marginBottom', '3rem');
-        }
-        event.preventDefault();
-        event.stopPropagation();
     });
-    // Navbar mobile button
-    $('.navbar-toggler').on('click', function (event) {
-        if ($('#collapse-nav').css('display') == 'block') {
-            $('#collapse-nav').css('display', 'none');
-        }
-        else {
-            $('#collapse-nav').css('display', 'block');
-        }
-        event.preventDefault();
-        event.stopPropagation();
-    });
+}
+document.getElementsByClassName('navbar-toggler')[0].addEventListener('click', function (event) {
+    var navbar = document.getElementById('collapse-nav');
+
+    if (navbar.style.display == 'block') {
+        navbar.style.display = 'none';
+    } else {
+        navbar.style.display = 'block';
+    }
 });
+
+// /* Custom jQuery("like") code */
+// $(document).ready(function() {
+//     // Search button
+//     $('.search-form-trigger').on('click', function (event) {
+//         if ($('.search-form-wrapper').css('display') == 'block') {
+//             $('.search-form-wrapper').css('display', 'none');
+//             $('.navbar').css('marginBottom', false);
+//         }
+//         else {
+//             $('.search-form-wrapper').css('display', 'block');
+//             $('.navbar').css('marginBottom', '3rem');
+//         }
+//     });
+//     // Navbar mobile button
+//     $('.navbar-toggler').on('click', function (event) {
+//         if ($('#collapse-nav').css('display') == 'block') {
+//             $('#collapse-nav').css('display', 'none');
+//         }
+//         else {
+//             $('#collapse-nav').css('display', 'block');
+//         }
+//     });
+// });
