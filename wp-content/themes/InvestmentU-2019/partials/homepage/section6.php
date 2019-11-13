@@ -31,12 +31,10 @@
                                             alt="<?php the_sub_field('expert_name'); ?>"></amp-img>
                                         <amp-fit-text width="150"
                                             height="100">
-                                            <div class="title-wrapper">
-                                                <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
-                                                    <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
-                                                </a>
-                                                <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
-                                            </div>
+                                            <a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black">
+                                                <p class="mt-2"><strong><?php the_sub_field('expert_name'); ?></strong></p>
+                                            </a>
+                                            <p><a href="<?php the_sub_field('expert_page_link'); ?>" class="p-black"><?php the_sub_field('expert_title'); ?></a></p>
                                         </amp-fit-text>
                                     </div>
                                 <?php endwhile; ?>
