@@ -57,19 +57,20 @@ function revive_display( $zone ) {
   $lytics = $_COOKIE['ly_segs'];
   echo "
   <!-- Revive Adserver Asynchronous JS Tag - Generated with Revive Adserver v4.2.1 -->
-  <ins
-    data-revive-zoneid=\"$zone\"
-    data-revive-block=\"0\"
-    data-revive-blockcampaign=\"0\"
-    data-revive-id=\"e381927fbe56d09bfb1b715794e5c109\"
-    data-revive-category=\"$all_categories\"
-    data-revive-tags=\"$all_tags\"
-    data-revive-author=\"$post_author\"
-    data-revive-cookies=\"$cookies\"
-    data-revive-referral-source=\"$source\"
-    data-revive-lytics=\"$lytics\"
-  ></ins>
-  <script async src=\"https://ads.web.oxfordclub.com/www/delivery/asyncjs.php\"></script>";
+  <amp-script layout=\"container\" src=\"https://ads.web.oxfordclub.com/www/delivery/asyncjs.php\">
+    <ins
+      data-revive-zoneid=\"$zone\"
+      data-revive-block=\"0\"
+      data-revive-blockcampaign=\"0\"
+      data-revive-id=\"e381927fbe56d09bfb1b715794e5c109\"
+      data-revive-category=\"$all_categories\"
+      data-revive-tags=\"$all_tags\"
+      data-revive-author=\"$post_author\"
+      data-revive-cookies=\"$cookies\"
+      data-revive-referral-source=\"$source\"
+      data-revive-lytics=\"$lytics\"
+    ></ins>
+  </amp-script>";
 
 
 }
