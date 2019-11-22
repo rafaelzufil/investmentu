@@ -4,7 +4,7 @@
         $headshot_url = get_field('author_headshot', 'user_' . $auth_id); 
     ?>
    
-    <?php if(strpos($headshot_url, "blank") == false) {?>
+    <?php if(!empty($headshot_url)) { ?>
     <img src="<?php the_field('author_headshot', 'user_' . $auth_id); ?>" class="headshot article-headshot align-middle d-inline-block">
     <?php } ?>
     <div class="align-middle d-inline-block ml-1">
