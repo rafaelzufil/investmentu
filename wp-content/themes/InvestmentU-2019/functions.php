@@ -215,3 +215,11 @@ function revive_zone($location) {
 
   return $zone;
 }
+
+// Queue lytics-css file from S3
+function enqueue_lytics_styles() {
+  wp_register_style( 'lytics-css', 'https://s3.amazonaws.com/assets.oxfordclub.com/css/investmentu/lytics-styles.css?ver=5.2.3' );
+  wp_enqueue_style( 'lytics-css'); 
+}
+
+add_action( 'wp_enqueue_scripts', 'enqueue_lytics_styles' );
