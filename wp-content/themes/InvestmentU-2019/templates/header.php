@@ -69,7 +69,7 @@ if ($terms && !is_front_page()) {
   }
 }
 
-if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
+//if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 
 ?>
   <!-- sticky signup form -->
@@ -81,7 +81,3 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
       </div>
     </div>
   </div>
-
-<?php else: ?>
-  <hr style="color:#bdbdbd" class="my-0"/>
-<?php endif; ?>
