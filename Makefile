@@ -43,8 +43,10 @@ else
 	SSH_HOST	:= ${MAKE_ENV_PROD_SSH_HOST}
 	DB_HOST		:= ${MAKE_ENV_PROD_DB_HOST}
 endif
+ifneq (${BRANCH_NAME}, master)
 ifneq (${MAKE_ENV_DEV_SITE_URL}, )
 	SITE_URL	:= ${MAKE_ENV_DEV_SITE_URL}
+endif
 endif
 # $(info "SSH_HOST=${SSH_HOST}")
 # $(info "SITE_URL=${SITE_URL}")
