@@ -1,0 +1,103 @@
+# ------------------------------------------------------------
+# SHELL COMMANDS
+# ------------------------------------------------------------
+CMD__WP_CORE_IS_INSTALLED			:= if [ -d ${PATHS__SITE_WEBROOT}/wp-admin ]; then echo 0; else echo 1; fi;
+#$(info "CMD__WP_CORE_IS_INSTALLED=${CMD__WP_CORE_IS_INSTALLED}")
+
+CMD__WP_CORE_DOWNLOAD				:= wp core download --path=${PATHS__SITE_WEBROOT}
+#$(info "CMD__WP_CORE_DOWNLOAD=${CMD__WP_CORE_DOWNLOAD}")
+
+CMD__WP_CORE_INSTALL				:= wp core install --path=${PATHS__SITE_WEBROOT} \
+										--title='${MAKE_ENV_SITE_TITLE}' --url=${SITE_URL} \
+										--admin_user=hierophant --skip-email \
+										--admin_email=accounts@oxfordclub.com \
+										--admin_password='${WP_ADMIN_PWD}'
+#$(info "CMD__WP_CORE_INSTALL=${CMD__WP_CORE_INSTALL}")
+
+CMD__WP_DB_CREATE					:= /bin/bash ${PATHS__SCRIPTS}/create_wp_database.sh ${DB_NAME} \
+										${SITE_DB_USER} ${SITE_DB_PASS}
+#$(info "CMD__WP_DB_CREATE=${CMD__WP_DB_CREATE}")
+
+CMD__WP_DB_CREATE_USER				:= mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASS} \
+										-e \"create user '${SITE_DB_USER}' identified by '${SITE_DB_PASS}'; grant all privileges on ${DB_NAME}.* to '${MAKE_ENV_DB_USER}'; flush privileges;\"
+# $(info "CMD__WP_DB_CREATE_USER=${CMD__WP_DB_CREATE_USER}")
+
+CMD__WP_CONFIG_EXISTS				:= if [ -f ${PATHS__SITE_WEBROOT}/wp-config.php ]; then echo 0; else echo 1; fi;
+#$(info "CMD__WP_CONFIG_EXISTS=${CMD__WP_CONFIG_EXISTS}")
+
+CMD__WP_CONFIG_CREATE				:= wp config create --path=${PATHS__SITE_WEBROOT} \
+										--dbhost=${DB_HOST} --dbname=${DB_NAME} \
+										--dbuser=${SITE_DB_USER} --dbpass=${SITE_DB_PASS}
+#$(info "CMD__WP_CONFIG_CREATE=${CMD__WP_CONFIG_CREATE}")
+
+CMD__WP_CONFIG_UPDATE_PREFIX		:= sed -i 's|table_prefix.=.\x27wp_\x27;|table_prefix = \x27${MAKE_ENV_TABLE_PREFIX}\x27;|g' \
+										${PATHS__SITE_WEBROOT}/wp-config.php
+#$(info "CMD__WP_CONFIG_UPDATE_PREFIX=${CMD__WP_CONFIG_UPDATE_PREFIX}")
+
+CMD__WP_BLANK_BLOGDESCRIPTION		:= wp option update blogdescription '' --path=${PATHS__SITE_WEBROOT}
+#$(info "CMD__WP_BLANK_BLOGDESCRIPTION=${CMD__WP_BLANK_BLOGDESCRIPTION}")
+
+CMD__WP_DISCOURAGE_SEARCH			:= wp option set blog_public 0 --path=${PATHS__SITE_WEBROOT}
+#$(info "CMD__WP_DISCOURAGE_SEARCH=${CMD__WP_DISCOURAGE_SEARCH}")
+
+CMD__WP_INSTALL_THEME_GITHUB		:= wp theme install-git https://github.com/PaidSites/${MAKE_ENV_GITHUB_THEME} \
+										--path=${PATHS__SITE_WEBROOT} --token=${GITHUB_TOKEN} --github --activate
+#$(info "CMD__WP_INSTALL_THEME_GITHUB=${CMD__WP_INSTALL_THEME_GITHUB}")
+
+CMD__CREATE_SITE_STRUCTURE			:=	sudo mkdir -p ${PATHS__DEPLOYMENT} && \
+										sudo mkdir -p ${PATHS__DEPLOYMENT_PLUGINS} && \
+										sudo mkdir -p ${PATHS__SITE_WEBROOT} && \
+										sudo mkdir -p ${PATHS__SHARED}/uploads && \
+										sudo chown -R ec2-user:ec2-user ${PATHS__SITEURL_ROOT}
+#$(info "CMD__CREATE_SITE_STRUCTURE=${CMD__CREATE_SITE_STRUCTURE}")
+
+# CMD__UPDATE_WP_CONFIG				:= echo ${WP_CONFIG_EXTRA_PHP} >> ${PATHS__DEPLOYMENT}/wp-config.php
+# #$(info "CMD__UPDATE_WP_CONFIG=${CMD__UPDATE_WP_CONFIG}")
+
+CMD__WP_CONTENT_SYMLINK_EXISTS		:= if [ -L ${PATHS__SITE_WEBROOT}/wp-content ]; then echo 1; else echo 0; fi;
+#$(info "CMD__WP_CONTENT_SYMLINK_EXISTS=${CMD__WP_CONTENT_SYMLINK_EXISTS}")
+
+CMD__REMOVE_STANDARD_WP_CONTENT		:= rm -Rf ${PATHS__SITE_WEBROOT}/wp-content
+#$(info "CMD__REMOVE_STANDARD_WP_CONTENT=${CMD__REMOVE_STANDARD_WP_CONTENT}")
+
+CMD__REMOVE_SAMPLE_CONFIG			:= rm -f ${PATHS__SITE_WEBROOT}/wp-config-sample.php
+#$(info "CMD__REMOVE_SAMPLE_CONFIG=${CMD__REMOVE_SAMPLE_CONFIG}")
+
+CMD__GET_LAST_SYMLINK_TO_CURRENT	:= readlink ${PATHS__SITE_WEBROOT}/wp-content
+#$(info "CMD__GET_LAST_SYMLINK_TO_CURRENT=${CMD__GET_LAST_SYMLINK_TO_CURRENT}")
+
+CMD__SYMLINK_TO_CURRENT				:= ln -sfn ${PATHS__DEPLOYMENT} ${PATHS__SITE_WEBROOT}/wp-content
+#$(info "CMD__SYMLINK_TO_CURRENT=${CMD__SYMLINK_TO_CURRENT}")
+
+CMD__SYMLINK_TO_UPLOADS				:= ln -sfn ${PATHS__SHARED}/uploads ${PATHS__SITE_WEBROOT}/wp-content/uploads
+#$(info "CMD__SYMLINK_TO_CURRENT=${CMD__SYMLINK_TO_CURRENT}")
+
+CMD__COPY_SYNDICATION_CONFIG		:= cp ${PATHS__CONFIG}/iu-syndication-configs.php ${PATHS__SHARED}
+#$(info "CMD__COPY_SYNDICATION_CONFIG=${CMD__COPY_SYNDICATION_CONFIG}")
+
+CMD__SYMLINK_SYNDICATION_CONFIG		:= ln -sfn ${PATHS__SHARED}/iu-syndication-configs.php \
+										${PATHS__IU_SYNDICATION_CONFIG}
+#$(info "CMD__SYMLINK_SYNDICATION_CONFIG=${CMD__SYMLINK_SYNDICATION_CONFIG}")
+
+CMD__INSTALL_PLUGINS				:= /bin/bash ${PATHS__SCRIPTS}/install_plugins.sh \
+										${PATHS__SITE_WEBROOT} ${RELEASE_TAG}
+#$(info "CMD__INSTALL_PLUGINS=${CMD__INSTALL_PLUGINS})
+
+CMD__SET_DIRECTORY_PERMISSIONS		:= find ${PATHS__SITE_WEBROOT} -type d -exec chmod 0755 {} \;
+#$(info "CMD__SET_DIRECTORY_PERMISSIONS=${CMD__SET_DIRECTORY_PERMISSIONS})
+
+CMD__SET_FILE_PERMISSIONS			:= find ${PATHS__SITE_WEBROOT} -type f -exec chmod 0644 {} \;
+#$(info "CMD__SET_FILE_PERMISSIONS=${CMD__SET_FILE_PERMISSIONS})
+
+CMD__SET_WEBROOT_OWNERSHIP			:= sudo chown -R apache:apache ${PATHS__SITE_WEBROOT}
+#$(info "CMD__SET_WEBROOT_OWNERSHIP=${CMD__SET_WEBROOT_OWNERSHIP})
+
+CMD__SET_UPLOADS_OWNERSHIP			:= sudo chown -R apache:apache ${PATHS__SHARED}/uploads
+#$(info "CMD__SET_UPLOADS_OWNERSHIP=${CMD__SET_UPLOADS_OWNERSHIP})
+
+CMD__PRUNE_OLD_DEPLOYMENTS			:= /bin/bash ${PATHS__SCRIPTS}/cleanup_old_deployments.sh ${PATHS__SITEURL_ROOT}
+#$(info "CMD__PRUNE_OLD_DEPLOYMENTS=${CMD__PRUNE_OLD_DEPLOYMENTS}")
+
+CMD__SENTINEL						:= touch ${PATHS__DEPLOYMENT}/SENTINEL
+#$(info "CMD__SENTINEL=${CMD__SENTINEL}")
+# ------------------------------------------------------------

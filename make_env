@@ -1,0 +1,19 @@
+# Site parameters
+MAKE_ENV_SITE_URL       = investmentu.com
+MAKE_ENV_DEV_SITE_URL   = dev.investmentu.com
+MAKE_ENV_SITE_TITLE     = Investment U
+# MAKE_ENV_GITHUB_THEME	= iu2019-theme
+
+# SSH parameters
+MAKE_ENV_DEV_SSH_HOST   = ssh.bluecrab.pro
+MAKE_ENV_PROD_SSH_HOST  = iu.in.theoxford.club
+
+# DB parameters
+MAKE_ENV_DEV_DB_HOST    = data.bluecrab.pro
+MAKE_ENV_PROD_DB_HOST   = data.upgrade.baron.in.theoxford.club
+# Max characters for DB_USER is 12
+MAKE_ENV_DB_USER        = iu_user
+MAKE_ENV_DB_NAME        = investmentu
+# Prefix should be site-representative, but pseudo-random, ending in an underscore
+# Example:  Investment U might be "iu_21ken0j_"
+MAKE_ENV_TABLE_PREFIX   = iu_21ken0j_

@@ -1,0 +1,37 @@
+# ------------------------------------------------------------
+# PATHS (and related path elements)
+# ------------------------------------------------------------
+PATHS__SITES_ROOT				:= /var/www
+# PATHS__SITES_ROOT				:= /usr/src/wordpress/sites
+#$(info "PATHS__SITES_ROOT=${PATHS__SITES_ROOT}")
+
+PATHS__SITEURL_ROOT				:= ${PATHS__SITES_ROOT}/${SITE_URL}
+#$(info "PATHS__SITEURL_ROOT=${PATHS__SITEURL_ROOT}")
+
+PATHS__SITE_WEBROOT				:= ${PATHS__SITEURL_ROOT}/webroot
+#$(info "PATHS__SITE_WEBROOT=${PATHS__SITE_WEBROOT}")
+
+PATHS__DEPLOYMENT				:= ${PATHS__SITEURL_ROOT}/${RELEASE_TAG}/wp-content
+#$(info "PATHS__DEPLOYMENT=${PATHS__DEPLOYMENT}")
+
+PATHS__DEPLOYMENT_PLUGINS		:= ${PATHS__SITEURL_ROOT}/${RELEASE_TAG}/plugins
+#$(info "PATHS__DEPLOYMENT_PLUGINS=${PATHS__DEPLOYMENT_PLUGINS}")
+
+PATHS__CURRENT					:= ${PATHS__SITEURL_ROOT}/current
+#$(info "PATHS__CURRENT=${PATHS__CURRENT}")
+
+PATHS__SHARED					:= ${PATHS__SITEURL_ROOT}/shared
+#$(info "PATHS__SHARED=${PATHS__SHARED}")
+
+PATHS__IU_SYNDICATION_CONFIG	:= ${PATHS__DEPLOYMENT}/plugins/iu-syndication-aggregator/iu-syndication-configs.php
+#$(info "PATHS__IU_SYNDICATION_CONFIG=${PATHS__IU_SYNDICATION_CONFIG}")
+
+PATHS__DEPLOYMENT_RESOURCES		:= /mnt/efs/deployment
+#$(info "PATHS__DEPLOYMENT_RESOURCES=${PATHS__DEPLOYMENT_RESOURCES}")
+
+PATHS__CONFIG					:= ${PATHS__DEPLOYMENT_RESOURCES}/configs
+#$(info "PATHS__CONFIG=${PATHS__CONFIG}")
+
+PATHS__SCRIPTS					:= ${PATHS__DEPLOYMENT_RESOURCES}/scripts
+#$(info "PATHS__SCRIPTS=${PATHS__SCRIPTS}")
+# ------------------------------------------------------------
