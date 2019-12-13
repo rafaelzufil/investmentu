@@ -16,4 +16,6 @@ MAKE_ENV_DB_USER        = iu_user
 MAKE_ENV_DB_NAME        = investmentu
 # Prefix should be site-representative, but pseudo-random, ending in an underscore
 # Example:  Investment U might be "iu_21ken0j_"
-MAKE_ENV_TABLE_PREFIX   = iu_21ken0j_
+#MAKE_ENV_TABLE_PREFIX   = iu_21ken0j_
+# Needs to be 'wp_' for now; needs renaming and such before that will work.
+MAKE_ENV_TABLE_PREFIX   = wp_
