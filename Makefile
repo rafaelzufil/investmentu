@@ -67,8 +67,25 @@ GIT_HASH			:= $(shell git rev-parse --short HEAD)
 RELEASE_TAG			:= $(shell date +%Y%m%d)/${GIT_HASH}
 #$(info "RELEASE_TAG=${RELEASE_TAG}")
 
-# Crafton (2019-12-12):  SITE_DB_USER is needed for a command in make_commands.
+# Crafton (2019-12-12):  SITE_DB_USER/SITE_DB_PASS are needed for commands in make_commands.
 SITE_DB_USER	:= ${MAKE_ENV_DB_USER}
+SITE_DB_PASS	:= $(shell /usr/bin/ssh ${SSH_HOST} \
+					"grep ${SITE_DB_USER} /mnt/efs/deployment/configs/.env.wpdb | sed -E 's/${SITE_DB_USER}=//g'")
+
+# If no password is found in the remote configuration, use the generated password.
+ifeq (${SITE_DB_PASS},)
+ifneq (${GENERATED_PASSWORD},)
+	SITE_DB_PASS	:= ${GENERATED_PASSWORD}
+	# $(error "Please create a database password for ${SITE_DB_USER} in /mnt/efs/deployment/configs/.env.wpdb.")
+endif
+endif
+ifeq (${SITE_DB_PASS},)
+	SITE_DB_PASS	:= nomakefilepasswordproblem
+endif
+# $(info "DB_USER=${DB_USER}")
+# $(info "DB_PASS=${DB_PASS}")
+# $(info "SITE_DB_USER=${SITE_DB_USER}")
+# $(info "SITE_DB_PASS=${SITE_DB_PASS}")
 
 # The `make_paths` and `make_commands` files were separated to keep the central
 # Makefile a bit cleaner.  We include them here because everything downstream
@@ -85,18 +102,6 @@ DB_USER			:= $(shell /usr/bin/ssh ${SSH_HOST} \
 					"grep DB_USER ${PATHS__CONFIG}/.env.wpdb | sed -E 's/DB_USER=//g'")
 DB_PASS			:= $(shell /usr/bin/ssh ${SSH_HOST} \
 					"grep DB_PASSWORD ${PATHS__CONFIG}/.env.wpdb | sed -E 's/DB_PASSWORD=//g'")
-SITE_DB_PASS	:= $(shell /usr/bin/ssh ${SSH_HOST} \
-					"grep ${SITE_DB_USER} /mnt/efs/deployment/configs/.env.wpdb | sed -E 's/${SITE_DB_USER}=//g'")
-
-# If no password is found in the remote configuration, use the generated password.
-ifeq (${SITE_DB_PASS},)
-	SITE_DB_PASS	:= ${GENERATED_PASSWORD}
-	# $(error "Please create a database password for ${SITE_DB_USER} in /mnt/efs/deployment/configs/.env.wpdb.")
-endif
-# $(info "DB_USER=${DB_USER}")
-# $(info "DB_PASS=${DB_PASS}")
-# $(info "SITE_DB_USER=${SITE_DB_USER}")
-# $(info "SITE_DB_PASS=${SITE_DB_PASS}")
 
 # Retrieve the WP Admin user password from the server-based credentials file.
 WP_ADMIN_PWD		:= $(shell /usr/bin/ssh ${SSH_HOST} \
