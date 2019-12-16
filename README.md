@@ -5,9 +5,12 @@
 *** See the bottom of this document for the declaration of the reference variables
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
+TODO:  Add these back once we have our own shields instance.
 -->
+<!--
 [![Contributors][contributors-shield]][contributors-url]
 [![Issues][issues-shield]][issues-url]
+-->
 
 <!-- PROJECT LOGO -->
 <br />
@@ -52,18 +55,16 @@
 [![InvestmentU Screen Shot][product-screenshot]](https://investmentu.com)
 > valid as of 2019.12.16
 
-Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`github_username`, `repo`, `twitter_handle`, `email`
-
+The InvestmentU website is one of our longest-running sites, and got a redesign in 2019 in order to capitalize on its high domain authority.  It now serves as a content-aggregator site, using posts from many of our other franchises to build on SEO efforts across the Oxford Group.
 
 ### Built With
 
 * [WordPress](https://wordpress.org)
-* [make]()
-* [Jenkins]()
-* [apache/httpd]()
-* [AWS EC2]()
+* [Apache 2.4](https://apache.org/)
+* [php 7.2](https://php.net)
+* [make](https://www.gnu.org/software/make/)
+* [Jenkins](https://jenkins.io)
+* [AWS EC2](https://aws.amazon.com/ec2/)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -72,12 +73,14 @@ To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
-TODO:  Environment stuff (apache, mysql)
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-```sh
-npm install npm@latest -g
-```
+You will need access to:
+* apache (>=2.4)
+* php (>= 7.2)
+* mysql
+
+You can use "bare-metal" installation, or set up docker/vagrant for your local webserver environment.
+
+For the database, you may either use an SSH tunnel connected to the `bluecrab.pro` development server and the RDS serverless credentials, or you may use a local version.  If you opt to use the tunnel, please be mindful of any ongoing efforts in the development server and post to Slack if you intend to make changes there.
 
 ### Installation
 
@@ -95,6 +98,8 @@ npm install
 
 See the [open issues](https://github.com/PaidSites/investmentu2019/issues) for a list of proposed features (and known issues).
 
+See the [Asana board]() for open issues in Asana.
+
 <!-- Project "Owner" -->
 ## Project Lead
 
@@ -104,12 +109,12 @@ Project Link: [https://github.com/PaidSites/investmentu2019](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/PaidSites/investmentu2019.svg?style=flat-square
+[contributors-shield]: https://img.shields.io/contributors.svg?style=flat
 [contributors-url]: https://github.com/PaidSites/investmentu2019/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/PaidSites/investmentu2019.svg?style=flat-square
+[forks-shield]: https://img.shields.io/github/forks/PaidSites/investmentu2019.svg?style=flat
 [forks-url]: https://github.com/PaidSites/investmentu2019/network/members
-[stars-shield]: https://img.shields.io/github/stars/PaidSites/investmentu2019.svg?style=flat-square
-[issues-shield]: https://img.shields.io/github/issues/PaidSites/investmentu2019.svg?style=flat-square
+[stars-shield]: https://img.shields.io/github/stars/PaidSites/investmentu2019.svg?style=flat
+[issues-shield]: https://img.shields.io/github/issues/PaidSites/investmentu2019.svg?style=flat
 [issues-url]: https://github.com/PaidSites/investmentu2019/issues
 [product-screenshot]: images/screenshot.png
 [product-logo]: images/logo.jpg
