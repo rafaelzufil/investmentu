@@ -16,7 +16,7 @@ TODO:  Add these back once we have our own shields instance.
 <br />
 <p align="center">
   <a href="https://github.com/PaidSites/investmentu2019">
-    <img src="images/logo.jpg" alt="IU Brand Logo" width="80" height="80">
+    <img src="images/logo.jpg" alt="IU Brand Logo">
   </a>
 
   <h3 align="center">InvestmentU.com</h3>
@@ -26,9 +26,9 @@ TODO:  Add these back once we have our own shields instance.
     <br />
     <a href="https://github.com/PaidSites/investmentu2019"><strong>Explore the docs »</strong></a>
     <br />
+        View the <a target="_blank" href="https://dev.investmentu.com">STAGING</a> / <a target="_blank" href="https://investmentu.com">PRODUCTION</a> Site
+        <br />
     <br />
-    <a href="https://github.com/PaidSites/investmentu2019">View Demo</a>
-    ·
     <a href="https://github.com/PaidSites/investmentu2019/issues">Report a Bug</a>
     ·
     <a href="https://github.com/PaidSites/investmentu2019/issues">Request a Feature</a>
@@ -46,6 +46,7 @@ TODO:  Add these back once we have our own shields instance.
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+- [Production Notes](#production-notes)
 - [Roadmap](#roadmap)
 - [Project Lead](#project-lead)
 
@@ -88,10 +89,18 @@ For the database, you may either use an SSH tunnel connected to the `bluecrab.pr
 ```sh
 git clone https://github.com/PaidSites/investmentu2019
 ```
-2. Install NPM packages
+2. Install WordPress
+_If you have php and the WP CLI installed locally, you can run WP CLI commands for this step_
 ```sh
-npm install
+wp core download
 ```
+3. Configure WordPress for local development
+
+## Production Notes
+
+The SEO team shifted the original site's content around somewhat, resulting in a large number of `401 Gone` and `301 Permanently Redirected` requests.  We resolved this by way of mapfiles linked in the `VirtualHost` directive for ths site.  Those mapfiles currently live in the [utilities](https://github.com/PaidSites/utilties) repo.
+
+If you experience any weirdness around URLs or redirection, this might be a good place to start your search for answers.
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -103,7 +112,7 @@ See the [Asana board]() for open issues in Asana.
 <!-- Project "Owner" -->
 ## Project Lead
 
-(none currently assigned - adopt me!)
+(currently unassigned - adopt me!)
 
 Project Link: [https://github.com/PaidSites/investmentu2019](https://github.com/PaidSites/investmentu2019)
 
