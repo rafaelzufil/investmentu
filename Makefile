@@ -217,6 +217,10 @@ deploy:
 	/usr/bin/scp -r ./wp-content/* ec2-user@${SSH_HOST}:${PATHS__DEPLOYMENT}
 	/usr/bin/scp -r ./plugins/* ec2-user@${SSH_HOST}:${PATHS__DEPLOYMENT_PLUGINS}
 
+	@echo "Setting IU Syndication plugin configuration..."
+	/usr/bin/ssh ${SSH_HOST}	"${CMD__COPY_SYNDICATION_CONFIG}"
+	/usr/bin/ssh ${SSH_HOST}	"${CMD__SYMLINK_SYNDICATION_CONFIG}"
+
 # If there's a MAKE_ENV_GITHUB_THEME, install it.
 ifneq (${MAKE_ENV_GITHUB_THEME},)
 	@echo "Installing theme from GitHub..."
@@ -229,10 +233,6 @@ endif
 
 	@echo "Installing plugins from plugins.dat and included .ZIP files..."
 	/usr/bin/ssh ${SSH_HOST}	"${CMD__INSTALL_PLUGINS}"
-
-	@echo "Setting IU Syndication plugin configuration..."
-	/usr/bin/ssh ${SSH_HOST}	"${CMD__COPY_SYNDICATION_CONFIG}"
-	/usr/bin/ssh ${SSH_HOST}	"${CMD__SYMLINK_SYNDICATION_CONFIG}"
 
 	@echo "Fixing permissions..."
 	/usr/bin/ssh ${SSH_HOST}	"${CMD__SET_DIRECTORY_PERMISSIONS}"
