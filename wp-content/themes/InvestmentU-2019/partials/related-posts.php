@@ -1,4 +1,4 @@
-<div class="row my-4 row-eq-height category-article-preview-row border-top pt-4">
+<div class="row my-4 row-eq-height category-article-preview-row border-top pt-4 related-category-posts">
     <?php $orig_post = $post;
     global $post;
     $categories = get_the_category($post->ID);
