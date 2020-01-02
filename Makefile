@@ -231,7 +231,6 @@ endif
 	/usr/bin/ssh ${SSH_HOST}	"${CMD__INSTALL_PLUGINS}"
 
 	@echo "Setting IU Syndication plugin configuration..."
-	/usr/bin/ssh ${SSH_HOST}	"${CMD__COPY_SYNDICATION_CONFIG}"
 	/usr/bin/ssh ${SSH_HOST}	"${CMD__SYMLINK_SYNDICATION_CONFIG}"
 
 	@echo "Fixing permissions..."
