@@ -15,38 +15,37 @@ TODO:  Add these back once we have our own shields instance.
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/PaidSites/investmentu2019">
-    <img src="images/logo.jpg" alt="IU Brand Logo">
-  </a>
+	<a href="https://github.com/PaidSites/investmentu2019">
+		<img src="images/logo.jpg" alt="IU Brand Logo">
+	</a>
 
-  <h3 align="center">InvestmentU.com</h3>
+	<h3 align="center">InvestmentU.com</h3>
 
-  <p align="center">
-    Repository for theming and deploying the InvestmentU.com site.
-    <br />
-    <a href="https://github.com/PaidSites/investmentu2019"><strong>Explore the docs »</strong></a>
-    <br />
-        View the <a target="_blank" href="https://dev.investmentu.com">STAGING</a> / <a target="_blank" href="https://investmentu.com">PRODUCTION</a> Site
-        <br />
-    <br />
-    <a href="https://github.com/PaidSites/investmentu2019/issues">Report a Bug</a>
-    ·
-    <a href="https://github.com/PaidSites/investmentu2019/issues">Request a Feature</a>
-  </p>
+	<p align="center">
+		Repository for theming and deploying the InvestmentU.com site.
+		<br />
+		<a href="https://github.com/PaidSites/investmentu2019"><strong>Explore the docs »</strong></a>
+		<br />
+				View the <a target="_blank" href="https://dev.investmentu.com">STAGING</a> / <a target="_blank" href="https://investmentu.com">PRODUCTION</a> Site
+				<br />
+		<br />
+		<a href="https://github.com/PaidSites/investmentu2019/issues">Report a Bug</a>
+		·
+		<a href="https://github.com/PaidSites/investmentu2019/issues">Request a Feature</a>
+	</p>
 </p>
-
-
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [About The Project](#about-the-project)
-  - [Built With](#built-with)
+	- [Built With](#built-with)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+	- [Prerequisites](#prerequisites)
+	- [Installation](#installation)
 - [Production Notes](#production-notes)
+- [Gotchas](#gotchas)
 - [Roadmap](#roadmap)
 - [Project Lead](#project-lead)
 
@@ -85,22 +84,27 @@ For the database, you may either use an SSH tunnel connected to the `bluecrab.pr
 
 ### Installation
 
+(NOTE:  This section could use some assistance.)
+
 1. Clone the repo
 ```sh
 git clone https://github.com/PaidSites/investmentu2019
 ```
 2. Install WordPress
 _If you have php and the WP CLI installed locally, you can run WP CLI commands for this step_
-```sh
-wp core download
-```
-3. Configure WordPress for local development
+   1. Configure WordPress for local development
+   2. Restore a copy of the database
+3. Start your webserver
 
 ## Production Notes
 
 The SEO team shifted the original site's content around somewhat, resulting in a large number of `401 Gone` and `301 Permanently Redirected` requests.  We resolved this by way of mapfiles linked in the `VirtualHost` directive for ths site.  Those mapfiles currently live in the [utilities](https://github.com/PaidSites/utilties) repo.
 
 If you experience any weirdness around URLs or redirection, this might be a good place to start your search for answers.
+
+## Gotchas
+
+In configuring this project with Jenkins, the custom syndication plugin was causing deployment weirdnesses, so it was just added directly to the server.  Any new instances (other than investmentu.com and dev.investmentu.com) will require manual intervention to set the initial deployment of that plugin and its configuration file.
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -111,7 +115,6 @@ See the [Asana board]() for open issues in Asana.
 
 <!-- Project "Owner" -->
 ## Project Lead
-
 (currently unassigned - adopt me!)
 
 Project Link: [https://github.com/PaidSites/investmentu2019](https://github.com/PaidSites/investmentu2019)
