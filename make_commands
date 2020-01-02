@@ -72,11 +72,8 @@ CMD__SYMLINK_TO_CURRENT				:= ln -sfn ${PATHS__DEPLOYMENT} ${PATHS__SITE_WEBROOT
 CMD__SYMLINK_TO_UPLOADS				:= ln -sfn ${PATHS__SHARED}/uploads ${PATHS__SITE_WEBROOT}/wp-content/uploads
 #$(info "CMD__SYMLINK_TO_CURRENT=${CMD__SYMLINK_TO_CURRENT}")
 
-CMD__COPY_SYNDICATION_CONFIG		:= cp ${PATHS__CONFIG}/iu-syndication-configs.php ${PATHS__SHARED}
-#$(info "CMD__COPY_SYNDICATION_CONFIG=${CMD__COPY_SYNDICATION_CONFIG}")
-
-CMD__SYMLINK_SYNDICATION_CONFIG		:= ln -sfn ${PATHS__SHARED}/iu-syndication-configs.php \
-										${PATHS__IU_SYNDICATION_CONFIG}
+CMD__SYMLINK_SYNDICATION_CONFIG		:= ln -sfn ${PATHS__SHARED}/iu-syndication-aggregator \
+										${PATHS__DEPLOYMENT}/plugins/iu-syndication-aggregator
 #$(info "CMD__SYMLINK_SYNDICATION_CONFIG=${CMD__SYMLINK_SYNDICATION_CONFIG}")
 
 CMD__INSTALL_PLUGINS				:= /bin/bash ${PATHS__SCRIPTS}/install_plugins.sh \
