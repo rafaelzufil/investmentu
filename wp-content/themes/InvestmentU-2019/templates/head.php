@@ -79,21 +79,6 @@
     </style>
   <?php } ?>
   
-<!--   Pushcrew Notifications for IU -->
-  <script type="text/javascript">
-    (function(p,u,s,h){
-        p._pcq=p._pcq||[];
-        p._pcq.push(['_currentTime',Date.now()]);
-        s=u.createElement('script');
-        s.type='text/javascript';
-        s.async=true;
-        s.crossOrigin = 'anonymous';
-        s.src='https://cdn.pushcrew.com/js/345df12e8fcb727cc2eacac6cf36afe1.js';
-        h=u.getElementsByTagName('script')[0];
-        h.parentNode.insertBefore(s,h);
-    })(window,document);
-  </script>
-  
   
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
