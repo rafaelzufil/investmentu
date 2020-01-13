@@ -7,6 +7,15 @@ $(document).on('submit', '#lead-gen', function(e) {
   var listCode = $(this).closest("form").find("input[name='signup.listCode']").val();
   var welcomeEmail = $(this).closest("form").find("input[name='signup.welcomeEmailTemplateName']").val();
 
+  var emailError = new Event('emailError'),
+      emailDuplicate = new Event('emailDuplicate'),
+      emailSuccess = new Event('emailSuccess'),
+      emailSubmit = new Event('emailSubmit');
+
+      emailSubmit.listCode = listCode;
+
+  document.dispatchEvent(emailSubmit);
+
   e.preventDefault();
 
   $.ajax({
@@ -17,7 +26,16 @@ $(document).on('submit', '#lead-gen', function(e) {
       error: function(xhr) {
         console.log(xhr.status);
         if (xhr.status === 400) {
+          document.dispatchEvent(emailError);
           displayErrorModal();
+
+          dataLayer.push({
+            'event':'event_triggered',
+            'event_category':'Newsletter',
+            'event_action':'Error',
+            'event_label': sourceId+' | '+listCode
+          });
+
         };
       }
   }) // using the done promise callback
@@ -25,16 +43,42 @@ $(document).on('submit', '#lead-gen', function(e) {
 
       // log data to the console so we can see
       if (data === 'success') {
-
+        document.dispatchEvent(emailSuccess);
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
+
+
+        
+        dataLayer.push({
+            'event':'event_triggered',
+            'event_category':'Newsletter',
+            'event_action':'Submit',
+            'event_label': sourceId+' | '+listCode
+        });
+        
 
       } else if (data === 'duplicate') {
 
+        document.dispatchEvent(emailDuplicate);
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
 
+        dataLayer.push({
+              'event':'event_triggered',
+              'event_category':'Newsletter',
+              'event_action':'Duplicate',
+              'event_label': sourceId+' | '+listCode
+        });
+
+
       } else {
+
+        dataLayer.push({
+              'event':'event_triggered',
+              'event_category':'Newsletter',
+              'event_action':'Error',
+              'event_label': sourceId+' | '+listCode
+        });
 
       }
 
