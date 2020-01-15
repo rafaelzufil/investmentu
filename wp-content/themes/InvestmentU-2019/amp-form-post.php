@@ -7,7 +7,7 @@ function myUrlEncode($string) {
 }
 
 if (!empty($_POST)) {
-    $url = get_site_url();
+    $url = $_SERVER['SERVER_NAME'];
     header("access-control-allow-credentials:true");
     header("access-control-allow-headers:Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token");
     header("access-control-allow-methods:POST, GET, OPTIONS");
