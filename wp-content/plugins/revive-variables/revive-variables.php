@@ -61,7 +61,7 @@ function revive_display( $zone ) {
     <div id=\"sidebar-lead-gen-ad\" class=\"col-12 py-3 mb-4\">
       <h6>Sign up for <em>Investment U</em>!</h6>
       <p>Get <em>Investment U</em> in your inbox today! No matter your skill level, we’ll show you how to grab control of your financial future and build a bank account that will let you live life on your terms!</p>
-      <form action=\"" . get_template_directory_uri() . '/amp-form-post.php' . "\" method=\"post\" name=\"SimpleSignUp\" role=\"form\" target=\"_top\">
+      <form action-xhr=\"" . get_template_directory_uri() . '/amp-form-post.php' . "\" method=\"post\" name=\"SimpleSignUp\" role=\"form\" target=\"_top\">
         <div class=\"form-group mb-0\">
           <input class=\"form-control mb-2\" type=\"email\" placeholder=\"Email\" name=\"signup_emailAddress\" id=\"inlineFormInputName\" required>
           <button class=\"btn btn-block btn-primary form-control\" type=\"submit\">Subscribe Now</button>
