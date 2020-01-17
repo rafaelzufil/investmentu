@@ -55,7 +55,7 @@ function IU_recent_posts_shortcode($atts, $content = null) {
 	wp_reset_postdata();
 
   if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) {
-	 return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" [href]="\'' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'/\'" style="width:60%;" on="tap:navigateTo(url=\'' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'\', target=\'_blank\', opener=\'true\')">View More</a>';
+	 return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" [href]="\'' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'/\'" style="width:60%;" on="tap:navigateTo(url=\'' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'\')">View More</a>';
   }
   else {
     return '<div class="row my-2 row-eq-height category-article-preview-row">'. $output .'</div><a class="btn btn-block btn-primary form-control mx-auto" href=" ' . esc_url(home_url('/')) . 'category/'.  $category[0]->slug .'/" style="width:60%;">View More</a>';
