@@ -10,7 +10,7 @@
                   <h1 class="page-title mb-4"><?php the_title(); ?></h1>
                 </div>
                 <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ):  ?>
-                  <?php if ( has_post_thumbnail() ) { ?>
+                  <?php if ( has_post_thumbnail() ): ?>
                     <amp-img
                       alt="<?php the_title(); ?>"
                       src="<?php the_post_thumbnail_url(); ?>"
