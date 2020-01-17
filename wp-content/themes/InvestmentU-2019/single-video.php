@@ -22,10 +22,10 @@
                 <?php if(!empty($wistia)) { ?>
                     <!-- Wistia Video -->
                     <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ): ?>
-                        <script async custom-element="amp-wistia-player" src="https://cdn.ampproject.org/v0/amp-wistia-player-0.1.js"></script>
+                        <!-- <script async custom-element="amp-wistia-player" src="https://cdn.ampproject.org/v0/amp-wistia-player-0.1.js"></script>
                         <amp-wistia-player
                             data-media-hashed-id="<?php echo $wistia; ?>"
-                            width="512" height="360" layout="responsive"></amp-wistia-player>
+                            width="512" height="360" layout="responsive"></amp-wistia-player> -->
                     <?php else: ?>
                       <script src="https://fast.wistia.com/embed/medias/<?php echo $wistia; ?>.jsonp" async></script>
                       <script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
