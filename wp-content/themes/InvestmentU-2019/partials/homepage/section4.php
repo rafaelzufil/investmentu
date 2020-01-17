@@ -46,7 +46,16 @@
                             <object style="width:100%;height:300px; float: none; clear: both; margin: 0 auto;"
                                 data="<?php echo $youtube; ?>"></object>
                         <?php } ?>
-                        <a href="<?php the_permalink(); ?>"><h1 class="mt-3 p-black"><?php the_title(); ?></h1></a>
+                        <a href="<?php the_permalink(); ?>">
+                            <h1 class="mt-3 p-black"><?php the_title(); ?></h1>
+                            <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ):  ?>
+                                <?php if ( has_post_thumbnail() ) { ?>
+                                    <img src="<?php the_post_thumbnail_url('medium'); ?>" class="featured-article-image img-fluid">
+                                <?php } else { ?>
+                                    <img src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg" class="featured-article-image img-fluid" alt="<?php the_title(); ?>" />
+                                <?php } ?>
+                            <?php endif; ?>
+                        </a>
                     </div>
                 </div>
                 <?php
