@@ -14,7 +14,7 @@
     <div class="container text-center my-3">
         <div class="row mx-auto my-auto">
             <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
-                <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
+                <!-- <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
                     <amp-carousel
                       layout="fixed-height"
                       type="carousel"
@@ -42,7 +42,7 @@
                             <?php endif; ?>
                         <?php endwhile; endif; ?>
                     </amp-carousel>
-                </div>
+                </div> -->
             <?php else: ?>
                 <div id="expertCarousel" class="carousel slide w-100" data-ride="carousel">
                     <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
