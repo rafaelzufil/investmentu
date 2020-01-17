@@ -49,15 +49,25 @@
                         <a href="<?php the_permalink(); ?>">
                             <h1 class="mt-3 p-black"><?php the_title(); ?></h1>
                             <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ):  ?>
-                                <?php $src = has_post_thumbnail() ? the_post_thumbnail_url('medium') : bloginfo('template_directory') . '/assets/images/iu-default-image.jpg'; ?>
-                                <amp-img
-                                  alt="<?php the_title(); ?>"
-                                  src="<?php echo $src; ?>"
-                                  width="540"
-                                  height="304"
-                                  layout="responsive"
-                                >
-                                </amp-img>
+                                <?php if ( has_post_thumbnail() ) { ?>
+                                    <amp-img
+                                      alt="<?php the_title(); ?>"
+                                      src="<?php the_post_thumbnail_url('medium'); ?>"
+                                      width="540"
+                                      height="304"
+                                      layout="responsive"
+                                    >
+                                    </amp-img>
+                                <?php } else { ?>
+                                    <amp-img
+                                      alt="<?php the_title(); ?>"
+                                      src="<?php bloginfo('template_directory'); ?>/assets/images/iu-default-image.jpg"
+                                      width="540"
+                                      height="304"
+                                      layout="responsive"
+                                    >
+                                    </amp-img>
+                                <?php } ?>
                             <?php endif; ?>
                         </a>
                     </div>
