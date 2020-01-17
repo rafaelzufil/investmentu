@@ -88,7 +88,12 @@ if ($is_syndicated !== 'true' && !isset($_COOKIE['INVESTME'])):
 ?>
   <!-- sticky signup form -->
   <div class="sticky-top container-fluid py-2" id="small-signup-form">
-  <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
+
+  <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ): ?>
+    <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" on="tap:small-signup-form.hide">x</span>
+  <?php else: ?>
+    <span id='close' class="d-block d-lg-none d-xl-none " style="float: right; cursor: pointer; color:#fff;" onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'>x</span>
+  <?php endif; ?>
     <div class="row">
       <div class="container">
         <?php iu_revive_display( 1 ); ?>
