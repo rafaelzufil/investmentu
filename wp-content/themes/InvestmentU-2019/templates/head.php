@@ -24,6 +24,10 @@
             #sidebar-lead-gen-ad p {
                 color: black;
             }
+
+            #small-signup-form p {
+                color: black !important;
+            }
         <?php endif; ?>
 
         .container ins center a img {
