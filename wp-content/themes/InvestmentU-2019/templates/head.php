@@ -33,7 +33,7 @@
                 text-decoration: none !important;
             }
 
-            .video-container a:hover {
+            .video-container a:hover h1 {
                 color: #1F82C5 !important;
             }
 
