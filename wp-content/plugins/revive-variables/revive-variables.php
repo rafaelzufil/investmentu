@@ -56,25 +56,52 @@ function revive_display( $zone ) {
   }
   $lytics = $_COOKIE['ly_segs'];
   if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()) {
-    echo "
-    <!-- AMP sign up form -->
-    <div id=\"sidebar-lead-gen-ad\" class=\"col-12 py-3 mb-4\">
-      <h6>Sign up for <em>Investment U</em>!</h6>
-      <p>Get <em>Investment U</em> in your inbox today! No matter your skill level, we’ll show you how to grab control of your financial future and build a bank account that will let you live life on your terms!</p>
-      <form action-xhr=\"" . get_template_directory_uri() . '/amp-form-post.php' . "\" method=\"post\" name=\"SimpleSignUp\" role=\"form\" target=\"_top\">
-        <div class=\"form-group mb-0\">
-          <input class=\"form-control mb-2\" type=\"email\" placeholder=\"Email\" name=\"signup_emailAddress\" id=\"inlineFormInputName\" required>
-          <button class=\"btn btn-block btn-primary form-control\" type=\"submit\">Subscribe Now</button>
-          <input name=\"signup_sourceId\" type=\"hidden\" value=\"X300V781\">
-          <input name=\"signup_listCode\" type=\"hidden\" value=\"INVESTME\">
-          <input name=\"signup_redirectUrl\" id=\"customRedirectUrl\" type=\"hidden\" value=\"" . get_site_url() . "\">
-          <input name=\"signup_welcomeEmailTemplateName\" type=\"hidden\" value=\"_pge_iu_welcome_2019\">
-          <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
-          <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
-          <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V781\">
-        </div>
-      </form>
-    </div>";
+    if ($zone == 1) {
+      echo "
+        <!-- AMP sign up form (header) -->
+        <form  action-xhr=\"" . get_template_directory_uri() . '/amp-form-post.php' . "\" method=\"post\" name=\"SimpleSignUp\" role=\"form\" target=\"_top\">
+          <div class=\"row\">
+            <div class=\"col-sm-12 col-md-12 col-lg-6 p-0 m-0 px-4 pt-2\">
+               <p style=\"color:#fff;\"><strong>
+                  Become a smarter, more confident and more successful wealth builder with the free <em>Investment U</em> e-letter.
+               </strong></p>
+            </div>
+            <div class=\"col-sm-12 col-md-12 col-lg-6 pt-2\" style=\"display: inline-flex;\">
+              <div class=\"col-10 pr-0\"><input class=\"form-control\" type=\"email\" placeholder=\"Email\" name=\"signup_emailAddress\" id=\"inlineFormInputName\" style=\"width:100%\" required></div>
+              <div class=\"col-2 pl-0\"><input class=\"form-control btn-default\" type=\"submit\" value=\"»\" style=\"width:100%\"></div>
+              <input name=\"signup_sourceId\" type=\"hidden\" value=\"X300V728\">
+              <input name=\"signup_listCode\" type=\"hidden\" value=\"INVESTME\">
+              <input name=\"signup_redirectUrl\" id=\"redirectUrl\" type=\"hidden\" value=\"" . get_site_url() . "\">
+              <input name=\"signup_welcomeEmailTemplateName\" type=\"hidden\" value=\"_pge_iu_welcome_2019\">
+              <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
+              <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
+              <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V728\">
+            </div>
+          </div>
+        </form>
+      ";
+    }
+    elseif ($zone == 2) {
+      echo "
+      <!-- AMP sign up form (content) -->
+      <div id=\"sidebar-lead-gen-ad\" class=\"col-12 py-3 mb-4\">
+        <h6>Sign up for <em>Investment U</em>!</h6>
+        <p>Get <em>Investment U</em> in your inbox today! No matter your skill level, we’ll show you how to grab control of your financial future and build a bank account that will let you live life on your terms!</p>
+        <form action-xhr=\"" . get_template_directory_uri() . '/amp-form-post.php' . "\" method=\"post\" name=\"SimpleSignUp\" role=\"form\" target=\"_top\">
+          <div class=\"form-group mb-0\">
+            <input class=\"form-control mb-2\" type=\"email\" placeholder=\"Email\" name=\"signup_emailAddress\" id=\"inlineFormInputName\" required>
+            <button class=\"btn btn-block btn-primary form-control\" type=\"submit\">Subscribe Now</button>
+            <input name=\"signup_sourceId\" type=\"hidden\" value=\"X300V781\">
+            <input name=\"signup_listCode\" type=\"hidden\" value=\"INVESTME\">
+            <input name=\"signup_redirectUrl\" id=\"customRedirectUrl\" type=\"hidden\" value=\"" . get_site_url() . "\">
+            <input name=\"signup_welcomeEmailTemplateName\" type=\"hidden\" value=\"_pge_iu_welcome_2019\">
+            <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
+            <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
+            <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V781\">
+          </div>
+        </form>
+      </div>";
+    }
   }
   else {
     echo "
