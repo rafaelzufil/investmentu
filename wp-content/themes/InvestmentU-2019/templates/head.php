@@ -14,13 +14,17 @@
 
     <style type="text/css">
         <?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()):
-            // TODO: AMP: use a dumbed down version of this - rebuild Bootstrap CSS / JS from source files (disable what's not needed)
             // Bootstrap 4.1.3 for AMP pages (same version as the one for non-AMP pages, but loaded from the server
             include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/bootstrap-4.1.3/css/bootstrap.min.css';
 
             // main stylesheet
             include  $_SERVER['DOCUMENT_ROOT'] . '/wp-content/themes/InvestmentU-2019/assets/styles/main.css';
-        endif; ?>
+            ?>
+
+            #sidebar-lead-gen-ad p {
+                color: black;
+            }
+        <?php endif; ?>
 
         .container ins center a img {
             width: 100%
