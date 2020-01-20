@@ -25,10 +25,6 @@
                 color: black;
             }
 
-            #small-signup-form p {
-                color: black !important;
-            }
-
             .video-container a {
                 text-decoration: none !important;
             }
