@@ -28,6 +28,20 @@
             #small-signup-form p {
                 color: black !important;
             }
+
+            .video-container a {
+                text-decoration: none !important;
+            }
+
+            .video-container a:hover {
+                color: #1F82C5 !important;
+            }
+
+            @media screen and (max-width: 991px) {
+                .video-container {
+                    padding: 0 0 30px 0 !important;
+                }
+            }
         <?php endif; ?>
 
         .container ins center a img {
