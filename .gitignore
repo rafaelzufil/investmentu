@@ -36,4 +36,5 @@ wp-content/advanced-cache.php
 **/.sass-cache
 **/.sass-cache/*
 
+
 **/log/*
