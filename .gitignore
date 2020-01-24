@@ -1,6 +1,6 @@
 .DS_Store
 */.DS_Store
-./index.php
+**/index.php
 wp-activate.php
 wp-admin
 wp-blog-header.php
@@ -19,6 +19,9 @@ wp-trackback.php
 xmlrpc.php
 iu-syndication-aggregator.php
 
+local-config.php
+
+wp-content/plugins
 wp-content/uploads
 wp-content/cache
 wp-content/w3tc-config
