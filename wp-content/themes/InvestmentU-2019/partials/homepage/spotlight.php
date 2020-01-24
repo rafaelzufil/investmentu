@@ -35,7 +35,7 @@ This template builds out a section under the homepage containing content from th
                     </a>
                 </section>
             </div>
-            <div class="d-flex align-items-end mx-2 mt-2">
+            <div class="d-flex align-items-md-start align-items-lg-end mx-2 mt-2">
                 <img src="<?php the_field('spotlight_image'); ?>" class="img-fluid">
             </div>
         </div> 
@@ -52,7 +52,7 @@ This template builds out a section under the homepage containing content from th
                         <?php the_field('spotlight_subhead'); ?>
                     </h5>
                 </header>
-                <section class="my-2 mx-2">
+                <section class="mt-1 mb-2 mx-2">
                     <?php the_field('spotlight_copy'); ?>
                     <a class="btn btn-block btn-primary mt-2" target="_blank" href="<?php the_field('spotlight_button_url'); ?>">
                         <?php the_field('spotlight_button_text'); ?>

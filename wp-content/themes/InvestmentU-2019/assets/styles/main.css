@@ -31,7 +31,7 @@ strong {
 }
 
 #spotlight header img, #spotlight-mobile header img {
-  width: 55px;
+  width: 30px;
 }
 
 #spotlight h4, #spotlight-mobile h4 {
@@ -50,6 +50,10 @@ strong {
 #spotlight a.btn, #spotlight-mobile a.btn {
   color: white;
   font-weight: 700;
+}
+
+#spotlight-mobile h5 {
+  font-size: 16px;
 }
 
 #small-signup-form {
