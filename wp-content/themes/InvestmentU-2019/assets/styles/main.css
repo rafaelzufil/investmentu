@@ -25,6 +25,33 @@ strong {
   font-weight: bold !important;
 }
 
+#spotlight {
+  border: 1px solid #4e81c1;
+  border-top: 15px solid #4e81c1;
+}
+
+#spotlight header img {
+  width: 55px;
+}
+
+#spotlight h4 {
+  font-size: 21px;
+}
+
+#spotlight h5 {
+  font-size: 17px;
+  color: #4e81c1;
+}
+
+#spotlight p {
+  margin-bottom: .25rem;
+}
+
+#spotlight a.btn {
+  color: white;
+  font-weight: 700;
+}
+
 #small-signup-form {
   background-color: #1f82c5;
   z-index: 1021;
