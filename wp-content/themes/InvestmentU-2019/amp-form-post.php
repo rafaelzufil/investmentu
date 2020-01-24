@@ -45,7 +45,7 @@ if (!empty($_POST)) {
     $sua_result = curl_exec($ch);
     //close connection
     curl_close($ch);
-    echo json_encode($sua_result);
+    echo "<pre>".var_dump($sua_result)."</pre>";
     header("AMP-Redirect-To: ".$redirecturl);
     header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin");
 }
