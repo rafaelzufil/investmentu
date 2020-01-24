@@ -45,7 +45,7 @@ if (!empty($_POST)) {
     $sua_result = curl_exec($ch);
     //close connection
     curl_close($ch);
-    die($sua_result);
+    echo $sua_result;
     header("AMP-Redirect-To: ".$redirecturl);
     header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin");
 }
