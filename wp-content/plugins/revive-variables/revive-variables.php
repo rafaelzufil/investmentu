@@ -71,7 +71,7 @@ function revive_display( $zone ) {
               <div class=\"col-2 pl-0\"><input class=\"form-control btn-default\" type=\"submit\" value=\"»\" style=\"width:100%\"></div>
               <input name=\"signup_sourceId\" type=\"hidden\" value=\"X300V728\">
               <input name=\"signup_listCode\" type=\"hidden\" value=\"INVESTME\">
-              <input name=\"signup_redirectUrl\" id=\"redirectUrl\" type=\"hidden\" value=\"\">
+              <input name=\"signup_redirectUrl\" id=\"redirectUrl\" type=\"hidden\" value=\"" . get_site_url() . "\">
               <input name=\"signup_welcomeEmailTemplateName\" type=\"hidden\" value=\"_pge_iu_welcome_2019\">
               <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
               <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
@@ -93,7 +93,7 @@ function revive_display( $zone ) {
             <button class=\"btn btn-block btn-primary form-control\" type=\"submit\">Subscribe Now</button>
             <input name=\"signup_sourceId\" type=\"hidden\" value=\"X300V781\">
             <input name=\"signup_listCode\" type=\"hidden\" value=\"INVESTME\">
-            <input name=\"signup_redirectUrl\" id=\"customRedirectUrl\" type=\"hidden\" value=\"\">
+            <input name=\"signup_redirectUrl\" id=\"customRedirectUrl\" type=\"hidden\" value=\"" . get_site_url() . "\">
             <input name=\"signup_welcomeEmailTemplateName\" type=\"hidden\" value=\"_pge_iu_welcome_2019\">
             <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
             <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
