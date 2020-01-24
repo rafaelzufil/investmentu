@@ -25,29 +25,29 @@ strong {
   font-weight: bold !important;
 }
 
-#spotlight {
+#spotlight, #spotlight-mobile {
   border: 1px solid #4e81c1;
   border-top: 15px solid #4e81c1;
 }
 
-#spotlight header img {
+#spotlight header img, #spotlight-mobile header img {
   width: 55px;
 }
 
-#spotlight h4 {
+#spotlight h4, #spotlight-mobile h4 {
   font-size: 21px;
 }
 
-#spotlight h5 {
+#spotlight h5, #spotlight-mobile h5 {
   font-size: 17px;
   color: #4e81c1;
 }
 
-#spotlight p {
+#spotlight p, #spotlight-mobile p {
   margin-bottom: .25rem;
 }
 
-#spotlight a.btn {
+#spotlight a.btn, #spotlight-mobile a.btn {
   color: white;
   font-weight: 700;
 }
