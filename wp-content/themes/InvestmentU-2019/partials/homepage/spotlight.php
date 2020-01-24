@@ -14,31 +14,9 @@ This template builds out a section under the homepage containing content from th
     $the_query = new WP_Query ( $args );
 ?>
 <?php if( have_posts() ) : while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
-    <!-- <style>
-		#spotlight {
-            border: 1px solid #4e81c1;
-            border-top: 15px solid #4e81c1;
-		}
-
-		#spotlight header img {
-			width: 55px;
-		}
-        #spotlight h4 {
-            font-size: 21px;
-        }
-        #spotlight h5 {
-            font-size: 17px;
-            color: #4e81c1;
-        }
-        #spotlight p {margin-bottom: .25rem}
-        #spotlight a.btn {
-            color: white;
-            font-weight: 700;
-        }
-	</style> -->
 	<section class="container mt-3">
-        <div class="col-12 d-flex justify-content-between p-0" id="spotlight">
-            <div class="align-items-start flex-column">
+    <div class="d-none col-md-12 d-md-flex justify-content-between p-0" id="spotlight">
+            <div class="d-flex align-items-start flex-column">
                 <header class="mt-3 ml-3">
                     <div class="d-flex align-items-center">
                         <img class="mr-2" src="<?php the_field('spotlight_icon'); ?>">
@@ -52,13 +30,35 @@ This template builds out a section under the homepage containing content from th
                 </header>
                 <section class="my-3 ml-3">
                     <?php the_field('spotlight_copy'); ?>
-                    <a class="btn btn-primary mt-2" target="_blank" href="<?php the_field('spotlight_button_url'); ?>">
+                    <a class="btn btn-primary mt-2 px-5" target="_blank" href="<?php the_field('spotlight_button_url'); ?>">
                         <?php the_field('spotlight_button_text'); ?>
                     </a>
                 </section>
             </div>
-            
-            <img src="<?php the_field('spotlight_image'); ?>" class="mr-3 mt-3 img-fluid">
-        </div>
+            <div class="d-flex align-items-md-start align-items-lg-end mx-2 mt-2">
+                <img src="<?php the_field('spotlight_image'); ?>" class="img-fluid">
+            </div>
+        </div> 
+        <div class="d-flex col-md-12 d-md-none p-0" id="spotlight-mobile">
+            <div class="d-flex align-items-start flex-column">
+                <header class="mt-2 mx-2">
+                    <div class="d-flex align-items-center">
+                        <img class="mr-3" src="<?php the_field('spotlight_icon'); ?>">
+                        <h4 class="m-0">
+                            <?php the_field('spotlight_heading'); ?>
+                        </h4>
+                    </div>
+                    <h5 class="mt-2">
+                        <?php the_field('spotlight_subhead'); ?>
+                    </h5>
+                </header>
+                <section class="mt-1 mb-2 mx-2">
+                    <?php the_field('spotlight_copy'); ?>
+                    <a class="btn btn-block btn-primary mt-2" target="_blank" href="<?php the_field('spotlight_button_url'); ?>">
+                        <?php the_field('spotlight_button_text'); ?>
+                    </a>
+                </section>
+            </div>
+        </div>    
 	</section>
 <?php endwhile; endif; ?>

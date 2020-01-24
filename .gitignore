@@ -25,6 +25,7 @@ wp-content/plugins
 wp-content/uploads
 wp-content/cache
 wp-content/w3tc-config
+wp-content/themes/twenty*
 
 node_modules
 
