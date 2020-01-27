@@ -77,15 +77,17 @@ function revive_display( $zone ) {
               <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
               <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V728\">
             </div>
-            <div submit-success>
-              <template type=\"amp-mustache\">
-                Subscription successful!
-              </template>
-            </div>
-            <div submit-error>
-              <template type=\"amp-mustache\">
-                {{result}}
-              </template>
+            <div class=\"amp-form-message-1\">
+              <div submit-success>
+                <template type=\"amp-mustache\">
+                  Subscription successful!
+                </template>
+              </div>
+              <div submit-error>
+                <template type=\"amp-mustache\">
+                  Subscription failed! {{result}}
+                </template>
+              </div>
             </div>
           </div>
         </form>
@@ -109,16 +111,18 @@ function revive_display( $zone ) {
             <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
             <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V781\">
           </div>
-          <div submit-success>
-            <template type=\"amp-mustache\">
-              Subscription successful!
-            </template>
-          </div>
-          <div submit-error>
-            <template type=\"amp-mustache\">
-              Subscription failed!
-            </template>
-          </div>
+          <div class=\"amp-form-message-2\">
+              <div submit-success>
+                <template type=\"amp-mustache\">
+                  Subscription successful!
+                </template>
+              </div>
+              <div submit-error>
+                <template type=\"amp-mustache\">
+                  Subscription failed! {{result}}
+                </template>
+              </div>
+            </div>
         </form>
       </div>";
     }

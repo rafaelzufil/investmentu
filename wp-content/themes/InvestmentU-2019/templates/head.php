@@ -38,6 +38,16 @@
                     padding: 0 0 30px 0 !important;
                 }
             }
+
+            .amp-form-message-1 {
+                color: #fff;
+                padding-left: 1.5rem;
+            }
+
+            .amp-form-message-2 {
+                color: #000;
+                padding-left: 1.5rem;
+            }
         <?php endif; ?>
 
         .container ins center a img {
@@ -72,6 +82,8 @@
         <script async custom-element="amp-selector" src="https://cdn.ampproject.org/v0/amp-selector-0.1.js"></script>
         <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
         <script async custom-element="amp-lightbox-gallery" src="https://cdn.ampproject.org/v0/amp-lightbox-gallery-0.1.js"></script>
+        <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+        <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.1.js"></script>
     <?php elseif (is_gtm_enabled()): ?>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
