@@ -37,8 +37,7 @@ if (!empty($_POST)) {
     $sua_options = array(
         CURLOPT_URL => $sua_url,
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $sua_fields_query,
-        CURLOPT_RETURNTRANSFER => true
+        CURLOPT_POSTFIELDS => $sua_fields_query
     );
     curl_setopt_array($ch, $sua_options);
     //execute post
