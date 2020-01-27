@@ -77,6 +77,16 @@ function revive_display( $zone ) {
               <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
               <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V728\">
             </div>
+            <div submit-success>
+              <template type=\"amp-mustache\">
+                Subscription successful!
+              </template>
+            </div>
+            <div submit-error>
+              <template type=\"amp-mustache\">
+                Subscription failed!
+              </template>
+            </div>
           </div>
         </form>
       ";
@@ -98,6 +108,16 @@ function revive_display( $zone ) {
             <input name=\"coRegSignups[0].checked\" type=\"hidden\" value=\"true\">
             <input name=\"coRegSignups[0].listCode\" type=\"hidden\" value=\"IUDED\">
             <input name=\"coRegSignups[0].sourceId\" type=\"hidden\" value=\"X300V781\">
+          </div>
+          <div submit-success>
+            <template type=\"amp-mustache\">
+              Subscription successful!
+            </template>
+          </div>
+          <div submit-error>
+            <template type=\"amp-mustache\">
+              Subscription failed!
+            </template>
           </div>
         </form>
       </div>";
