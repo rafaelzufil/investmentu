@@ -45,7 +45,7 @@ if (!empty($_POST)) {
     $sua_result = curl_exec($ch);
     //close connection
     curl_close($ch);
-    $ = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+    $domain_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
     header("Content-type: application/json");
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Origin: " . str_replace('.', '-', $domain_url) . ".cdn.ampproject.org");
