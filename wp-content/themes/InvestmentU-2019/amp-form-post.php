@@ -45,7 +45,14 @@ if (!empty($_POST)) {
     $sua_result = curl_exec($ch);
     //close connection
     curl_close($ch);
-    echo $sua_result;
-    header("AMP-Redirect-To: ".$redirecturl);
-    header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin");
+    $ = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+    header("Content-type: application/json");
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Allow-Origin: " . str_replace('.', '-', $domain_url) . ".cdn.ampproject.org");
+    header("AMP-Access-Control-Allow-Source-Origin: " . $domain_url);
+    header("Access-Control-Expose-Headers: AMP-Access-Control-Allow-Source-Origin");
+    header("AMP-Redirect-To: " . $redirecturl);
+    header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin"); 
+    echo json_encode(array('result' => $sua_result));
+    exit;
 }

@@ -84,7 +84,7 @@ function revive_display( $zone ) {
             </div>
             <div submit-error>
               <template type=\"amp-mustache\">
-                Subscription failed!
+                {{result}}
               </template>
             </div>
           </div>
