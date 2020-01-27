@@ -43,7 +43,7 @@ if (!empty($_POST)) {
     curl_setopt_array($ch, $sua_options);
     //execute post
     $sua_result = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE)
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     //close connection
     curl_close($ch);
     $domain_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
