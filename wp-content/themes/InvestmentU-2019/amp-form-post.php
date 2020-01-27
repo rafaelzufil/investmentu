@@ -43,6 +43,7 @@ if (!empty($_POST)) {
     curl_setopt_array($ch, $sua_options);
     //execute post
     $sua_result = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE)
     //close connection
     curl_close($ch);
     $domain_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
@@ -53,6 +54,6 @@ if (!empty($_POST)) {
     header("Access-Control-Expose-Headers: AMP-Access-Control-Allow-Source-Origin");
     header("AMP-Redirect-To: " . $redirecturl);
     header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin"); 
-    echo json_encode(array('result' => $sua_result));
+    echo json_encode(array('http_code' => $http_code, 'result' => $sua_result));
     exit;
 }

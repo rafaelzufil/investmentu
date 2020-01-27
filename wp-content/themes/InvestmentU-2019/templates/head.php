@@ -41,12 +41,12 @@
 
             .amp-form-message-1 {
                 color: #fff;
+                font-weight: bold;
                 padding-left: 1.5rem;
             }
 
             .amp-form-message-2 {
                 color: #000;
-                padding-left: 1.5rem;
             }
         <?php endif; ?>
 
