@@ -53,7 +53,8 @@ if (!empty($_POST)) {
     header("AMP-Access-Control-Allow-Source-Origin: " . $domain_url);
     header("Access-Control-Expose-Headers: AMP-Access-Control-Allow-Source-Origin");
     header("AMP-Redirect-To: " . $redirecturl);
-    header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin"); 
+    header("Access-Control-Expose-Headers: AMP-Redirect-To, AMP-Access-Control-Allow-Source-Origin");
     echo json_encode(array('http_code' => $http_code, 'result' => $sua_result));
+    http_response_code($http_code);
     exit;
 }
