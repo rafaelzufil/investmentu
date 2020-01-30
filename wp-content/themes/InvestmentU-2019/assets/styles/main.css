@@ -27,7 +27,7 @@ strong {
 
 #spotlight, #spotlight-mobile {
   border: 1px solid #4e81c1;
-  border-top: 15px solid #4e81c1;
+  border-top: 11px solid #4e81c1;
 }
 
 #spotlight header img, #spotlight-mobile header img {
@@ -50,6 +50,11 @@ strong {
 #spotlight a.btn, #spotlight-mobile a.btn {
   color: white;
   font-weight: 700;
+  border-color: transparent;
+}
+
+#spotlight .spotlight-image, #spotlight-mobile .spotlight-image {
+  width: 84%;
 }
 
 #spotlight-mobile h5 {
