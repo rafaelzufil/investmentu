@@ -7,14 +7,6 @@ $(document).on('submit', '#lead-gen', function(e) {
   var listCode = $(this).closest("form").find("input[name='signup.listCode']").val();
   var welcomeEmail = $(this).closest("form").find("input[name='signup.welcomeEmailTemplateName']").val();
 
-  var emailError = new Event('emailError'),
-      emailDuplicate = new Event('emailDuplicate'),
-      emailSuccess = new Event('emailSuccess'),
-      emailSubmit = new Event('emailSubmit');
-
-      emailSubmit.listCode = listCode;
-
-  document.dispatchEvent(emailSubmit);
 
   e.preventDefault();
 
@@ -32,7 +24,7 @@ $(document).on('submit', '#lead-gen', function(e) {
           dataLayer.push({
             'event':'event_triggered',
             'event_category':'Newsletter',
-            'event_action':'Error',
+            'event_action':'Error - ',
             'event_label': sourceId+' | '+listCode
           });
 
@@ -40,6 +32,8 @@ $(document).on('submit', '#lead-gen', function(e) {
       }
   }) // using the done promise callback
   .done(function(data) {
+
+      console.log(data);
 
       // log data to the console so we can see
       if (data === 'success') {
