@@ -18,7 +18,7 @@ $(document).on('submit', '#lead-gen', function(e) {
       error: function(xhr) {
         console.log(xhr.status);
         if (xhr.status === 400) {
-          document.dispatchEvent(emailError);
+          
           displayErrorModal();
 
           dataLayer.push({
@@ -53,7 +53,6 @@ $(document).on('submit', '#lead-gen', function(e) {
 
       } else if (data === 'duplicate') {
 
-        document.dispatchEvent(emailDuplicate);
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
 
