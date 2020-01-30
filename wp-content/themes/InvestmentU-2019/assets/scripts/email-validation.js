@@ -40,8 +40,6 @@ $(document).on('submit', '#lead-gen', function(e) {
      
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
-
-
         
         dataLayer.push({
             'event':'event_triggered',
@@ -63,8 +61,19 @@ $(document).on('submit', '#lead-gen', function(e) {
               'event_label': sourceId+' | '+listCode
         });
 
+      } else if (data === 'Invalid email format') {
 
-      } else {
+        displayErrorModal();
+        dataLayer.push({
+              'event':'event_triggered',
+              'event_category':'Newsletter',
+              'event_action':'Error - Invalid Email',
+              'event_label': sourceId+' | '+listCode
+        });
+      
+      }
+
+      else {
 
         dataLayer.push({
               'event':'event_triggered',
