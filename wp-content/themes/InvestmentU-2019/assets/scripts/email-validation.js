@@ -24,7 +24,7 @@ $(document).on('submit', '#lead-gen', function(e) {
           dataLayer.push({
             'event':'event_triggered',
             'event_category':'Newsletter',
-            'event_action':'Error - ',
+            'event_action':'Error - Cant Connect',
             'event_label': sourceId+' | '+listCode
           });
 
@@ -37,7 +37,7 @@ $(document).on('submit', '#lead-gen', function(e) {
 
       // log data to the console so we can see
       if (data === 'success') {
-        document.dispatchEvent(emailSuccess);
+     
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
 
@@ -70,7 +70,7 @@ $(document).on('submit', '#lead-gen', function(e) {
         dataLayer.push({
               'event':'event_triggered',
               'event_category':'Newsletter',
-              'event_action':'Error',
+              'event_action':'Error - Other',
               'event_label': sourceId+' | '+listCode
         });
 
