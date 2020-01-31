@@ -7,14 +7,6 @@ $(document).on('submit', '#lead-gen', function(e) {
   var listCode = $(this).closest("form").find("input[name='signup.listCode']").val();
   var welcomeEmail = $(this).closest("form").find("input[name='signup.welcomeEmailTemplateName']").val();
 
-  var emailError = new Event('emailError'),
-      emailDuplicate = new Event('emailDuplicate'),
-      emailSuccess = new Event('emailSuccess'),
-      emailSubmit = new Event('emailSubmit');
-
-      emailSubmit.listCode = listCode;
-
-  document.dispatchEvent(emailSubmit);
 
   e.preventDefault();
 
@@ -24,30 +16,37 @@ $(document).on('submit', '#lead-gen', function(e) {
       dataType    : 'json', // what type of data do we expect back from the server
       encode          : true,
       error: function(xhr) {
-        console.log(xhr.status);
+        console.log(xhr);
         if (xhr.status === 400) {
-          document.dispatchEvent(emailError);
+            
           displayErrorModal();
-
           dataLayer.push({
             'event':'event_triggered',
             'event_category':'Newsletter',
-            'event_action':'Error',
+            'event_action':'Error - 400',
             'event_label': sourceId+' | '+listCode
           });
 
         };
+        else if (xhr.status === 404) { 
+          dataLayer.push({
+            'event':'event_triggered',
+            'event_category':'Newsletter',
+            'event_action':'Error - 404',
+            'event_label': sourceId+' | '+listCode
+          });
+        }
       }
   }) // using the done promise callback
   .done(function(data) {
 
+      console.log(data);
+
       // log data to the console so we can see
       if (data === 'success') {
-        document.dispatchEvent(emailSuccess);
+     
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
-
-
         
         dataLayer.push({
             'event':'event_triggered',
@@ -59,7 +58,6 @@ $(document).on('submit', '#lead-gen', function(e) {
 
       } else if (data === 'duplicate') {
 
-        document.dispatchEvent(emailDuplicate);
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
 
@@ -70,13 +68,24 @@ $(document).on('submit', '#lead-gen', function(e) {
               'event_label': sourceId+' | '+listCode
         });
 
+      } else if (data === 'Invalid email format') {
 
-      } else {
+        displayErrorModal();
+        dataLayer.push({
+              'event':'event_triggered',
+              'event_category':'Newsletter',
+              'event_action':'Error - Invalid Email',
+              'event_label': sourceId+' | '+listCode
+        });
+      
+      }
+
+      else {
 
         dataLayer.push({
               'event':'event_triggered',
               'event_category':'Newsletter',
-              'event_action':'Error',
+              'event_action':'Error - 200',
               'event_label': sourceId+' | '+listCode
         });
 

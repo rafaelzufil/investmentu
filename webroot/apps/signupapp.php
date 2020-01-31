@@ -65,8 +65,16 @@ $sua_fields = array(
 );
 
 //Email validation regex pattern
+
+if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+     http_response_code(400);
+     echo "Invalid email format";
+     exit();
+}
+
+//THIS PATTERN THROWS ERRORS UNECESSARILY
 //$pattern = '/^([\w-\.\+]+@([\w-]+\.)+[\w-]{2,4})?$/';
-$pattern = '/^([\w-\.\+]+(.[_aA-zZ0-9-\+]+)+@([\w-]+\.)+[\w-]{2,4})?$/';
+/*$pattern = '/^([\w-\.\+]+(.[_aA-zZ0-9-\+]+)+@([\w-]+\.)+[\w-]{2,4})?$/';
 
 $valid = preg_match($pattern, $email);
 
@@ -74,7 +82,7 @@ if ($valid === 0) {
 	http_response_code(400);
 	echo "Invalid email format";
 	exit();
-}
+}*/
 
 /**
  * Check email address against CARL to prevent duplicate signups
