@@ -16,19 +16,26 @@ $(document).on('submit', '#lead-gen', function(e) {
       dataType    : 'json', // what type of data do we expect back from the server
       encode          : true,
       error: function(xhr) {
-        console.log(xhr.status);
+        console.log(xhr);
         if (xhr.status === 400) {
-          
+            
           displayErrorModal();
-
           dataLayer.push({
             'event':'event_triggered',
             'event_category':'Newsletter',
-            'event_action':'Error - Cant Connect',
+            'event_action':'Error - 400',
             'event_label': sourceId+' | '+listCode
           });
 
         };
+        else if (xhr.status === 404) { 
+          dataLayer.push({
+            'event':'event_triggered',
+            'event_category':'Newsletter',
+            'event_action':'Error - 404',
+            'event_label': sourceId+' | '+listCode
+          });
+        }
       }
   }) // using the done promise callback
   .done(function(data) {
@@ -78,7 +85,7 @@ $(document).on('submit', '#lead-gen', function(e) {
         dataLayer.push({
               'event':'event_triggered',
               'event_category':'Newsletter',
-              'event_action':'Error - Other',
+              'event_action':'Error - 200',
               'event_label': sourceId+' | '+listCode
         });
 
