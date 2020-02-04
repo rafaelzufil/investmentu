@@ -27,7 +27,7 @@ $(document).on('submit', '#lead-gen', function(e) {
             'event_label': sourceId+' | '+listCode
           });
 
-        };
+        }
         else if (xhr.status === 404) { 
           dataLayer.push({
             'event':'event_triggered',
