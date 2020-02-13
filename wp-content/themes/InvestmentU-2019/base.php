@@ -17,7 +17,7 @@ use Roots\Sage\Wrapper;
                       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
   <?php endif ?>
-    <?php // TODO: AMP: Conditional HTML comments are not allowed in AMP so this will only work on non-AMP pages ?>
+    <?php // AMP: Conditional HTML comments are not allowed in AMP so this will only work on non-AMP pages ?>
     <!--[if IE]>
     <div class="alert alert-warning">
         <?php _e('You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.', 'sage'); ?>

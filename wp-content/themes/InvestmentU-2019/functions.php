@@ -32,11 +32,7 @@ foreach ($sage_includes as $file) {
 unset($file, $filepath);
 
 function roots_scripts() {
-    if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()) {
-        // TODO: AMP: need to handle email validation (like on the else bracnh below for AMP pages, probably somewhere else
-        // TODO: AMP: either by using Vanila JS cor email validation inside <amp-script>
-        // TODO: AMP: or by combining all JS inside a single script (jQuery too) and include that inside an <amp-script> in head.php
-    } else {
+    if (!(function_exists( 'is_amp_endpoint' ) && is_amp_endpoint())) {
         //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
         wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
     }

@@ -103,8 +103,6 @@ function display_sidebar() {
  */
 function assets() {
     if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()) {
-        // TODO: AMP: revise these - disabled jQuery for AMP pages
-
         // custom styles / JS are loaded elsewhere for AMP pages
         // (look in base.php, head.php and look for any <amp-script> tags in the templates)
 
