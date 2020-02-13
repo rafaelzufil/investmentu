@@ -17,6 +17,7 @@ use Roots\Sage\Wrapper;
                       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
   <?php endif ?>
+<?php else: ?>
     <?php // AMP: Conditional HTML comments are not allowed in AMP so this will only work on non-AMP pages ?>
     <!--[if IE]>
     <div class="alert alert-warning">
@@ -29,6 +30,18 @@ use Roots\Sage\Wrapper;
 do_action('get_header');
 get_template_part('templates/header');
 ?>
+<?php if (function_exists( 'is_amp_endpoint' ) && is_amp_endpoint()): ?>
+  <amp-analytics type="newrelic" id="newrelic">
+  <script type="application/json">
+    {
+      "vars": {
+        "appId": "<?php echo get_field('new_relic_app_id', 'option'); ?>",
+        "licenseKey": "<?php echo get_field('new_relic_license_key', 'option'); ?>"
+      }
+    }
+  </script>
+  </amp-analytics>
+<?php endif; ?>
 <!-- <div class="wrap container" role="document">
   <div class="content row">
     <main> -->

@@ -74,14 +74,5 @@
         });
     </script>
 <?php else: ?>
-    <amp-analytics type="newrelic" id="newrelic">
-    <script type="application/json">
-      {
-        "vars": {
-          "appId": "<?php echo get_field('new_relic_app_id', 'option'); ?>",
-          "licenseKey": "<?php echo get_field('new_relic_license_key', 'option'); ?>"
-        }
-      }
-    </script>
-    </amp-analytics>
+    
 <?php endif; ?>
