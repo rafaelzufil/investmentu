@@ -78,8 +78,8 @@
     <script type="application/json">
       {
         "vars": {
-          "appId": "37639091",
-          "licenseKey": "81c385adef09e912618c587afdc2a1ef5657eb7a"
+          "appId": "<?php echo get_field('new_relic_app_id', 'option'); ?>",
+          "licenseKey": "<?php echo get_field('new_relic_license_key', 'option'); ?>"
         }
       }
     </script>
