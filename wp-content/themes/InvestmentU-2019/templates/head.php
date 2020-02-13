@@ -83,18 +83,7 @@
         <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
         <script async custom-element="amp-lightbox-gallery" src="https://cdn.ampproject.org/v0/amp-lightbox-gallery-0.1.js"></script>
         <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
-        <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
         <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.1.js"></script>
-        <amp-analytics type="newrelic" id="newrelic">
-        <script type="application/json">
-          {
-            "vars": {
-              "appId": "37639091",
-              "licenseKey": "81c385adef09e912618c587afdc2a1ef5657eb7a"
-            }
-          }
-        </script>
-        </amp-analytics>
     <?php elseif (is_gtm_enabled()): ?>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {

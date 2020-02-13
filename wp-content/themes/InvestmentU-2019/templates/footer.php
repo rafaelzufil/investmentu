@@ -74,8 +74,14 @@
         });
     </script>
 <?php else: ?>
-    <?php
-    // TODO: AMP: need to add the custom jQuery from above to be loaded via <amp-script> wrappers where it's used (body, search form, homepage carousel)
-    // TODO: AMP: maybe use Vanila JS for both AMP based and non AMP based pages as well
-    ?>
+    <amp-analytics type="newrelic" id="newrelic">
+    <script type="application/json">
+      {
+        "vars": {
+          "appId": "37639091",
+          "licenseKey": "81c385adef09e912618c587afdc2a1ef5657eb7a"
+        }
+      }
+    </script>
+    </amp-analytics>
 <?php endif; ?>
