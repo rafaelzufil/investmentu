@@ -18,7 +18,7 @@ TODO:  Add these back once we have our own shields instance.
 	<a href="https://github.com/PaidSites/investmentu2019">
 		<img src="images/logo.jpg" alt="IU Brand Logo">
 	</a>
-
+</p>
 	<h3 align="center">InvestmentU.com</h3>
 
 	<p align="center">
