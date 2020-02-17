@@ -216,10 +216,45 @@ function revive_zone($location) {
   return $zone;
 }
 
-// Queue lytics-css file from S3
-function enqueue_lytics_styles() {
-  wp_register_style( 'lytics-css', 'https://s3.amazonaws.com/assets.oxfordclub.com/css/investmentu/lytics-styles.css' );
-  wp_enqueue_style( 'lytics-css');
+/**
+ * Disable AddToAny share script on certain pages
+ */
+add_filter( 'addtoany_script_disabled', disableAddToAnyScripts, 999);
+
+function disableAddToAnyScripts() {
+    if (!is_single()) {
+        return true;
+    }
 }
 
-add_action( 'wp_enqueue_scripts', 'enqueue_lytics_styles' );
+/**
+ * Custom image sizes
+ */
+add_image_size('related-posts-thumbnail', 600, 9999);
+
+/**
+ * Enable ACF options page
+ */
+if( function_exists('acf_add_options_page') ) {
+	acf_add_options_page();
+}
+
+function is_gtm_enabled() {
+  return get_field('gtm_enabled', 'option') && !isset($_GET['disable_gtm']);
+}
+
+function get_gtm_code() {
+  return get_field('gtm_code', 'option');
+}
+
+function iu_revive_display( $id ) {
+  if (!function_exists('revive_display')) {
+    return;
+  }
+
+  if (isset($_GET['disable_revive'])) {
+    return;
+  }
+
+  revive_display( $id );
+}

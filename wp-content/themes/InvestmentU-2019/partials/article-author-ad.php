@@ -30,11 +30,11 @@ if ($is_syndicated == 'true'):
 
 ?>
   <div class="native-leadgen-signup">
-    <?php revive_display( 17 ); ?>
+    <?php iu_revive_display( 17 ); ?>
   </div>
 
 <?php else: ?>
   <div class="native-leadgen-signup">
-    <?php revive_display( 3 ); ?>
+    <?php iu_revive_display( 3 ); ?>
   </div>
 <?php endif; ?>

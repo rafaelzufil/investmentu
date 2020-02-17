@@ -30,7 +30,7 @@
                 <p>Sorry, no posts matched your criteria.</p>
                 <?php endif; ?>
                 <?php iu_pagination(); ?>
-                <?php revive_display( 3 ); ?>
+                <?php iu_revive_display( 3 ); ?>
             </div>
             <!-- SIDEBAR -->
             <?php get_template_part('partials/sidebar'); ?>

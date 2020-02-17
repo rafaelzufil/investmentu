@@ -7,7 +7,6 @@ $(document).on('submit', '#lead-gen', function(e) {
   var listCode = $(this).closest("form").find("input[name='signup.listCode']").val();
   var welcomeEmail = $(this).closest("form").find("input[name='signup.welcomeEmailTemplateName']").val();
 
-
   e.preventDefault();
 
   $.ajax({
@@ -16,78 +15,26 @@ $(document).on('submit', '#lead-gen', function(e) {
       dataType    : 'json', // what type of data do we expect back from the server
       encode          : true,
       error: function(xhr) {
-        console.log(xhr);
+        console.log(xhr.status);
         if (xhr.status === 400) {
-            
           displayErrorModal();
-          dataLayer.push({
-            'event':'event_triggered',
-            'event_category':'Newsletter',
-            'event_action':'Error - 400',
-            'event_label': sourceId+' | '+listCode
-          });
-
-        }
-        else if (xhr.status === 404) { 
-          dataLayer.push({
-            'event':'event_triggered',
-            'event_category':'Newsletter',
-            'event_action':'Error - 404',
-            'event_label': sourceId+' | '+listCode
-          });
-        }
+        };
       }
   }) // using the done promise callback
   .done(function(data) {
 
-      console.log(data);
-
       // log data to the console so we can see
       if (data === 'success') {
-     
+
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
-        
-        dataLayer.push({
-            'event':'event_triggered',
-            'event_category':'Newsletter',
-            'event_action':'Submit',
-            'event_label': sourceId+' | '+listCode
-        });
-        
 
       } else if (data === 'duplicate') {
 
         displayConfirmModal(listCode, data);
         revive.setCookie(listCode, true, 365);
 
-        dataLayer.push({
-              'event':'event_triggered',
-              'event_category':'Newsletter',
-              'event_action':'Duplicate',
-              'event_label': sourceId+' | '+listCode
-        });
-
-      } else if (data === 'Invalid email format') {
-
-        displayErrorModal();
-        dataLayer.push({
-              'event':'event_triggered',
-              'event_category':'Newsletter',
-              'event_action':'Error - Invalid Email',
-              'event_label': sourceId+' | '+listCode
-        });
-      
-      }
-
-      else {
-
-        dataLayer.push({
-              'event':'event_triggered',
-              'event_category':'Newsletter',
-              'event_action':'Error - 200',
-              'event_label': sourceId+' | '+listCode
-        });
+      } else {
 
       }
 
