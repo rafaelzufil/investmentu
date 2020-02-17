@@ -32,11 +32,14 @@ foreach ($sage_includes as $file) {
 unset($file, $filepath);
 
 function roots_scripts() {
-  //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
-  wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
+    if (!(function_exists( 'is_amp_endpoint' ) && is_amp_endpoint())) {
+        //wp_enqueue_script('carl/js', 'https://carl.pubsvs.com/carl.js'  );
+        wp_enqueue_script('validation-js', get_template_directory_uri() .'/assets/scripts/email-validation.js' );
+    }
 
-  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
-  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick.css', false, '1');
+    // NOTE: commented out these - not used on the site probably
+//  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick-theme.css', false, '1');
+//  wp_enqueue_style( 'slick-theme', get_template_directory_uri() . '/assets/styles/slick.css', false, '1');
 }
 add_action('wp_enqueue_scripts', 'roots_scripts', 100);
 
@@ -216,10 +219,52 @@ function revive_zone($location) {
   return $zone;
 }
 
-// Queue lytics-css file from S3
-function enqueue_lytics_styles() {
-  wp_register_style( 'lytics-css', 'https://s3.amazonaws.com/assets.oxfordclub.com/css/investmentu/lytics-styles.css' );
-  wp_enqueue_style( 'lytics-css');
+/**
+ * Disable AddToAny share script on certain pages
+ */
+add_filter( 'addtoany_script_disabled', disableAddToAnyScripts, 999);
+
+function disableAddToAnyScripts() {
+    if (!is_single()) {
+        return true;
+    }
 }
 
-add_action( 'wp_enqueue_scripts', 'enqueue_lytics_styles' );
+/**
+ * Custom image sizes
+ */
+add_image_size('related-posts-thumbnail', 600, 9999);
+
+/**
+ * Enable ACF options page
+ */
+if( function_exists('acf_add_options_page') ) {
+	acf_add_options_page();
+}
+
+function is_gtm_enabled() {
+  return get_field('gtm_enabled', 'option') && !isset($_GET['disable_gtm']);
+}
+
+function get_gtm_code() {
+  return get_field('gtm_code', 'option');
+}
+
+function iu_revive_display( $id ) {
+  if (!function_exists('revive_display')) {
+    return;
+  }
+
+  if (isset($_GET['disable_revive'])) {
+    return;
+  }
+
+  revive_display( $id );
+}
+
+function iu_site_url() {
+    $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ||
+        $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $domainName = $_SERVER['HTTP_HOST'];
+    return $protocol.$domainName;
+}

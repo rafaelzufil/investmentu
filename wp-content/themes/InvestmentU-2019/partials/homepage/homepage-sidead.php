@@ -3,7 +3,7 @@
   <?php
     if (!isset($_COOKIE['INVESTME'])):
         $zone = revive_zone(2);
-        revive_display( $zone );
+        iu_revive_display( $zone );
     else :
   ?>
     <h5 class="p-blue m-0 pb-2" style="border-bottom: 1px solid #d3d3d3;">Popular Posts</h5>
@@ -18,5 +18,5 @@
   <?php endif; ?>
 </div>
 <div class="col-md-12 d-block d-md-block d-lg-none pt-4" id="sidebar-banner-ad">
-  <?php revive_display( 2 ); ?>
+  <?php iu_revive_display( 2 ); ?>
 </div>
