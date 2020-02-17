@@ -9,4 +9,4 @@
     </div>
     </form>
 </div> -->
-<?php revive_display( 3 ); ?>
+<?php iu_revive_display( 3 ); ?>

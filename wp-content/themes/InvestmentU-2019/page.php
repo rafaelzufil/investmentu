@@ -9,7 +9,20 @@
                 <div class="article-header mb-2">
                   <h1 class="page-title mb-4"><?php the_title(); ?></h1>
                 </div>
-                <img src="<?php the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image">
+                <?php if ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ):  ?>
+                  <?php if ( has_post_thumbnail() ): ?>
+                    <amp-img
+                      alt="<?php the_title(); ?>"
+                      src="<?php the_post_thumbnail_url(); ?>"
+                      width="300"
+                      height="300"
+                      layout="responsive"
+                    >
+                    </amp-img>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <img src="<?php the_post_thumbnail_url(); ?>" class="float-right ml-3 mb-3 featured-image">
+                <?php endif; ?>
                 <?php the_content(); ?>
               </article>
             </div>
